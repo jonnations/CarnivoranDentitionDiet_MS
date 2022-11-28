@@ -1,8 +1,8 @@
 
 # Carnivoran Dentition & Ordinal Diet Rankings 
-
-Predicting multivariate ecology using phenotypic data yields novel insights into the diets of cryptic and extinct taxa
 =========
+
+#### Predicting multivariate ecology using phenotypic data yields novel insights into the diets of cryptic and extinct taxa
 
 GitHub repo for the manuscript. All scripts necessary to perform the analyses and generate the plots from this manuscript are found here.
 
