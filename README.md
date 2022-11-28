@@ -2,7 +2,7 @@
 # Carnivoran Dentition & Ordinal Diet Rankings 
 =========
 
-#### Predicting multivariate ecology using phenotypic data yields novel insights into the diets of cryptic and extinct taxa
+## Predicting multivariate ecology using phenotypic data yields novel insights into the diets of cryptic and extinct taxa
 
 GitHub repo for the manuscript. All scripts necessary to perform the analyses and generate the plots from this manuscript are found here.
 
@@ -10,7 +10,7 @@ GitHub repo for the manuscript. All scripts necessary to perform the analyses an
 
 - pacman, tidyverse, tidybayes, brms, cmdstanr, phytools, geiger, mclust, polycor, NbClust, ggstar, janitor, here, caret
 
-- All of these packages should be available in CRAN. See the brms [FAQ](https://github.com/paul-buerkner/brms#faq) for details on installing Stan, cmndstanr, and brms. 
+- All of these packages should be available in CRAN. See the brms [FAQ](https://github.com/paul-buerkner/brms#faq) for details on installing Stan, cmndstanr, and brms. [pacman](http://trinker.github.io/pacman/vignettes/Introduction_to_pacman.html) makes it easy to install and load multiple packages. 
 
 ## Layout:
 
