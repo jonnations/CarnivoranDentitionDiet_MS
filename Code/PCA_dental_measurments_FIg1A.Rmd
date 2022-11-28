@@ -1,0 +1,63 @@
+---
+title: "PCA Dental Measurements GGPLOT"
+#output: html_notebook
+---
+
+Making a PCA plot from dental measurements, colored by clade. This is figure 1A. There was some minor editing done of the legend size in Affinity Design.
+
+
+```{r}
+pacman::p_load(tidyverse, patchwork, png, ggstar, here)
+
+here::i_am("Code", "PCA_dental_measurements_Fig1A.Rmd")
+```
+
+## Read Data
+```{r}
+input_data_1<- read.delim(here("Data", "Master_Data.txt")) %>% drop_na() %>% select(1:10) %>% mutate(Family = as.factor(Family))
+
+colors.list9<-c("#1090e5", "#4624b5", "#51bc27", "#69efeb", "#e8ea72", "#a2ea6e", "#7f3faa", "#dd8871", "#f2da9b", "#d596f7", "#fcc7c9", "#ac0bc1", "#1488a8")
+```
+## PCA
+```{r}
+pca1<-prcomp(input_data_1[4:10], scale.=TRUE, center=TRUE)
+
+pdat <- pca1$x %>% as_tibble() %>% 
+  bind_cols(input_data_1) %>% 
+  # reversing axis to match previous version
+  mutate(PC1 = -PC1)
+```
+
+
+## Plot
+Black Rings on geom_point
+
+```{r}
+hull <- pdat %>% 
+  group_by(Family) %>% 
+  slice(chull(PC1, PC2))
+
+pcplot <- pdat  %>% ggplot(aes(x = PC1, y = PC2)) + 
+   geom_star(aes(fill = Family), size = 2.5, starstroke = 0.7, starshape = 15) +
+  scale_starshape_manual(c(15)) +
+  geom_polygon(aes(fill = Family, color = Family),data = hull, alpha = 0.35, show.legend = F) +
+  scale_fill_manual(values = colors.list9) +
+  scale_color_manual(values = colors.list9) +
+  labs(x = "PC 1 (64%)", y = "PC 2 (18%)") +
+  theme_classic() +
+  theme(legend.title = element_blank(), 
+        legend.position = c(0.165, 0.87),
+        panel.background = element_blank(),
+        panel.border = element_blank(),
+        axis.text.y = element_text(angle = 90),
+        legend.text=element_text(size=rel(1)),
+        legend.background = element_rect(fill='transparent'),
+        legend.key.size = unit(0.5, 'lines')) +
+      guides(color = guide_legend(byrow = TRUE, override.aes = list(size = 4), ncol = 2),
+             fill = guide_legend(byrow = TRUE, override.aes = list(size = 4),  ncol = 2)) #+
+
+
+pcplot
+ggsave(here("Plots", "Fig1A.png", height = 7, width = 8))
+ggsave(here("Plots", "Fig1A.pdf", height = 7, width = 8))
+```

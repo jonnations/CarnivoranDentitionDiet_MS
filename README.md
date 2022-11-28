@@ -1,1 +1,46 @@
 # CarnivoranDentitionDiet_MS
+Predicting multivariate ecology using phenotypic data yields novel insights into the diets of cryptic and extinct taxa
+=========
+
+GitHub repo for the manuscript. All scripts necessary to perform the analyses and generate the plots from this manuscript are found here.
+
+## Required Packages:
+
+- pacman, tidyverse, tidybayes, brms, cmdstanr, phytools, geiger, mclust, polycor, NbClust, ggstar, janitor, here
+
+- All of these packages should be available in CRAN. See the brms [FAQ](https://github.com/paul-buerkner/brms#faq) for details on installing Stan, cmndstanr, and brms. 
+
+## Layout:
+
+- The contents of this repo is split up into 4 main directories:`Code`, `Data`, `mod_outputs`, and `Plots`. We use the package [here](https://here.r-lib.org/) to deal with the repo structure, allowing anyone to download the repo as is and run the code without dealing with paths. 
+
+## **`Code`** 
+
+- All of the models, prior and posterior checking, predictions, data wrangling, etc. are found in this directory.
+
+- The bulk of our results are from the multilevel models generated in [**brms**](https://github.com/paul-buerkner/brms). The scripts containing the models for each food item are in the `Code/Models/` directory and labeled `D_Mods_FOODITEM.Rmd`. Each script contains 5 models. To run all of these, visit the script `Code/D_All_Models.Rmd`, which wrangles the data and calls each food item script individually. ***This Must Be Run Before the Plotting or Prediction Scripts*** because the brms model objects are necessary for those. The outputs of the models will be stored in the `mod_outputs` directory (see below). These are imported later for predictive and plotting scripts (rather than running the whole thing again).
+
+- All of our ordinal **brms** models use a Dirichlet Prior on the threshold (aka cutpoint) values. The Dirichet prior script is found in `Dirichlet_Prior.R`. We used the Stan code described in [this Stan Discourse post](https://discourse.mc-stan.org/t/dirichlet-prior-on-ordinal-regression-cutpoints-in-brms/20640/3), written by [Staffan Betnèr](https://github.com/StaffanBetner), to create this prior. This code was generated from and informed by the case study by [Michael Betancourt](https://betanalpha.github.io/) found [here](https://betanalpha.github.io/assets/case_studies/ordinal_regression.html). We included the prior predictive checks in the script `Prior_Predictive_Checks.Rmd`.It is by no means necessary to use this Dirichlet prior to estimate the cutpoints. A normal or student-t distribution will also work and provide very similar estimates. However, our posterior predictive checks showed that the Dirichlet prior was a little more accurate. We set the mean intercept	$\phi$ to 0 rather than have the model estimate it, which performed better in our simulations. See comment #9 in the discourse post.
+
+- The `Weighted_Predictions_Fig3_Fig4.Rmd` script generates weighted posterior predictions and weighted averages for the extant-with-data, cryptic and fossil taxa, and produces Figures 3 & 4. 
+
+- The `Diet_Space_Ordination_and_Clustering.Rmd` script contains the polychoric PCA analysis that generates a multivariate diet space, the clustering analysis that generates Figure 1B, and the diet space projection of cryptic and fossil taxa used to make Table 4.
+
+- The remainder of the scripts are for plotting (plot name/number included in the title), or tables generates in [kableExtra](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html) as `.tex` and `.png` files. The plots are stored in the `Plots` directory.
+
+## **`mod_outputs`** 
+
+- This directory stores the model outputs generated in the 13 model scripts called in the `Code/D_All_Models.Rds` file. brms stores the model objects as `.rds` files. These can be loaded via `brms:brm()` or with the `readRds()` command, which we use a lot in other scripts here. 
+
+- This directory will be empty in the Dryad repo to save space (all 67 model outputs = 367Mb in size), but running the `Code/D_All_Models.Rds` script will populate it. 
+
+
+## **`Data`** 
+
+- The data directory contains all of the raw data used in the initial models, and the data generated from the model outputs. The `Master_Data.txt` is the primary source for dental metrics, body mass, and dietary rankings for all extant species, including those that lack diet rankings (the "cryptic" species we use for prediction later). We also store results in this directory because **every output is called later as an input**, either for additional analyses, predictions, or as input data for a plot. 
+
+## **`Plots`** 
+
+- All of the output plots are stored here. There are both `.pdf`s and `.png`s of most of the plot files. Additionally, several table outputs are stored here as they are rendered in the package [kableExtra](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html) into figures and `.tex` files. 
+
+

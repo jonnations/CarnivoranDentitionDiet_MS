@@ -1,0 +1,514 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+# hard_invert
+ Similar to root and some others, there are almost all 1's for hard_invert, so the model just predicts that they are all 1's. 
+Setup
+```{r}
+pacman::p_load(tidyverse, rmarkdown, brms, cmdstanr, phytools, geiger)
+source("Dirichlet_Prior.R")
+scale2 <- function(x, na.rm = TRUE) (x - mean(x, na.rm = na.rm)) / sd(x, na.rm)
+add1 <- function(x, na.rm = TRUE) (x + 1)
+options(brms.backend = "cmdstanr")
+phylo <- ape::read.nexus("Carnivora_MCC_2.tre")
+fos_dat_1 <- read_csv("fossil_carnivoran_data.csv") %>% 
+  mutate(log_cuberoot_mass = log(mass_kg^(1/3)))
+dat <- read.delim("Master_Data.txt") %>% 
+  mutate(mass_kg = exp(log_cuberoot_mass)^3,
+         phylo = Species) %>% 
+  drop_na(m2_dne) %>% 
+  bind_rows(fos_dat_1) %>% 
+  mutate_at(vars(4:11), scale2) %>% 
+  mutate_at(vars(12:24), add1) %>% 
+  mutate_at(vars(12:24), as.ordered) 
+row.names(dat)<-dat$Species
+carn_treedata<-treedata(phylo, dat, warnings = FALSE)
+phylo<-carn_treedata$phy
+A <- ape::vcv.phylo(phylo, corr = TRUE)
+dat1 <- dat %>% drop_na(hard_invert)
+```
+
+
+# Priors
+
+#### Plot
+```{r}
+dat1 %>% ggplot(aes(x =hard_invert)) + geom_bar()
+```
+
+#### Set
+```{r}
+p1 <- c(set_prior("normal(-1,1)", class = "Intercept"))
+
+p2 <- c(set_prior("normal(-1,2)", class = "Intercept"))
+
+p3 <- c(set_prior("normal(0,3)", class = "Intercept"))
+
+p4 <- c(set_prior("normal(0,4)", class = "Intercept"))
+
+p5 <- c(set_prior("student_t(3,-1,2)", class = "Intercept"))
+
+p6 <- c(set_prior("student_t(3,-1,3)", class = "Intercept"))
+
+p7 <- c(set_prior("student_t(3,-2,3)", class = "Intercept"))
+
+p8 <- c(set_prior("student_t(3,0,4)", class = "Intercept"))
+
+p9 = prior = c(set_prior("induced_dirichlet(rep_vector(1, nthres+1),0", class = "Intercept"))
+```
+
+### Prior Models
+```{r, include=FALSE}
+m1 <-  brm(hard_invert ~ 1, 
+           data = dat1,family = cumulative(), prior = p1,
+           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
+m2 <-  brm(hard_invert ~ 1, data = dat1,family = cumulative(), prior = p2,
+           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
+m3 <-  brm(hard_invert ~ 1, 
+           data = dat1,family = cumulative(), prior = p3,
+           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
+m4 <-  brm(hard_invert ~ 1, 
+           data = dat1, family = cumulative(), prior = p4,
+           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
+m5 <-  brm(hard_invert ~ 1, 
+           data = dat1, family = cumulative(), prior = p5,
+           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
+m6 <-  brm(hard_invert ~ 1, 
+           data = dat1, family = cumulative(), prior = p6,
+           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
+m7 <-  brm(hard_invert ~ 1, 
+           data = dat1, family = cumulative(), prior = p7,
+           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
+m8 <-  brm(hard_invert ~ 1, 
+           data = dat1, family = cumulative(), prior = p8,
+           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
+m9 <-  brm(hard_invert ~ 1, 
+           data = dat1, family = cumulative(), prior = p9,
+           refresh = 0, chains = 4,  cores = 4, stanvars = dirichlet_prior_stanvar, sample_prior = 'only')
+```
+
+#### Prior Checks  
+```{r}
+pp_check(m1, type = 'bars', ndraws = 1000) + ylim(0, 90)
+pp_check(m2, type = 'bars', ndraws = 1000) + ylim(0, 90) 
+pp_check(m3, type = 'bars', ndraws = 1000) + ylim(0, 90)
+pp_check(m4, type = 'bars', ndraws = 1000) + ylim(0, 90)
+pp_check(m5, type = 'bars', ndraws = 1000) + ylim(0, 90)
+pp_check(m6, type = 'bars', ndraws = 1000) + ylim(0, 90)
+pp_check(m7, type = 'bars', ndraws = 1000) + ylim(0, 90)
+pp_check(m8, type = 'bars', ndraws = 1000) + ylim(0, 90) 
+pp_check(m9, type = 'bars', ndraws = 1000) + ylim(0, 90) + ggtitle('dirichlet')
+```
+
+## N(-1,2)
+## S(3,-1,2)
+
+#RLGA
+
+```{r, include = FALSE}
+mn_RLGA <-  brm(hard_invert ~  RLGA * log_cuberoot_mass + (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(), 
+           prior = c(set_prior("normal(-1,2)", class = "Intercept"),
+        set_prior("normal(0,1)", class = "sd"),
+        set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, control = list(adapt_delta = 0.98)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+
+ms_RLGA <-  brm(hard_invert ~  RLGA * log_cuberoot_mass + (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(), 
+           prior = c(set_prior("student_t(3,-1,2)", class = "Intercept"),
+        set_prior("normal(0,1)", class = "sd"),
+        set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, control = list(adapt_delta = 0.98)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+
+md_RLGA <-  brm(hard_invert ~  RLGA * log_cuberoot_mass + (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(), 
+           prior =  c(set_prior("induced_dirichlet(rep_vector(1, nthres+1),0", class = "Intercept"),
+                     set_prior("normal(0,1)", class = "sd"),
+                     set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, stanvars = dirichlet_prior_stanvar, control = list(adapt_delta = 0.98)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+```
+
+```{r}
+loo_compare(mn_RLGA, ms_RLGA, md_RLGA, criterion = "loo")
+loo_compare(mn_RLGA, ms_RLGA, md_RLGA, criterion = "waic")
+model_weights(md_RLGA, mn_RLGA, ms_RLGA, weights = "stacking") %>%
+  round(digits = 3)
+```
+#### RLGA = D
+
+
+#### Pred & Acc
+```{r}
+tibble(pareto_k = mn_RLGA$criteria$loo$diagnostics$pareto_k,
+       p_waic   = mn_RLGA$criteria$waic$pointwise[, "p_waic"],
+       Species      = pull(dat1, Species)) %>% 
+  filter(p_waic > 0.4 | pareto_k > .5) %>% arrange(desc(pareto_k))
+
+tibble(pareto_k = ms_RLGA$criteria$loo$diagnostics$pareto_k,
+       p_waic   = ms_RLGA$criteria$waic$pointwise[, "p_waic"],
+       Species      = pull(dat1, Species)) %>% 
+  filter(p_waic > 0.4 | pareto_k > .5) %>% arrange(desc(pareto_k))
+
+tibble(pareto_k = md_RLGA$criteria$loo$diagnostics$pareto_k,
+       p_waic   = md_RLGA$criteria$waic$pointwise[, "p_waic"],
+       Species      = pull(dat1, Species)) %>% 
+  filter(p_waic > 0.4 | pareto_k > .5) %>% arrange(desc(pareto_k))
+
+pred <- predict(mn_RLGA, summary = T, probs = c(0.55, 0.945))
+pred2 <- as.data.frame(pred) %>% mutate(actual = as.factor(dat1$hard_invert), pred   = colnames(pred)[max.col(pred,ties.method="first")], pred   = str_remove(pred,"P\\(Y = "), pred   = str_remove(pred,"\\)"), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
+cm <- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c("Prediction", "Reference"))
+cm$overall[1]
+
+pred <- predict(ms_RLGA, summary = T, probs = c(0.55, 0.945))
+pred2 <- as.data.frame(pred) %>% mutate(actual = as.factor(dat1$hard_invert), pred   = colnames(pred)[max.col(pred,ties.method="first")], pred   = str_remove(pred,"P\\(Y = "), pred   = str_remove(pred,"\\)"), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
+cm <- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c("Prediction", "Reference"))
+cm$overall[1]
+
+pred <- predict(md_RLGA, summary = T, probs = c(0.55, 0.945))
+pred2 <- as.data.frame(pred) %>% mutate(actual = as.factor(dat1$hard_invert), pred   = colnames(pred)[max.col(pred,ties.method="first")], pred   = str_remove(pred,"P\\(Y = "), pred   = str_remove(pred,"\\)"), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
+cm <- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c("Prediction", "Reference"))
+cm$overall[1]
+```
+
+
+#DNE
+
+Using 3 priors.
+```{r, include=FALSE}
+mn_DNE <-  brm(hard_invert ~  m1_dne * log_cuberoot_mass + m2_dne * log_cuberoot_mass + (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(), 
+           prior = c(set_prior("normal(-1,2)", class = "Intercept"),
+        set_prior("normal(0,1)", class = "sd"),
+        set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, control = list(adapt_delta = 0.98)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+
+ms_DNE <-  brm(hard_invert ~  m1_dne * log_cuberoot_mass + m2_dne * log_cuberoot_mass + (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(), 
+           prior = c(set_prior("student_t(3,-1,2)", class = "Intercept"),
+        set_prior("normal(0,1)", class = "sd"),
+        set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, control = list(adapt_delta = 0.98)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+
+md_DNE <-  brm(hard_invert ~  m1_dne * log_cuberoot_mass + m2_dne * log_cuberoot_mass + (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(), 
+           prior =  c(set_prior("induced_dirichlet(rep_vector(1, nthres+1),0", class = "Intercept"),
+                     set_prior("normal(0,1)", class = "sd"),
+                     set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, stanvars = dirichlet_prior_stanvar, control = list(adapt_delta = 0.98)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+```
+
+
+```{r}
+loo_compare(mn_DNE, ms_DNE, md_DNE, criterion = "loo") 
+loo_compare(mn_DNE, ms_DNE, md_DNE, criterion = "waic")
+model_weights(md_DNE, mn_DNE, ms_DNE, weights = "stacking") %>%
+  round(digits = 3)
+```
+
+####DNE = N
+
+#### Pred & Acc
+```{r}
+tibble(pareto_k = mn_DNE$criteria$loo$diagnostics$pareto_k,
+       p_waic   = mn_DNE$criteria$waic$pointwise[, "p_waic"],
+       Species      = pull(dat1, Species)) %>% 
+  filter(p_waic > 0.4 | pareto_k > .5) %>% arrange(desc(pareto_k))
+
+tibble(pareto_k = ms_DNE$criteria$loo$diagnostics$pareto_k,
+       p_waic   = ms_DNE$criteria$waic$pointwise[, "p_waic"],
+       Species      = pull(dat1, Species)) %>% 
+  filter(p_waic > 0.4 | pareto_k > .5) %>% arrange(desc(pareto_k))
+
+tibble(pareto_k = md_DNE$criteria$loo$diagnostics$pareto_k,
+       p_waic   = md_DNE$criteria$waic$pointwise[, "p_waic"],
+       Species      = pull(dat1, Species)) %>% 
+  filter(p_waic > 0.4 | pareto_k > .5) %>% arrange(desc(pareto_k))
+
+pred <- predict(mn_DNE, summary = T, probs = c(0.55, 0.945))
+pred2 <- as.data.frame(pred) %>% mutate(actual = as.factor(dat1$hard_invert), pred   = colnames(pred)[max.col(pred,ties.method="first")], pred   = str_remove(pred,"P\\(Y = "), pred   = str_remove(pred,"\\)"), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
+cm <- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c("Prediction", "Reference"))
+cm$overall[1]
+
+pred <- predict(ms_DNE, summary = T, probs = c(0.55, 0.945))
+pred2 <- as.data.frame(pred) %>% mutate(actual = as.factor(dat1$hard_invert), pred   = colnames(pred)[max.col(pred,ties.method="first")], pred   = str_remove(pred,"P\\(Y = "), pred   = str_remove(pred,"\\)"), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
+cm <- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c("Prediction", "Reference"))
+cm$overall[1]
+
+pred <- predict(md_DNE, summary = T, probs = c(0.55, 0.945))
+pred2 <- as.data.frame(pred) %>% mutate(actual = as.factor(dat1$hard_invert), pred   = colnames(pred)[max.col(pred,ties.method="first")], pred   = str_remove(pred,"P\\(Y = "), pred   = str_remove(pred,"\\)"), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
+cm <- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c("Prediction", "Reference"))
+cm$overall[1]
+```
+
+
+# RFI
+```{r, include = FALSE}
+mn_RFI <-  brm(hard_invert ~  RFI_m1 * log_cuberoot_mass + RFI_m2 * log_cuberoot_mass + (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(), 
+           prior = c(set_prior("normal(-1,2)", class = "Intercept"),
+        set_prior("normal(0,1)", class = "sd"),
+        set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, control = list(adapt_delta = 0.98)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+
+ms_RFI <-  brm(hard_invert ~  RFI_m1 * log_cuberoot_mass + RFI_m2 * log_cuberoot_mass + (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(),  
+           prior = c(set_prior("student_t(3,-1,2)", class = "Intercept"),
+        set_prior("normal(0,1)", class = "sd"),
+        set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, control = list(adapt_delta = 0.98)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+
+md_RFI <-  brm(hard_invert ~  RFI_m1 * log_cuberoot_mass + RFI_m2 * log_cuberoot_mass + (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(),  
+           prior =  c(set_prior("induced_dirichlet(rep_vector(1, nthres+1),0", class = "Intercept"),
+                     set_prior("normal(0,1)", class = "sd"),
+                     set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, stanvars = dirichlet_prior_stanvar, control = list(adapt_delta = 0.98)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+```
+
+```{r}
+loo_compare(mn_RFI, ms_RFI, md_RFI, criterion = "loo") 
+loo_compare(mn_RFI, ms_RFI, md_RFI, criterion = "waic")
+model_weights(md_RFI, mn_RFI, ms_RFI, weights = "stacking") %>%
+  round(digits = 3)
+```
+#### RFI = S
+
+#### Pred & Acc
+```{r}
+tibble(pareto_k = mn_RFI$criteria$loo$diagnostics$pareto_k,
+       p_waic   = mn_RFI$criteria$waic$pointwise[, "p_waic"],
+       Species      = pull(dat1, Species)) %>% 
+  filter(p_waic > 0.4 | pareto_k > .5) %>% arrange(desc(pareto_k))
+
+tibble(pareto_k = ms_RFI$criteria$loo$diagnostics$pareto_k,
+       p_waic   = ms_RFI$criteria$waic$pointwise[, "p_waic"],
+       Species      = pull(dat1, Species)) %>% 
+  filter(p_waic > 0.4 | pareto_k > .5) %>% arrange(desc(pareto_k))
+
+tibble(pareto_k = md_RFI$criteria$loo$diagnostics$pareto_k,
+       p_waic   = md_RFI$criteria$waic$pointwise[, "p_waic"],
+       Species      = pull(dat1, Species)) %>% 
+  filter(p_waic > 0.4 | pareto_k > .5) %>% arrange(desc(pareto_k))
+
+pred <- predict(mn_RFI, summary = T, probs = c(0.55, 0.945))
+pred2 <- as.data.frame(pred) %>% mutate(actual = as.factor(dat1$hard_invert), pred   = colnames(pred)[max.col(pred,ties.method="first")], pred   = str_remove(pred,"P\\(Y = "), pred   = str_remove(pred,"\\)"), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
+cm <- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c("Prediction", "Reference"))
+cm$overall[1]
+
+pred <- predict(ms_RFI, summary = T, probs = c(0.55, 0.945))
+pred2 <- as.data.frame(pred) %>% mutate(actual = as.factor(dat1$hard_invert), pred   = colnames(pred)[max.col(pred,ties.method="first")], pred   = str_remove(pred,"P\\(Y = "), pred   = str_remove(pred,"\\)"), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
+cm <- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c("Prediction", "Reference"))
+cm$overall[1]
+
+pred <- predict(md_RFI, summary = T, probs = c(0.55, 0.945))
+pred2 <- as.data.frame(pred) %>% mutate(actual = as.factor(dat1$hard_invert), pred   = colnames(pred)[max.col(pred,ties.method="first")], pred   = str_remove(pred,"P\\(Y = "), pred   = str_remove(pred,"\\)"), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
+cm <- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c("Prediction", "Reference"))
+cm$overall[1]
+```
+
+  
+# OPCR
+Using 3 priors.
+```{r, include = FALSE}
+mn_OPCR <-  brm(hard_invert ~  m1_opcr * log_cuberoot_mass + m2_opcr * log_cuberoot_mass + (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(), 
+           prior = c(set_prior("normal(-1,2)", class = "Intercept"),
+        set_prior("normal(0,1)", class = "sd"),
+        set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, control = list(adapt_delta = 0.98)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+
+ms_OPCR <-  brm(hard_invert ~  m1_opcr * log_cuberoot_mass + m2_opcr * log_cuberoot_mass + (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(), 
+           prior = c(set_prior("student_t(3,-1,2)", class = "Intercept"),
+        set_prior("normal(0,1)", class = "sd"),
+        set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, control = list(adapt_delta = 0.98)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+
+md_OPCR <-  brm(hard_invert ~  m1_opcr * log_cuberoot_mass + m2_opcr * log_cuberoot_mass + (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(), 
+           prior =  c(set_prior("induced_dirichlet(rep_vector(1, nthres+1),0", class = "Intercept"),
+                     set_prior("normal(0,1)", class = "sd"),
+                     set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, stanvars = dirichlet_prior_stanvar, control = list(adapt_delta = 0.98)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+```
+
+```{r}
+loo_compare(mn_OPCR, ms_OPCR, md_OPCR, criterion = "loo") 
+loo_compare(mn_OPCR, ms_OPCR, md_OPCR, criterion = "waic")
+model_weights(md_OPCR, mn_OPCR, ms_OPCR, weights = "stacking") %>%
+  round(digits = 3)
+```
+
+####OPCR = S 
+
+#### Pred & Acc
+```{r}
+tibble(pareto_k = mn_OPCR$criteria$loo$diagnostics$pareto_k,
+       p_waic   = mn_OPCR$criteria$waic$pointwise[, "p_waic"],
+       Species      = pull(dat1, Species)) %>% 
+  filter(p_waic > 0.4 | pareto_k > .5) %>% arrange(desc(pareto_k))
+
+tibble(pareto_k = ms_OPCR$criteria$loo$diagnostics$pareto_k,
+       p_waic   = ms_OPCR$criteria$waic$pointwise[, "p_waic"],
+       Species      = pull(dat1, Species)) %>% 
+  filter(p_waic > 0.4 | pareto_k > .5) %>% arrange(desc(pareto_k))
+
+tibble(pareto_k = md_OPCR$criteria$loo$diagnostics$pareto_k,
+       p_waic   = md_OPCR$criteria$waic$pointwise[, "p_waic"],
+       Species      = pull(dat1, Species)) %>% 
+  filter(p_waic > 0.4 | pareto_k > .5) %>% arrange(desc(pareto_k))
+
+pred <- predict(mn_OPCR, summary = T, probs = c(0.55, 0.945))
+pred2 <- as.data.frame(pred) %>% mutate(actual = as.factor(dat1$hard_invert), pred   = colnames(pred)[max.col(pred,ties.method="first")], pred   = str_remove(pred,"P\\(Y = "), pred   = str_remove(pred,"\\)"), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
+cm <- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c("Prediction", "Reference"))
+cm$overall[1]
+
+pred <- predict(ms_OPCR, summary = T, probs = c(0.55, 0.945))
+pred2 <- as.data.frame(pred) %>% mutate(actual = as.factor(dat1$hard_invert), pred   = colnames(pred)[max.col(pred,ties.method="first")], pred   = str_remove(pred,"P\\(Y = "), pred   = str_remove(pred,"\\)"), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
+cm <- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c("Prediction", "Reference"))
+cm$overall[1]
+
+pred <- predict(md_OPCR, summary = T, probs = c(0.55, 0.945))
+pred2 <- as.data.frame(pred) %>% mutate(actual = as.factor(dat1$hard_invert), pred   = colnames(pred)[max.col(pred,ties.method="first")], pred   = str_remove(pred,"P\\(Y = "), pred   = str_remove(pred,"\\)"), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
+cm <- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c("Prediction", "Reference"))
+cm$overall[1]
+```
+
+
+# ALL
+
+```{r, include = FALSE}
+mn_ALL <-  brm(hard_invert ~  log_cuberoot_mass*m1_opcr + 
+                      log_cuberoot_mass*m2_opcr +
+                      log_cuberoot_mass*m1_dne  + 
+                      log_cuberoot_mass*m2_dne  + 
+                      log_cuberoot_mass*RFI_m1  + 
+                      log_cuberoot_mass*RFI_m2  + 
+                      log_cuberoot_mass*RLGA +
+                      (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(), 
+           prior = c(set_prior("normal(-1,2)", class = "Intercept"),
+        set_prior("normal(0,1)", class = "sd"),
+        set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, control = list(adapt_delta = 0.95)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+
+ms_ALL <-  brm(hard_invert ~  log_cuberoot_mass*m1_opcr + 
+                      log_cuberoot_mass*m2_opcr +
+                      log_cuberoot_mass*m1_dne  + 
+                      log_cuberoot_mass*m2_dne  + 
+                      log_cuberoot_mass*RFI_m1  + 
+                      log_cuberoot_mass*RFI_m2  + 
+                      log_cuberoot_mass*RLGA +
+                      (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(), 
+           prior = c(set_prior("student_t(3,-1,2)", class = "Intercept"),
+        set_prior("normal(0,1)", class = "sd"),
+        set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, control = list(adapt_delta = 0.95)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+
+md_ALL <-  brm(hard_invert~  log_cuberoot_mass*m1_opcr + 
+                      log_cuberoot_mass*m2_opcr +
+                      log_cuberoot_mass*m1_dne  + 
+                      log_cuberoot_mass*m2_dne  + 
+                      log_cuberoot_mass*RFI_m1  + 
+                      log_cuberoot_mass*RFI_m2  + 
+                      log_cuberoot_mass*RLGA +
+                      (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(), 
+           prior =  c(set_prior("induced_dirichlet(rep_vector(1, nthres+1),0", class = "Intercept"),
+                     set_prior("normal(0,1)", class = "sd"),
+                     set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, stanvars = dirichlet_prior_stanvar, control = list(adapt_delta = 0.95)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+
+```
+
+```{r}
+loo_compare(mn_ALL, ms_ALL, md_ALL, criterion = "loo") 
+loo_compare(mn_ALL, ms_ALL, md_ALL, criterion = "waic")
+model_weights(md_ALL, mn_ALL, ms_ALL, weights = "stacking") %>%
+  round(digits = 3)
+```
+#### ALL = D
+
+#### Pred & Acc
+```{r}
+tibble(pareto_k = mn_ALL$criteria$loo$diagnostics$pareto_k,
+       p_waic   = mn_ALL$criteria$waic$pointwise[, "p_waic"],
+       Species      = pull(dat1, Species)) %>% 
+  filter(p_waic > 0.4 | pareto_k > .5) %>% arrange(desc(pareto_k))
+
+tibble(pareto_k = ms_ALL$criteria$loo$diagnostics$pareto_k,
+       p_waic   = ms_ALL$criteria$waic$pointwise[, "p_waic"],
+       Species      = pull(dat1, Species)) %>% 
+  filter(p_waic > 0.4 | pareto_k > .5) %>% arrange(desc(pareto_k))
+
+tibble(pareto_k = md_ALL$criteria$loo$diagnostics$pareto_k,
+       p_waic   = md_ALL$criteria$waic$pointwise[, "p_waic"],
+       Species      = pull(dat1, Species)) %>% 
+  filter(p_waic > 0.4 | pareto_k > .5) %>% arrange(desc(pareto_k))
+
+pred <- predict(mn_ALL, summary = T, probs = c(0.55, 0.945))
+pred2 <- as.data.frame(pred) %>% mutate(actual = as.factor(dat1$hard_invert), pred   = colnames(pred)[max.col(pred,ties.method="first")], pred   = str_remove(pred,"P\\(Y = "), pred   = str_remove(pred,"\\)"), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
+cm <- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c("Prediction", "Reference"))
+cm$overall[1]
+
+pred <- predict(ms_ALL, summary = T, probs = c(0.55, 0.945))
+pred2 <- as.data.frame(pred) %>% mutate(actual = as.factor(dat1$hard_invert), pred   = colnames(pred)[max.col(pred,ties.method="first")], pred   = str_remove(pred,"P\\(Y = "), pred   = str_remove(pred,"\\)"), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
+cm <- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c("Prediction", "Reference"))
+cm$overall[1]
+
+pred <- predict(md_ALL, summary = T, probs = c(0.55, 0.945))
+pred2 <- as.data.frame(pred) %>% mutate(actual = as.factor(dat1$hard_invert), pred   = colnames(pred)[max.col(pred,ties.method="first")], pred   = str_remove(pred,"P\\(Y = "), pred   = str_remove(pred,"\\)"), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
+cm <- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c("Prediction", "Reference"))
+cm$overall[1]
+```
+
+
+# All Model Comp
+```{r, message=FALSE}
+loo_compare(mn_DNE, ms_DNE, md_DNE, mn_ALL, ms_ALL, md_ALL, mn_OPCR, ms_OPCR, md_OPCR, mn_RFI, ms_RFI, md_RFI, mn_RLGA,ms_RLGA, md_RLGA,  criterion = "loo") 
+
+loo_compare(mn_DNE, ms_DNE, md_DNE, mn_ALL, ms_ALL, md_ALL, mn_OPCR, ms_OPCR, md_OPCR, mn_RFI, ms_RFI, md_RFI, mn_RLGA,ms_RLGA, md_RLGA,  criterion = "waic")
+
+mw_hard_invert <- model_weights(mn_DNE, ms_DNE, md_DNE, mn_ALL, ms_ALL, md_ALL, mn_OPCR, ms_OPCR, md_OPCR, mn_RFI, ms_RFI, md_RFI, mn_RLGA,ms_RLGA, md_RLGA, weights = "stacking") %>% 
+  round(digits = 3) %>% 
+  as.data.frame() %>%
+  rownames_to_column("metric") %>% 
+  add_column(diet = "hard_invert") %>% 
+  rename("value" = ".") %>% 
+  arrange(desc(value))
+
+mw_hard_invert
+
+
+```
+
+#### Write Weights
+```{r}
+mw_hard_invert <- model_weights( mn_DNE, md_ALL, ms_OPCR, ms_RFI, md_RLGA, weights = "stacking") %>% 
+  round(digits = 3) %>% 
+  as.data.frame() %>%
+  rownames_to_column("metric") %>% 
+  add_column(diet = "hard_invert") %>% 
+  rename("value" = ".") %>% 
+  arrange(desc(value))
+
+mw_hard_invert
+```
+
+```{r}
+weights_all <- read_csv(file = "Test_weights_all.csv") %>% 
+  bind_rows(mw_hard_invert) %>% 
+  write_csv(file = "Test_weights_all.csv")
+```
+
+#### Write Models
+
+```{r}
+md_RLGA %>% write_rds("new_mod_outputs/hard_invert_md_RLGA.Rds")
+md_ALL %>%  write_rds("new_mod_outputs/hard_invert_md_ALL.Rds")
+mn_DNE %>%  write_rds("new_mod_outputs/hard_invert_mn_DNE.Rds")
+```
+
+

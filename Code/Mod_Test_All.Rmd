@@ -1,0 +1,90 @@
+---
+title: "Run All Models"
+output: html_notebook
+---
+
+#Run all models in one script
+This script reads in the scripts and runs the models one by one, so we don't have to open each model script individually. This way the data only has to be loaded once, and wrangled once. 
+
+26 September
+I have these all set up.
+Now I need to run this script and collect all the models. 
+Then run the accuracy funtions over them, add in the weights, then estimate the weighted predictions, then the accuracy. Whew! 
+
+
+13 Sept 2022
+Adding a confusion matrix to the scripts.
+Here is what I've learned: 
+- The intercept prior needs to be bigger, making sure to cover the empirical data in a `pp_check` command. This NEEDS TO BE DONE FOR EACH FOOD ITEM!
+- The effect sizes can and should remain normal(0,1)
+- the priors should work across all models for each dietary item. 
+- The larger priors on intercepts seem to always have better accuracy than the Dirichlet priors. 
+- Extremely vague priors means perfect accuracy in confusion matrix, but horrible overfiting, ie terrible pareto-k values. There is a push and pull here. Minimize overfitting but maximize confusion matrix accuracy.  
+
+
+#Setup
+
+#### Files and Functions
+```{r}
+pacman::p_load(tidyverse, rmarkdown, brms, cmdstanr, phytools, geiger, caret)
+
+# Dirichlet Script
+source("Dirichlet_Prior.R")
+#Functions
+scale2 <- function(x, na.rm = TRUE) (x - mean(x, na.rm = na.rm)) / sd(x, na.rm)
+add1 <- function(x, na.rm = TRUE) (x + 1)
+options(brms.backend = "cmdstanr")
+```
+
+#### Read and Wrangle Data
+```{r}
+# Read Tree
+phylo <- ape::read.nexus("Carnivora_MCC_2.tre")
+
+# Read fossil data and calculate body size estimate ^1/3
+fos_dat_1 <- read_csv("fossil_carnivoran_data.csv") %>% 
+  mutate(log_cuberoot_mass = log(mass_kg^(1/3)))
+# Read extant data
+dat <- read.delim("Master_Data.txt") %>% 
+  mutate(mass_kg = exp(log_cuberoot_mass)^3,
+         phylo = Species) %>% 
+  # drop taxa with missing m2 data
+  drop_na(m2_dne) %>% 
+  #combine extant and fossil dat for tip dropping and standardizing
+  bind_rows(fos_dat_1) %>% 
+  # Standardize all data together
+  mutate_at(vars(4:11), scale2) %>% 
+  mutate_at(vars(12:24), add1) %>% 
+  mutate_at(vars(12:24), as.ordered) 
+
+
+row.names(dat)<-dat$Species
+# Remove extra tips (but keep fossil tips!)
+carn_treedata<-treedata(phylo, dat, warnings = FALSE)
+phylo<-carn_treedata$phy
+A <- ape::vcv.phylo(phylo, corr = TRUE)
+
+
+#Separate the model inputs
+dat1 <- dat %>% drop_na(bird)
+
+```
+
+#Run Models 
+These scripts run the models, generate the rds files, and generate the `Test_weights_all.csv` file. 
+```{r include=FALSE}
+render("Mod_Test_Bird.Rmd") 
+render("Mod_Test_Carrion.Rmd")
+render("Mod_Test_Egg.Rmd")
+render("Mod_Test_Fish.Rmd")
+render("Mod_Test_Fruit.Rmd")
+render("Mod_Test_Hard_Invert.Rmd")
+render("Mod_Test_Herptile.Rmd")
+render("Mod_Test_Large_Mammal.Rmd")
+render("Mod_Test_Plant.Rmd")
+render("Mod_Test_Root.Rmd")
+render("Mod_Test_Seed.Rmd")
+render("Mod_Test_Small_Mammal.Rmd")
+render("Mod_Test_Soft_Invert.Rmd")
+```
+

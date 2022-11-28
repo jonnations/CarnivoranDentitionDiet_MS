@@ -1,0 +1,409 @@
+Species,.prediction,diet,Percentage
+Daphoenus,1,Bird,11.262599999999997
+Daphoenus,2,Bird,45.499449999999996
+Daphoenus,3,Bird,38.8347
+Daphoenus,4,Bird,4.40325
+Dinictis,1,Bird,9.074850000000001
+Dinictis,2,Bird,37.0405
+Dinictis,3,Bird,45.32255000000001
+Dinictis,4,Bird,8.562100000000001
+Hoplophoneus_primaevus,1,Bird,7.3567
+Hoplophoneus_primaevus,2,Bird,36.719750000000005
+Hoplophoneus_primaevus,3,Bird,48.092349999999996
+Hoplophoneus_primaevus,4,Bird,7.831200000000001
+Miacis,1,Bird,20.04235
+Miacis,2,Bird,50.44045
+Miacis,3,Bird,26.438
+Miacis,4,Bird,3.0792
+Promartes_lepidus,1,Bird,5.62065
+Promartes_lepidus,2,Bird,30.3557
+Promartes_lepidus,3,Bird,53.327
+Promartes_lepidus,4,Bird,10.69665
+Smilodon_californicus_PM_3702,1,Bird,30.106749999999998
+Smilodon_californicus_PM_3702,2,Bird,41.2435
+Smilodon_californicus_PM_3702,3,Bird,24.7152
+Smilodon_californicus_PM_3702,4,Bird,3.93455
+Tomarctus,1,Bird,10.7259
+Tomarctus,2,Bird,43.60475
+Tomarctus,3,Bird,40.66030000000001
+Tomarctus,4,Bird,5.00905
+Ursus_spelaeus,1,Bird,49.96115
+Ursus_spelaeus,2,Bird,29.931549999999998
+Ursus_spelaeus,3,Bird,17.6844
+Ursus_spelaeus,4,Bird,2.4229
+Daphoenus,1,Carrion,42.1426
+Daphoenus,2,Carrion,29.916449999999998
+Daphoenus,3,Carrion,22.253700000000002
+Daphoenus,4,Carrion,5.687250000000001
+Dinictis,1,Carrion,40.30245
+Dinictis,2,Carrion,29.32875
+Dinictis,3,Carrion,22.9504
+Dinictis,4,Carrion,7.4184
+Hoplophoneus_primaevus,1,Carrion,40.185449999999996
+Hoplophoneus_primaevus,2,Carrion,30.173599999999997
+Hoplophoneus_primaevus,3,Carrion,22.7136
+Hoplophoneus_primaevus,4,Carrion,6.927350000000001
+Miacis,1,Carrion,48.58879999999999
+Miacis,2,Carrion,28.63395
+Miacis,3,Carrion,18.336199999999998
+Miacis,4,Carrion,4.44105
+Promartes_lepidus,1,Carrion,45.42315
+Promartes_lepidus,2,Carrion,28.988149999999997
+Promartes_lepidus,3,Carrion,20.4557
+Promartes_lepidus,4,Carrion,5.132999999999999
+Smilodon_californicus_PM_3702,1,Carrion,30.576150000000002
+Smilodon_californicus_PM_3702,2,Carrion,26.67175
+Smilodon_californicus_PM_3702,3,Carrion,28.552449999999993
+Smilodon_californicus_PM_3702,4,Carrion,14.199649999999998
+Tomarctus,1,Carrion,43.2118
+Tomarctus,2,Carrion,29.621699999999997
+Tomarctus,3,Carrion,21.607999999999997
+Tomarctus,4,Carrion,5.5585
+Ursus_spelaeus,1,Carrion,65.75744999999999
+Ursus_spelaeus,2,Carrion,13.64035
+Ursus_spelaeus,3,Carrion,13.6707
+Ursus_spelaeus,4,Carrion,6.9315
+Daphoenus,1,Egg,58.01004999999999
+Daphoenus,2,Egg,27.811699999999995
+Daphoenus,3,Egg,12.37825
+Daphoenus,4,Egg,1.7999999999999996
+Dinictis,1,Egg,53.21704999999999
+Dinictis,2,Egg,29.38565
+Dinictis,3,Egg,14.959149999999998
+Dinictis,4,Egg,2.43815
+Hoplophoneus_primaevus,1,Egg,66.45655
+Hoplophoneus_primaevus,2,Egg,23.4566
+Hoplophoneus_primaevus,3,Egg,8.4576
+Hoplophoneus_primaevus,4,Egg,1.6292499999999999
+Miacis,1,Egg,52.88024999999999
+Miacis,2,Egg,31.06995
+Miacis,3,Egg,13.6554
+Miacis,4,Egg,2.3944
+Promartes_lepidus,1,Egg,52.263349999999996
+Promartes_lepidus,2,Egg,30.69025
+Promartes_lepidus,3,Egg,14.78505
+Promartes_lepidus,4,Egg,2.26135
+Smilodon_californicus_PM_3702,1,Egg,42.315200000000004
+Smilodon_californicus_PM_3702,2,Egg,28.116950000000003
+Smilodon_californicus_PM_3702,3,Egg,23.114749999999997
+Smilodon_californicus_PM_3702,4,Egg,6.453099999999999
+Tomarctus,1,Egg,52.8709
+Tomarctus,2,Egg,30.96125
+Tomarctus,3,Egg,14.1235
+Tomarctus,4,Egg,2.0443499999999997
+Ursus_spelaeus,1,Egg,68.25465
+Ursus_spelaeus,2,Egg,20.072599999999998
+Ursus_spelaeus,3,Egg,9.7746
+Ursus_spelaeus,4,Egg,1.89815
+Daphoenus,1,Fish,46.501
+Daphoenus,2,Fish,32.4266
+Daphoenus,3,Fish,11.3592
+Daphoenus,4,Fish,9.7132
+Dinictis,1,Fish,49.9414
+Dinictis,2,Fish,31.085899999999995
+Dinictis,3,Fish,10.5898
+Dinictis,4,Fish,8.3829
+Hoplophoneus_primaevus,1,Fish,53.2678
+Hoplophoneus_primaevus,2,Fish,29.016
+Hoplophoneus_primaevus,3,Fish,10.058599999999998
+Hoplophoneus_primaevus,4,Fish,7.657600000000001
+Miacis,1,Fish,65.3459
+Miacis,2,Fish,23.725699999999996
+Miacis,3,Fish,6.0884
+Miacis,4,Fish,4.84
+Promartes_lepidus,1,Fish,65.3229
+Promartes_lepidus,2,Fish,22.900499999999997
+Promartes_lepidus,3,Fish,7.0150999999999994
+Promartes_lepidus,4,Fish,4.761500000000001
+Smilodon_californicus_PM_3702,1,Fish,39.065999999999995
+Smilodon_californicus_PM_3702,2,Fish,31.133799999999997
+Smilodon_californicus_PM_3702,3,Fish,14.0694
+Smilodon_californicus_PM_3702,4,Fish,15.730799999999999
+Tomarctus,1,Fish,46.4187
+Tomarctus,2,Fish,33.38290000000001
+Tomarctus,3,Fish,10.6252
+Tomarctus,4,Fish,9.5732
+Ursus_spelaeus,1,Fish,26.4957
+Ursus_spelaeus,2,Fish,22.8303
+Ursus_spelaeus,3,Fish,14.971
+Ursus_spelaeus,4,Fish,35.703
+Daphoenus,1,Fruit,23.120700000000003
+Daphoenus,2,Fruit,30.94915
+Daphoenus,3,Fruit,23.68115
+Daphoenus,4,Fruit,22.248999999999995
+Dinictis,1,Fruit,36.1919
+Dinictis,2,Fruit,31.969549999999998
+Dinictis,3,Fruit,17.9726
+Dinictis,4,Fruit,13.865950000000002
+Hoplophoneus_primaevus,1,Fruit,40.84005
+Hoplophoneus_primaevus,2,Fruit,31.19935
+Hoplophoneus_primaevus,3,Fruit,15.56035
+Hoplophoneus_primaevus,4,Fruit,12.400249999999998
+Miacis,1,Fruit,21.44535
+Miacis,2,Fruit,28.976300000000002
+Miacis,3,Fruit,23.97645
+Miacis,4,Fruit,25.6019
+Promartes_lepidus,1,Fruit,24.13775
+Promartes_lepidus,2,Fruit,30.32765
+Promartes_lepidus,3,Fruit,22.585599999999996
+Promartes_lepidus,4,Fruit,22.949
+Smilodon_californicus_PM_3702,1,Fruit,34.745400000000004
+Smilodon_californicus_PM_3702,2,Fruit,28.872549999999997
+Smilodon_californicus_PM_3702,3,Fruit,18.289
+Smilodon_californicus_PM_3702,4,Fruit,18.093049999999998
+Tomarctus,1,Fruit,23.326
+Tomarctus,2,Fruit,30.283700000000003
+Tomarctus,3,Fruit,22.6633
+Tomarctus,4,Fruit,23.727
+Ursus_spelaeus,1,Fruit,59.19570000000001
+Ursus_spelaeus,2,Fruit,16.04795
+Ursus_spelaeus,3,Fruit,10.907150000000001
+Ursus_spelaeus,4,Fruit,13.8492
+Daphoenus,1,Hard Invert,11.720375
+Daphoenus,2,Hard Invert,29.003075000000003
+Daphoenus,3,Hard Invert,36.844350000000006
+Daphoenus,4,Hard Invert,22.4322
+Dinictis,1,Hard Invert,45.837999999999994
+Dinictis,2,Hard Invert,30.654375
+Dinictis,3,Hard Invert,16.61975
+Dinictis,4,Hard Invert,6.887875000000001
+Hoplophoneus_primaevus,1,Hard Invert,38.74125000000001
+Hoplophoneus_primaevus,2,Hard Invert,36.33625
+Hoplophoneus_primaevus,3,Hard Invert,18.723625000000002
+Hoplophoneus_primaevus,4,Hard Invert,6.198874999999999
+Miacis,1,Hard Invert,2.9694000000000003
+Miacis,2,Hard Invert,10.091725
+Miacis,3,Hard Invert,29.457375
+Miacis,4,Hard Invert,57.481500000000004
+Promartes_lepidus,1,Hard Invert,9.200325
+Promartes_lepidus,2,Hard Invert,24.701625
+Promartes_lepidus,3,Hard Invert,38.021950000000004
+Promartes_lepidus,4,Hard Invert,28.0761
+Smilodon_californicus_PM_3702,1,Hard Invert,52.132075
+Smilodon_californicus_PM_3702,2,Hard Invert,27.610575000000004
+Smilodon_californicus_PM_3702,3,Hard Invert,14.306175
+Smilodon_californicus_PM_3702,4,Hard Invert,5.951175
+Tomarctus,1,Hard Invert,18.779925
+Tomarctus,2,Hard Invert,34.8137
+Tomarctus,3,Hard Invert,30.96305
+Tomarctus,4,Hard Invert,15.443325000000002
+Ursus_spelaeus,1,Hard Invert,54.952125
+Ursus_spelaeus,2,Hard Invert,15.645675
+Ursus_spelaeus,3,Hard Invert,15.009125000000001
+Ursus_spelaeus,4,Hard Invert,14.393075
+Daphoenus,1,Herptile,24.2418
+Daphoenus,2,Herptile,36.333450000000006
+Daphoenus,3,Herptile,35.31889999999999
+Daphoenus,4,Herptile,4.10585
+Dinictis,1,Herptile,30.04265
+Dinictis,2,Herptile,37.013799999999996
+Dinictis,3,Herptile,30.1954
+Dinictis,4,Herptile,2.7481500000000003
+Hoplophoneus_primaevus,1,Herptile,28.43965
+Hoplophoneus_primaevus,2,Herptile,36.777950000000004
+Hoplophoneus_primaevus,3,Herptile,30.8708
+Hoplophoneus_primaevus,4,Herptile,3.9116
+Miacis,1,Herptile,18.154149999999998
+Miacis,2,Herptile,33.4471
+Miacis,3,Herptile,41.68085
+Miacis,4,Herptile,6.717900000000001
+Promartes_lepidus,1,Herptile,19.20235
+Promartes_lepidus,2,Herptile,33.33565000000001
+Promartes_lepidus,3,Herptile,41.046949999999995
+Promartes_lepidus,4,Herptile,6.415050000000001
+Smilodon_californicus_PM_3702,1,Herptile,24.839550000000003
+Smilodon_californicus_PM_3702,2,Herptile,31.161450000000006
+Smilodon_californicus_PM_3702,3,Herptile,37.06005
+Smilodon_californicus_PM_3702,4,Herptile,6.938949999999999
+Tomarctus,1,Herptile,28.760050000000003
+Tomarctus,2,Herptile,37.33985
+Tomarctus,3,Herptile,30.494299999999996
+Tomarctus,4,Herptile,3.4058
+Ursus_spelaeus,1,Herptile,90.59755000000001
+Ursus_spelaeus,2,Herptile,6.2341
+Ursus_spelaeus,3,Herptile,2.9174
+Ursus_spelaeus,4,Herptile,0.25095
+Daphoenus,1,Large Mammal,55.138749999999995
+Daphoenus,2,Large Mammal,27.403750000000002
+Daphoenus,3,Large Mammal,7.026250000000001
+Daphoenus,4,Large Mammal,10.431249999999999
+Dinictis,1,Large Mammal,9.67125
+Dinictis,2,Large Mammal,15.405
+Dinictis,3,Large Mammal,9.588750000000001
+Dinictis,4,Large Mammal,65.33500000000001
+Hoplophoneus_primaevus,1,Large Mammal,10.93375
+Hoplophoneus_primaevus,2,Large Mammal,18.32
+Hoplophoneus_primaevus,3,Large Mammal,12.1075
+Hoplophoneus_primaevus,4,Large Mammal,58.63875
+Miacis,1,Large Mammal,94.59125
+Miacis,2,Large Mammal,3.9137499999999994
+Miacis,3,Large Mammal,0.73125
+Miacis,4,Large Mammal,0.76375
+Promartes_lepidus,1,Large Mammal,85.2175
+Promartes_lepidus,2,Large Mammal,10.013750000000002
+Promartes_lepidus,3,Large Mammal,2.225
+Promartes_lepidus,4,Large Mammal,2.54375
+Smilodon_californicus_PM_3702,1,Large Mammal,0.8150000000000002
+Smilodon_californicus_PM_3702,2,Large Mammal,1.5074999999999998
+Smilodon_californicus_PM_3702,3,Large Mammal,2.41375
+Smilodon_californicus_PM_3702,4,Large Mammal,95.26374999999999
+Tomarctus,1,Large Mammal,41.685
+Tomarctus,2,Large Mammal,28.55375
+Tomarctus,3,Large Mammal,10.489999999999998
+Tomarctus,4,Large Mammal,19.271250000000002
+Ursus_spelaeus,1,Large Mammal,25.136249999999997
+Ursus_spelaeus,2,Large Mammal,17.903750000000002
+Ursus_spelaeus,3,Large Mammal,8.838750000000001
+Ursus_spelaeus,4,Large Mammal,48.12125
+Daphoenus,1,Plant,49.407
+Daphoenus,2,Plant,34.6685
+Daphoenus,3,Plant,10.801749999999998
+Daphoenus,4,Plant,5.12275
+Dinictis,1,Plant,62.43475000000001
+Dinictis,2,Plant,28.497999999999998
+Dinictis,3,Plant,6.29425
+Dinictis,4,Plant,2.773
+Hoplophoneus_primaevus,1,Plant,72.65375
+Hoplophoneus_primaevus,2,Plant,21.240250000000003
+Hoplophoneus_primaevus,3,Plant,4.36275
+Hoplophoneus_primaevus,4,Plant,1.7432499999999997
+Miacis,1,Plant,53.27675000000001
+Miacis,2,Plant,32.35675
+Miacis,3,Plant,9.7815
+Miacis,4,Plant,4.585000000000001
+Promartes_lepidus,1,Plant,55.807
+Promartes_lepidus,2,Plant,31.9635
+Promartes_lepidus,3,Plant,8.49675
+Promartes_lepidus,4,Plant,3.73275
+Smilodon_californicus_PM_3702,1,Plant,65.03
+Smilodon_californicus_PM_3702,2,Plant,24.875
+Smilodon_californicus_PM_3702,3,Plant,6.545
+Smilodon_californicus_PM_3702,4,Plant,3.55
+Tomarctus,1,Plant,44.38275
+Tomarctus,2,Plant,36.526
+Tomarctus,3,Plant,12.56925
+Tomarctus,4,Plant,6.522
+Ursus_spelaeus,1,Plant,18.117
+Ursus_spelaeus,2,Plant,18.72175
+Ursus_spelaeus,3,Plant,14.489
+Ursus_spelaeus,4,Plant,48.672250000000005
+Daphoenus,1,Root,88.775
+Daphoenus,2,Root,7.775
+Daphoenus,3,Root,3.45
+Dinictis,1,Root,95.6
+Dinictis,2,Root,2.9749999999999996
+Dinictis,3,Root,1.425
+Hoplophoneus_primaevus,1,Root,96.025
+Hoplophoneus_primaevus,2,Root,2.85
+Hoplophoneus_primaevus,3,Root,1.125
+Miacis,1,Root,86.3
+Miacis,2,Root,9.075
+Miacis,3,Root,4.625
+Promartes_lepidus,1,Root,91.27499999999999
+Promartes_lepidus,2,Root,5.45
+Promartes_lepidus,3,Root,3.2750000000000004
+Smilodon_californicus_PM_3702,1,Root,94.3
+Smilodon_californicus_PM_3702,2,Root,3.35
+Smilodon_californicus_PM_3702,3,Root,2.35
+Tomarctus,1,Root,91.025
+Tomarctus,2,Root,5.8500000000000005
+Tomarctus,3,Root,3.125
+Ursus_spelaeus,1,Root,59.275
+Ursus_spelaeus,2,Root,19.15
+Ursus_spelaeus,3,Root,21.575
+Daphoenus,1,Seed,81.28575
+Daphoenus,2,Seed,12.6405
+Daphoenus,3,Seed,4.78875
+Daphoenus,4,Seed,1.285
+Dinictis,1,Seed,90.7785
+Dinictis,2,Seed,6.501125
+Dinictis,3,Seed,2.0092499999999998
+Dinictis,4,Seed,0.711125
+Hoplophoneus_primaevus,1,Seed,95.297
+Hoplophoneus_primaevus,2,Seed,3.436625
+Hoplophoneus_primaevus,3,Seed,0.9728749999999999
+Hoplophoneus_primaevus,4,Seed,0.2935
+Miacis,1,Seed,77.289
+Miacis,2,Seed,14.1885
+Miacis,3,Seed,6.442124999999999
+Miacis,4,Seed,2.0803749999999996
+Promartes_lepidus,1,Seed,79.996
+Promartes_lepidus,2,Seed,12.807
+Promartes_lepidus,3,Seed,5.426625
+Promartes_lepidus,4,Seed,1.7703749999999998
+Smilodon_californicus_PM_3702,1,Seed,90.16049999999998
+Smilodon_californicus_PM_3702,2,Seed,5.336
+Smilodon_californicus_PM_3702,3,Seed,3.1977499999999996
+Smilodon_californicus_PM_3702,4,Seed,1.30575
+Tomarctus,1,Seed,78.83512499999999
+Tomarctus,2,Seed,13.371875000000001
+Tomarctus,3,Seed,6.3161249999999995
+Tomarctus,4,Seed,1.476875
+Ursus_spelaeus,1,Seed,53.89399999999999
+Ursus_spelaeus,2,Seed,18.862999999999996
+Ursus_spelaeus,3,Seed,15.498999999999999
+Ursus_spelaeus,4,Seed,11.744
+Daphoenus,1,Small Mammal,7.5156
+Daphoenus,2,Small Mammal,27.277124999999998
+Daphoenus,3,Small Mammal,31.357374999999998
+Daphoenus,4,Small Mammal,33.849900000000005
+Dinictis,1,Small Mammal,4.39675
+Dinictis,2,Small Mammal,19.913950000000003
+Dinictis,3,Small Mammal,29.269050000000004
+Dinictis,4,Small Mammal,46.420249999999996
+Hoplophoneus_primaevus,1,Small Mammal,2.792175
+Hoplophoneus_primaevus,2,Small Mammal,13.811174999999999
+Hoplophoneus_primaevus,3,Small Mammal,24.965375
+Hoplophoneus_primaevus,4,Small Mammal,58.43127499999999
+Miacis,1,Small Mammal,9.68195
+Miacis,2,Small Mammal,31.538024999999998
+Miacis,3,Small Mammal,28.81015
+Miacis,4,Small Mammal,29.969875
+Promartes_lepidus,1,Small Mammal,2.1759
+Promartes_lepidus,2,Small Mammal,12.376575000000003
+Promartes_lepidus,3,Small Mammal,22.958925
+Promartes_lepidus,4,Small Mammal,62.4886
+Smilodon_californicus_PM_3702,1,Small Mammal,35.41545
+Smilodon_californicus_PM_3702,2,Small Mammal,38.71750000000001
+Smilodon_californicus_PM_3702,3,Small Mammal,16.3739
+Smilodon_californicus_PM_3702,4,Small Mammal,9.49315
+Tomarctus,1,Small Mammal,5.843325
+Tomarctus,2,Small Mammal,25.533749999999998
+Tomarctus,3,Small Mammal,32.545449999999995
+Tomarctus,4,Small Mammal,36.077475
+Ursus_spelaeus,1,Small Mammal,18.641725
+Ursus_spelaeus,2,Small Mammal,34.242975
+Ursus_spelaeus,3,Small Mammal,23.867224999999998
+Ursus_spelaeus,4,Small Mammal,23.248075
+Daphoenus,1,Soft Invert,58.974599999999995
+Daphoenus,2,Soft Invert,24.1396
+Daphoenus,3,Soft Invert,10.830000000000002
+Daphoenus,4,Soft Invert,6.0558
+Dinictis,1,Soft Invert,63.67020000000001
+Dinictis,2,Soft Invert,21.418999999999997
+Dinictis,3,Soft Invert,8.890199999999998
+Dinictis,4,Soft Invert,6.0206
+Hoplophoneus_primaevus,1,Soft Invert,68.3058
+Hoplophoneus_primaevus,2,Soft Invert,17.9544
+Hoplophoneus_primaevus,3,Soft Invert,8.370400000000002
+Hoplophoneus_primaevus,4,Soft Invert,5.3694
+Miacis,1,Soft Invert,32.875
+Miacis,2,Soft Invert,28.29
+Miacis,3,Soft Invert,20.116600000000002
+Miacis,4,Soft Invert,18.7184
+Promartes_lepidus,1,Soft Invert,38.281600000000005
+Promartes_lepidus,2,Soft Invert,27.294999999999998
+Promartes_lepidus,3,Soft Invert,17.3612
+Promartes_lepidus,4,Soft Invert,17.0622
+Smilodon_californicus_PM_3702,1,Soft Invert,74.7514
+Smilodon_californicus_PM_3702,2,Soft Invert,15.109
+Smilodon_californicus_PM_3702,3,Soft Invert,6.0166
+Smilodon_californicus_PM_3702,4,Soft Invert,4.122999999999999
+Tomarctus,1,Soft Invert,56.38740000000001
+Tomarctus,2,Soft Invert,23.5708
+Tomarctus,3,Soft Invert,11.6868
+Tomarctus,4,Soft Invert,8.355
+Ursus_spelaeus,1,Soft Invert,39.7406
+Ursus_spelaeus,2,Soft Invert,18.119400000000002
+Ursus_spelaeus,3,Soft Invert,15.3458
+Ursus_spelaeus,4,Soft Invert,26.7942

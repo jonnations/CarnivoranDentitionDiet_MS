@@ -1,0 +1,392 @@
+---
+title: "Prior Predictive Checks"
+author: "Jon Nations"
+date: "4/28/2022"
+---
+
+# Prior Predictive Checks
+
+This script generates plots of the prior predictive checks and the Figure S1's (one .png & one .pdf). These are produces to ensure that our priors generate distributions that are at all reasonable for our models. These things can get tricky with response families like ordinal, poisson, categorical, etc. because the logit link that is typically applied changes the scale of the parameters. 
+
+Here we look at the custom Dirichlet prior that is described elsewhere in this repo. For the sake of space, we will only explore the models with the highest LOO model weight for each dietary item. We first run the `brms` models, setting the `sample_prior` argument to "only" so that no posterior estimations are made. Then we plot the outputs using the `pp_check` command, just as we would for posterior predictive checks. The bars in the bar plots are the empirical counts for each category. The point-intervals are the distributions of the estimates of the counts from the priors. Note that a few of the prior predictions do not overlap the empirical values, such as carrion, group 4 (not many carnivorans have carrion as a primary source of food). If you look at the posterior predictive plots in the supporting information, you can see that the posterior estimates for this (and other similar) parameters actually do a really good job predicting these values. This is due to the updating process in the Dirichlet prior and the model itself. 
+
+To view these plots just run the script. 
+
+## Data and Packages
+```{r}
+pacman::p_load(tidyverse, tidybayes, rmarkdown, brms, cmdstanr, phytools, geiger, here)
+
+here::i_am('Code/Prior_Predictive_Checks.Rmd')
+
+#Functions
+scale2 <- function(x, na.rm = TRUE) (x - mean(x, na.rm = na.rm)) / sd(x, na.rm)
+add1 <- function(x, na.rm = TRUE) (x + 1)
+options(brms.backend = "cmdstanr")
+
+# Read Tree
+phylo <- ape::read.nexus(here("Data", "Carnivora_MCC_2.tre"))
+
+# Read fossil data and calculate body size estimate ^1/3
+fos_dat_1 <- read_csv(here("Data", "fossil_carnivoran_data.csv")) %>% 
+  mutate(log_cuberoot_mass = log(mass_kg^(1/3)))
+# Read extant data
+dat <- read.delim(here("Data", "Master_Data.txt")) %>% 
+  mutate(mass_kg = exp(log_cuberoot_mass)^3,
+         phylo = Species) %>% 
+  # drop taxa with missing m2 data
+  drop_na(m2_dne) %>% 
+  #combine extant and fossil dat for tip dropping and standardizing
+  bind_rows(fos_dat_1) %>% 
+  # Standardize all data together
+  mutate_at(vars(4:11), scale2) %>% 
+  mutate_at(vars(12:24), add1) %>% 
+  mutate_at(vars(12:24), as.ordered) 
+
+
+row.names(dat)<-dat$Species
+# Remove extra tips (but keep fossil tips!)
+carn_treedata<-treedata(phylo, dat, warnings = FALSE)
+phylo<-carn_treedata$phy
+A <- ape::vcv.phylo(phylo, corr = TRUE)
+
+
+dat <- dat %>% drop_na(bird)
+#Separate the model inputs
+
+# Dirichlet Script
+source("Dirichlet_Prior.R")
+
+#Prior
+pr = prior = c(set_prior("induced_dirichlet(rep_vector(1, nthres+1),0", class = "Intercept"),
+                     set_prior("normal(0,1)", class = "sd"),
+                     set_prior("normal(0,1)", class = "b"))
+```
+## Function
+```{r}
+pred<- function(mod){
+  dat %>% add_predicted_draws({{mod}}, 
+                              allow_new_levels = TRUE,
+                              ndraws = 200,
+                              value = 'preds') %>% 
+  as_tibble()  %>% 
+  select(c(Species, preds)) %>% 
+group_by(Species) %>% 
+  mutate(preds = as.numeric(preds),
+         row = row_number()) %>% 
+  pivot_wider(names_from = "Species", values_from = "preds") %>% 
+  select(-row)
+}
+```
+
+
+## Bird
+
+#### RLGA
+
+```{r}
+brm(bird ~ RLGA * log_cuberoot_mass + (1 | gr(phylo, cov = A)), 
+     data = dat1, 
+     data2 = list(A = A),
+     family = cumulative(),
+     stanvars = dirichlet_prior_stanvar,
+     prior = pr,
+     refresh = 0,
+     chains = 4, 
+     cores = 4,
+     silent = 2,
+     sample_prior = 'only') %>%
+  pred() %>% 
+  as.matrix() -> p.bird
+
+p1 <- ppc_bars(as.numeric(dat$bird), p.bird) + xlab("Bird")
+```
+
+
+## Carrion
+
+#### opcr
+
+```{r}
+brm( carrion ~ log_cuberoot_mass * (m1_opcr + m2_opcr ) + (1 | gr(phylo, cov = A)), 
+     data = dat1, 
+     data2 = list(A = A),
+     family = cumulative(),
+     stanvars = dirichlet_prior_stanvar,
+     prior = pr,
+     refresh = 0,
+     chains = 4, 
+     cores = 4,
+     silent = 2,
+     sample_prior = 'only')  %>%
+  pred() %>% 
+  as.matrix() -> p.car
+
+p2 <- ppc_bars(as.numeric(dat$carrion), p.car) + xlab("Carrion")
+```
+
+
+## Egg
+
+#### RFI
+
+```{r}
+brm( egg ~ log_cuberoot_mass * (RFI_m1 + RFI_m2 ) + (1 | gr(phylo, cov = A)), 
+     data = dat1, 
+     data2 = list(A = A),
+     family = cumulative(),
+     stanvars = dirichlet_prior_stanvar,
+     prior = pr,
+     refresh = 0,
+     chains = 4, 
+     cores = 4,
+     silent = 2,
+     sample_prior = 'only')  %>%
+  pred() %>% 
+  as.matrix() -> p.egg
+
+p3 <- ppc_bars(as.numeric(dat$egg), p.egg) + xlab("Egg")
+```
+
+## Fish
+
+#### RLGA
+
+
+```{r}
+brm( fish ~ RLGA * log_cuberoot_mass + (1 | gr(phylo, cov = A)), 
+     data = dat1, 
+     data2 = list(A = A),
+     family = cumulative(),
+     stanvars = dirichlet_prior_stanvar,
+     prior = pr,
+     refresh = 0,
+     chains = 4, 
+     cores = 4,
+     silent = 2,
+     sample_prior = 'only')  %>%
+  pred() %>% 
+  as.matrix() -> p.fish
+
+p4 <- ppc_bars(as.numeric(dat$fish), p.fish) + xlab("Fish")
+```
+
+## Fruit
+
+#### opcr
+
+```{r}
+brm( fruit ~ log_cuberoot_mass * (RFI_m1 + RFI_m2 ) + (1 | gr(phylo, cov = A)), 
+     data = dat1, 
+     data2 = list(A = A),
+     family = cumulative(),
+     stanvars = dirichlet_prior_stanvar,
+     prior = pr,
+     refresh = 0,
+     chains = 4, 
+     cores = 4,
+     silent = 2,
+     sample_prior = 'only')  %>%
+  pred() %>% 
+  as.matrix() -> p.fruit
+
+p5 <- ppc_bars(as.numeric(dat$fruit), p.fruit) + xlab("Fruit")
+```
+
+## Hard invert
+
+#### All
+
+```{r}
+brm( hard_invert ~ log_cuberoot_mass*m1_opcr + 
+                      log_cuberoot_mass*m2_opcr +
+                      log_cuberoot_mass*m1_dne  + 
+                      log_cuberoot_mass*m2_dne  + 
+                      log_cuberoot_mass*RFI_m1  + 
+                      log_cuberoot_mass*RFI_m2  +
+                      log_cuberoot_mass*RLGA +
+                      (1 | gr(phylo, cov = A)), 
+     data = dat1, 
+     data2 = list(A = A),
+     family = cumulative(),
+     stanvars = dirichlet_prior_stanvar,
+     prior = pr,
+     refresh = 0,
+     chains = 4, 
+     cores = 4,
+     silent = 2,
+     sample_prior = 'only')  %>%
+  pred() %>% 
+  as.matrix() -> p.hard
+
+p6 <- ppc_bars(as.numeric(dat$hard_invert), p.hard) + xlab("Hard Invert")
+```
+
+## Herptile
+
+#### aDNE
+
+```{r}
+brm( herptile ~ log_cuberoot_mass * (m1_dne + m2_dne ) + (1 | gr(phylo, cov = A)), 
+     data = dat1, 
+     data2 = list(A = A),
+     family = cumulative(),
+     stanvars = dirichlet_prior_stanvar,
+     prior = pr,
+     refresh = 0,
+     chains = 4, 
+     cores = 4,
+     silent = 2,
+     sample_prior = 'only') %>%
+  pred() %>% 
+  as.matrix() -> p.herp
+
+p7 <- ppc_bars(as.numeric(dat$herptile), p.herp) + xlab("Herptile")
+```
+
+## Large Mammal
+
+#### RLGA
+
+```{r}
+brm( large_mammal ~ RLGA * log_cuberoot_mass + (1 | gr(phylo, cov = A)), 
+     data = dat1, 
+     data2 = list(A = A),
+     family = cumulative(),
+     stanvars = dirichlet_prior_stanvar,
+     prior = pr,
+     refresh = 0,
+     chains = 4, 
+     cores = 4,
+     silent = 2,
+     sample_prior = 'only')  %>%
+  pred() %>% 
+  as.matrix() -> p.large
+
+p8 <- ppc_bars(as.numeric(dat$large_mammal), p.large) + xlab("Large Mammal")
+```
+
+## Plant 
+
+#### aDNE 
+
+```{r}
+brm( plant ~ log_cuberoot_mass * (m1_dne + m2_dne ) + (1 | gr(phylo, cov = A)), 
+     data = dat1, 
+     data2 = list(A = A),
+     family = cumulative(),
+     stanvars = dirichlet_prior_stanvar,
+     prior = pr,
+     refresh = 0,
+     chains = 4, 
+     cores = 4,
+     silent = 2,
+     sample_prior = 'only')  %>%
+  pred() %>% 
+  as.matrix() -> p.plant
+
+p9 <- ppc_bars(as.numeric(dat$plant), p.plant) + xlab("Plant")
+```
+
+## Root 
+
+#### RLGA 
+
+```{r}
+brm( root ~ RLGA * log_cuberoot_mass + (1 | gr(phylo, cov = A)), 
+     data = dat1, 
+     data2 = list(A = A),
+     family = cumulative(),
+     stanvars = dirichlet_prior_stanvar,
+     prior = pr,
+     refresh = 0,
+     chains = 4, 
+     cores = 4,
+     silent = 2,
+     sample_prior = 'only')  %>%
+  pred() %>% 
+  as.matrix() -> p.root
+
+p10 <- ppc_bars(as.numeric(dat$root), p.root) + xlab("Root")
+```
+
+## Seed 
+
+#### 
+
+```{r}
+brm( plant ~ log_cuberoot_mass * (m1_dne + m2_dne ) + (1 | gr(phylo, cov = A)), 
+     data = dat1, 
+     data2 = list(A = A),
+     family = cumulative(),
+     stanvars = dirichlet_prior_stanvar,
+     prior = pr,
+     refresh = 0,
+     chains = 4, 
+     cores = 4,
+     silent = 2,
+     sample_prior = 'only') %>%
+  pred() %>% 
+  as.matrix() -> p.seed
+
+p11 <- ppc_bars(as.numeric(dat$seed), p.seed) + xlab("Seed")
+```
+
+## Small Mammal
+
+#### RLGA
+
+```{r}
+brm( small_mammal ~ RLGA * log_cuberoot_mass + (1 | gr(phylo, cov = A)), 
+     data = dat1, 
+     data2 = list(A = A),
+     family = cumulative(),
+     stanvars = dirichlet_prior_stanvar,
+     prior = pr,
+     refresh = 0,
+     chains = 4, 
+     cores = 4,
+     silent = 2,
+     sample_prior = 'only') %>%
+  pred() %>% 
+  as.matrix() -> p.sm
+
+p12 <- ppc_bars(as.numeric(dat$small_mammal), p.sm) + xlab("Small Mammal")
+```
+
+
+## Soft Invert
+
+#### aDNE
+
+```{r}
+brm( soft_invert ~ log_cuberoot_mass * (m1_dne + m2_dne ) + (1 | gr(phylo, cov = A)), 
+     data = dat1, 
+     data2 = list(A = A),
+     family = cumulative(),
+     stanvars = dirichlet_prior_stanvar,
+     prior = pr,
+     refresh = 0,
+     chains = 4, 
+     cores = 4,
+     silent = 2,
+     sample_prior = 'only')  %>%
+  pred() %>% 
+  as.matrix() -> p.soft
+
+p13 <- ppc_bars(as.numeric(dat$soft_invert), p.soft) + xlab("Soft Invert")
+```
+
+# Plotting
+
+```{r}
+(p1 + p2) / (p3 + p4) / (p5 + p6) / (p7 + p8) / (p9 + p10) / (p11 + p12) / (p13 + plot_spacer()) + plot_layout(guides = "collect") + plot_annotation(title = "Prior Predictive Checks") & 
+  theme(text=element_text(family=""))
+
+ggsave(here("Plots", "Prior_Pred_Checks_Supp.pdf"), height = 13, width = 8.5)
+
+(p1 + p2) / (p3 + p4) / (p5 + p6) / (p7 + p8) / (p9 + p10) / (p11 + p12) / (p13 + plot_spacer()) + plot_layout(guides = "collect") + plot_annotation(title = "Prior Predictive Checks") & 
+  theme(text=element_text(family=""))
+ggsave(here("Plots", "Prior_Pred_Checks_Supp.png"), height = 13, width = 8.5)
+```
+```
+

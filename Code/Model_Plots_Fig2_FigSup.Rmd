@@ -1,0 +1,199 @@
+---
+title: "Ordinal Plots"
+author: "Jon Nations"
+date: "9/17/2021"
+output: html_document
+---
+# Ordinal Plots
+Figuring out how to order some of these plots, and what palettes to use. 
+
+```{r}
+pacman::p_load(tidyverse, patchwork, brms, here)
+
+here::i_am("Code", "Model_Plots_Fig2_FigSup.Rmd")
+
+```
+
+```{r}
+m.bird =    readRDS(here("mod_outputs", "D_RLGA_bird.rds"))
+m.carrion = readRDS(here("mod_outputs", "D_opcr_carrion.rds"))
+m.egg =     readRDS(here("mod_outputs", "D_RFI_egg.rds"))
+m.fish =    readRDS(here("mod_outputs", "D_RLGA_fish.rds"))
+m.fruit =   readRDS(here("mod_outputs", "D_opcr_fruit.rds"))
+m.hard =    readRDS(here("mod_outputs", "D_all_hard_invert.rds"))
+m.herp =    readRDS(here("mod_outputs", "D_dne_herptile.rds"))
+m.large =   readRDS(here("mod_outputs", "D_RLGA_large_mammal.rds"))
+m.plant =   readRDS(here("mod_outputs", "D_dne_plant.rds"))
+m.root =    readRDS(here("mod_outputs", "D_RLGA_root.rds"))
+m.seed =    readRDS(here("mod_outputs", "D_dne_seed.rds"))
+m.small =   readRDS(here("mod_outputs", "D_RLGA_small_mammal.rds"))
+m.soft =    readRDS(here("mod_outputs", "D_dne_soft_invert.rds"))
+```
+
+Each metric's highest weight
+Bird =         opcr
+Carrion =      opcr
+egg =          none
+fish =         rlga
+fruit =        rlga
+hard invert =  dne
+herp =         none
+large mammal = dne
+plant =        all
+root =         rlga
+seed =         RFI
+small mammal = rlga
+soft invert =  dne
+
+### Palettes
+```{r}
+lapal <- c("1" = "#F4D464", "2" = "#E27E4F", "3" = "#C04B49", "4" = "#753830")
+
+pal2 <- viridis::viridis_pal(direction = -1, option = "A", begin = 0.15, end = 0.88)(4)
+pal3 <- colorspace::desaturate(pal2)
+
+```
+
+### Plotting Fuction
+
+```{r}
+ord_plot <- function(mod, effect, title){
+conditions <- data.frame(log_cuberoot_mass = c(-1.5, 0, 1.5))
+mass.labs <- c("Low Mass", "Mean Mass", "High Mass")
+names(mass.labs) <- c(-1.5, 0, 1.5)
+p1 <- conditional_effects({{mod}}, 
+                          categorical  = TRUE, 
+                          prob = 0.75, 
+                          conditions = conditions, 
+                          effects= {{effect}})
+plot(p1, plot = FALSE)[[1]] + 
+  facet_wrap(~log_cuberoot_mass, 
+             ncol = 3,
+             labeller = labeller(log_cuberoot_mass = mass.labs)) + 
+  labs(subtitle = {{title}}) +
+    scale_fill_viridis_d( direction = -1, option = "A", begin = 0.15, end = 0.88, name = "Dietary\nImportance") +
+  scale_color_viridis_d(direction = -1, option = "A", begin = 0.15, end = 0.88, name = "Dietary\nImportance") +
+  ylim(0,1) +
+  theme_classic() +  guides(colour = guide_legend(reverse=T,
+                                                  #title.hjust = 0.5,
+                                                  title.theme = element_text(size = 8)),
+                            fill = guide_legend(reverse=T,
+                                                  #title.hjust = 0.5,
+                                                  title.theme = element_text(size = 8))) + 
+                             theme( panel.grid.major = element_blank(), 
+                                    panel.grid.minor = element_blank(),
+                                    strip.background = element_blank(),
+                                    panel.border = element_rect(colour = "black", 
+                                                                fill = NA))
+}
+
+# Plotting function for Egg and Root
+ord_plot2 <- function(mod, effect, title){
+conditions <- data.frame(log_cuberoot_mass = c(-1.5, 0, 1.5))
+mass.labs <- c("Low Mass", "Mean Mass", "High Mass")
+names(mass.labs) <- c(-1.5, 0, 1.5)
+p1 <- conditional_effects({{mod}}, 
+                          categorical  = TRUE, 
+                          prob = 0.75, 
+                          conditions = conditions, 
+                          effects= {{effect}})
+plot(p1, plot = FALSE)[[1]] + 
+  facet_wrap(~log_cuberoot_mass, 
+             ncol = 3,
+             labeller = labeller(log_cuberoot_mass = mass.labs)) + 
+  labs(subtitle = {{title}}) +
+  scale_fill_viridis_d( direction = -1, option = "A", begin = 0.3325, end = 0.88, name = "Dietary\nImportance") +
+  scale_color_viridis_d(direction = -1, option = "A", begin = 0.3325, end = 0.88, name = "Dietary\nImportance") +
+  theme_classic() +  guides(colour = guide_legend(reverse=T,
+                                                  #title.hjust = 0.5,
+                                                  title.theme = element_text(size = 8)),
+                            fill = guide_legend(reverse=T,
+                                                  #title.hjust = 0.5,
+                                                  title.theme = element_text(size = 8))) + 
+                             theme( panel.grid.major = element_blank(), 
+                                    panel.grid.minor = element_blank(),
+                                    strip.background = element_blank(),
+                                    panel.border = element_rect(colour = "black", 
+                                                                fill = NA),
+                                    legend.position = "none")
+}
+```
+
+## Select Variables 2 Columns
+These are selected to demonstrate various properties and dental measurements. 6 would make a nice clean figure.
+We want:
+Changes with mass but not tooth (?)
+Changes with tooth but not mass
+Different measurements represented, and m1 or m2, not just RLGA
+
+Bird RLGA is a clean story with
+Fruit m2 opcr is a big shift with mass
+herp is dne, and m1 is low prediction at low mass, good at high mass.
+Large Mammal is clean and rlga
+small mammal rlga is cool, mass effect
+soft invert m1 dne is cool
+```{r}
+ord_plot(m.bird, "RLGA", "Bird")              -> p1
+ord_plot(m.fruit, "m2_opcr", "Fruit") + labs(y = "", x = "m2 OPCr")  -> p2
+ord_plot(m.herp, "m1_dne", "Herptile") + labs(y = "", x = "m1 aDNE") -> p3
+ord_plot(m.large, "RLGA", "Large Mammal")  -> p4
+ord_plot(m.small, "RLGA", "Small Mammal")  + labs(y = "")      -> p5
+ord_plot(m.soft, "m1_dne", "Soft Invertebrate") + labs(y = "", x = "m1 aDNE") -> p6
+
+```
+
+## Figure 2
+
+```{r}
+plot3col <- (p1 + p2 + p3 ) /  (p4 + p5 + p6)  + plot_layout(guides = "collect")  + plot_annotation(tag_levels = 'A')
+plot3col
+ggsave(here("Plots", "Figure2.pdf", width = 10, height = 5))
+ggsave(here("Plots", "Figure2.png", width = 10, height = 5))
+```
+
+
+## All Variables 4 columns
+
+Supplemental Plot
+```{r}
+ord_plot(m.bird, "RLGA", "Bird") -> p1
+ord_plot(m.carrion, "m1_opcr", "Carrion") + labs(y = "") -> p2
+ord_plot(m.carrion, "m2_opcr", "Carrion") + labs(y = "") -> p3
+ord_plot2(m.egg, "RFI_m1", "Egg") + labs(y = "") -> p4
+ord_plot2(m.egg, "RFI_m2", "Egg")  -> p5
+ord_plot(m.fish, "RLGA", "Fish")  + labs(y = "") -> p6
+ord_plot(m.fruit, "m1_opcr", "Fruit")  + labs(y = "") -> p7
+ord_plot(m.fruit, "m2_opcr", "Fruit")  + labs(y = "") -> p8
+ord_plot(m.hard, "m1_dne", "Hard Invert")  -> p9
+ord_plot(m.hard, "m2_dne", "Hard Invert") + labs(y = "")  -> p10
+ord_plot(m.hard, "m1_opcr", "Hard Invert")  + labs(y = "") -> p11
+ord_plot(m.hard, "m2_opcr", "Hard Invert") + labs(y = "")  -> p12
+ord_plot(m.hard, "RFI_m1", "Hard Invert")  -> p13
+ord_plot(m.hard, "RFI_m2", "Hard Invert") + labs(y = "")  -> p14
+ord_plot(m.hard, "RLGA", "Hard Invert")  + labs(y = "") -> p15
+ord_plot(m.herp, "m1_dne", "Herptile") + labs(y = "")  -> p16
+ord_plot(m.herp, "m2_dne", "Herptile")  -> p17
+ord_plot(m.large, "RLGA", "Large Mammal")  + labs(y = "") -> p18
+ord_plot(m.plant, "m1_dne", "Plant")  + labs(y = "")-> p19
+ord_plot(m.plant, "m2_dne", "Plant") + labs(y = "") -> p20
+ord_plot2(m.root, "RLGA", "Root")  -> p21
+ord_plot(m.seed, "m1_dne", "Seed")  + labs(y = "") -> p22
+ord_plot(m.seed, "m2_dne", "Seed") +  labs(y = "") -> p23
+ord_plot(m.small, "RLGA", "Small Mammal")  + labs(y = "") -> p24
+ord_plot(m.soft, "m1_dne", "Soft Invert")  -> p25
+ord_plot(m.soft, "m2_dne", "Soft Invert")  + labs(y = "") -> p26
+plot_spacer() -> p27
+plot_spacer() -> p28
+```
+
+## Figure S1
+
+```{r}
+
+plot <- (p1 | p2 | p3 | p4) / (p5 | p6 | p7 | p8) / (p9 | p10 | p11 | p12)  / (p13 | p14 | p15 | p16) / (p17 | p18 | p19 | p20) / (p21 | p22 | p23 | p24) / (p25 | p26 | p27 | p28) + plot_layout(guides = "collect")  + plot_annotation(tag_levels = 'A')
+plot
+ggsave(here("Plots", "Sup_Fig_Model_Outputs.pdf", width = 17, height = 20))
+ggsave(here("Plots", "Sup_Fig_Model_Outputs.png", width = 17, height = 20))
+```
+
+

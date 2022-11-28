@@ -1,0 +1,7 @@
+load("/Users/Dicrostonyx/Documents/Projects/CarnivoranDentitionDiet/mod_outputs/D_dne_bird.rds")
+load("/Users/Dicrostonyx/Documents/Projects/CarnivoranDentitionDiet/mod_outputs/D_dne_carrion.rds")
+load("/Users/Dicrostonyx/Documents/Projects/CarnivoranDentitionDiet/mod_outputs/D_dne_egg.rds")
+load("/Users/Dicrostonyx/Documents/Projects/CarnivoranDentitionDiet/mod_outputs/D_dne_fish.rds")
+load("/Users/Dicrostonyx/Documents/Projects/CarnivoranDentitionDiet/mod_outputs/D_dne_fruit.rds")
+load("/Users/Dicrostonyx/Documents/Projects/CarnivoranDentitionDiet/mod_outputs/D_dne_hard_invert.rds")
+load("/Users/Dicrostonyx/Documents/Projects/CarnivoranDentitionDiet/mod_outputs/D_dne_herptile.rds")

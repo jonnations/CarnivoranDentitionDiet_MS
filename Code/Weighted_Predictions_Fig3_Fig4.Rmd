@@ -1,0 +1,804 @@
+---
+title: "Weighted_Predictions"
+output: html_notebook
+---
+
+# Generating Weighted Predictions 
+
+## And generating Figures 3 & 4
+
+This notebook uses the model weights to generate a 'weighted' prediction for each food item. This is done by first retrieving the model weights for each food item from the `Data/D_weights_all.csv` file. Then fossil predictions are generated for each model with a weight above 0. Each prediction is then multiplied by the model weight, then the predictions are summed together to equal 1. 
+
+For example, if dne has a model weight of 0.5, and opcr has a model weight of 0.5, then fossil or cryptic taxa predictions are generated for both dne and opcr. These prediciton values are both multiplied by 0.5, then they are summed together, generating a prediction weighed by the model weights. 
+
+#### Outputs
+
+This script outputs 1 large prediction dataframe containing percentages for each rank for each food item. These are stored in `Data/Fossil_Predictions_Weighted.csv` and `Data/Cryptic_Predictions_Weighted.csv`. We also adjust these into weighted averages. To do this we multiply each ranking by it's percentage, then sum the values. So if the predicted percentages for **food_A** are 1 = 0.1, 2 = 0.1, 3 = 0.2, 4 = 0.6, then the weighted average is a ranking of (1 * 0.1) + (2 * 0.1) + (3 * 0.2) + (4 * 0.6) = 3.3. These values are stored as the `Data/Fossil_Weighted_Predictions_New.csv` and `Data/Cryptic_Weighted_Predictions_New.csv`. The same process, with virtually the same file names was done for the extant species (the original data set) resulting in a `Data/Extant_Predictions_Weighted.csv` and a `Data/Extant_Weighted_Predictions_New.csv`.
+
+```{r}
+pacman::p_load(phytools, geiger, tidyverse, patchwork, tidybayes, here)
+
+here::i_am("Code/Weighted_Predictions_Fig3_Fig4.Rmd")
+
+options(dplyr.summarise.inform = FALSE)
+scale2 <- function(x, na.rm = TRUE) (x - mean(x, na.rm = na.rm)) / sd(x, na.rm)
+add1 <- function(x, na.rm = TRUE) (x + 1)
+```
+
+## Data
+
+Results in dat (all extant w data), fos_dat (fossils), and c_dat (cryptic). Also weights is the model weights
+```{r}
+# Read fossil data and calculate body size estimate ^1/3
+fos_dat_1 <- read_csv(here("Data", "fossil_carnivoran_data.csv"))%>% 
+  mutate(log_cuberoot_mass = log(mass_kg^(1/3)))
+# Read extant data
+dat <- read.delim(here("Data", "Master_Data.txt")) %>% 
+  mutate(mass_kg = exp(log_cuberoot_mass)^3,
+         phylo = Species) %>% 
+  # drop taxa with missing m2 data
+  drop_na(m2_dne) %>% 
+  #combine extant and fossil dat for tip dropping and standardizing
+  bind_rows(fos_dat_1) %>% 
+  # Standardize all data together
+  mutate_at(vars(4:11), scale2) %>% 
+  mutate_at(vars(12:24), add1) %>% 
+  mutate_at(vars(12:24), as.ordered) 
+
+rm(fos_dat_1)
+row.names(dat)<-dat$Species
+
+fos_dat <- dat %>% drop_na(m1_tooth_length)
+cryp_sp <- c("Arctogalidia_trivirgata", "Bassaricyon_alleni", "Catopuma_badia", "Chrotogale_owstoni", "Cynogale_bennettii", "Galidia_elegans", "Galidictis_fasciata", "Hemigalus_derbyanus", "Herpestes_brachyurus", "Mydaus_javanensis", "Paradoxurus_musanga", "Pardofelis_marmorata", "Prionodon_linsang")
+c_dat <- dat %>% filter(Species %in% cryp_sp)
+dat <- dat %>% drop_na(bird)
+
+weights = read_csv(here("Data", "D_weights_all.csv"))
+```
+## Fossil Predictions 
+
+### Functions
+
+These are the same functions I used for the initial predictions
+```{r}
+pred<- function(mod, col){
+  fos_dat %>% add_predicted_draws({{mod}} , allow_new_levels = TRUE) %>% 
+ group_by(Species,.prediction) %>% 
+ summarise(Percentage=n()) %>% 
+ group_by(Species) %>% 
+ mutate(Percentage=Percentage/sum(Percentage)*100) %>% 
+  ungroup() %>% 
+  mutate(diet = add_column({{col}}),
+         .prediction = as.factor(.prediction))
+}
+```
+
+
+### Bird
+```{r}
+bird.w <- weights %>% filter(diet == "bird")
+bird.w
+```
+Bird uses RFI, RLGA, and All
+```{r}
+m.bird_RLGA <-  readRDS(here("mod_outputs", "D_RLGA_bird.rds"))
+m.bird_RFI <- readRDS(here("mod_outputs", "D_RFI_bird.rds"))
+m.bird_all <- readRDS(here("mod_outputs", "D_all_bird.rds"))
+pred.bird_RFI <- pred(m.bird_RFI, "Bird") %>% mutate(w_percent1 = Percentage * 0.07) %>% select(!Percentage)
+pred.bird_RLGA <- pred(m.bird_RLGA, "Bird") %>% mutate(w_percent2 = Percentage * 0.592) %>% select(!Percentage)
+pred.bird_all <- pred(m.bird_all, "Bird") %>% mutate(w_percent3 =  Percentage * 0.338) %>% select(!Percentage)
+pred.bird <- right_join(pred.bird_all, pred.bird_RFI) %>% right_join(pred.bird_RLGA) %>% mutate(Percentage = w_percent1 + w_percent2 + w_percent3) %>% select(!c(w_percent1, w_percent2, w_percent3))
+#p2 <- pred(m.bird_RLGA, "Bird") %>% predplot(., "Bird Probability - RLGA")
+#(p1 | p2) + plot_layout(guides = "collect")
+rm(m.bird_RLGA, m.bird_RFI, m.bird_all, pred.bird_RLGA, pred.bird_RFI, pred.bird_all)
+```
+### Carrion
+```{r}
+weights %>% filter(diet == "carrion")
+```
+
+```{r}
+m.carrion_opcr <-  readRDS(here("mod_outputs", "D_opcr_carrion.rds"))
+m.carrion_RLGA <-  readRDS(here("mod_outputs", "D_RLGA_carrion.rds"))
+
+pred.carrion_OPCR <- pred(m.carrion_opcr, "Carrion") %>% mutate(w_percent1 = Percentage * 0.566) %>% select(!Percentage)
+pred.carrion_RLGA <- pred(m.carrion_RLGA, "Carrion") %>% mutate(w_percent2 =  Percentage * 0.434) %>% select(!Percentage)
+
+pred.carrion <- right_join(pred.carrion_OPCR, pred.carrion_RLGA) %>% mutate(Percentage = w_percent1 + w_percent2 ) %>% select(!c(w_percent1, w_percent2))
+rm(m.carrion_RLGA, m.carrion_opcr, pred.carrion_RLGA, pred.carrion_OPCR)
+```
+
+### Egg
+```{r}
+weights %>% filter(diet == "egg")
+```
+
+```{r}
+m.egg_rfi <-  readRDS(here("mod_outputs", "D_RFI_egg.rds"))
+m.egg_dne <-  readRDS(here("mod_outputs", "D_dne_egg.rds"))
+
+pred.egg_rfi <- pred(m.egg_rfi, "Egg") %>% mutate(w_percent1 = Percentage * 0.566) %>% select(!Percentage)
+pred.egg_dne <- pred(m.egg_dne, "Egg") %>% mutate(w_percent2 =  Percentage * 0.434) %>% select(!Percentage)
+
+pred.egg <- right_join(pred.egg_rfi, pred.egg_dne) %>% mutate(Percentage = w_percent1 + w_percent2 ) %>% select(!c(w_percent1, w_percent2))
+rm(m.egg_dne, m.egg_rfi, pred.egg_rfi, pred.egg_dne)
+```
+
+### Fish
+
+```{r}
+weights %>% filter(diet == "fish")
+```
+
+```{r}
+m.fish_opcr <-  readRDS(here("mod_outputs", "D_opcr_fish.rds"))
+m.fish_rlga <-  readRDS(here("mod_outputs", "D_RLGA_fish.rds"))
+
+pred.fish_opcr <- pred(m.fish_opcr, "Fish") %>% mutate(w_percent1 = Percentage * 0.268) %>% select(!Percentage)
+pred.fish_rlga <- pred(m.fish_rlga, "Fish") %>% mutate(w_percent2 =  Percentage * 0.732) %>% select(!Percentage)
+
+pred.fish <- right_join(pred.fish_opcr, pred.fish_rlga) %>% mutate(Percentage = w_percent1 + w_percent2 ) %>% select(!c(w_percent1, w_percent2))
+rm(m.fish_rlga, m.fish_opcr, pred.fish_opcr, pred.fish_rlga)
+```
+### Fruit
+
+```{r}
+weights %>% filter(diet == "fruit")
+```
+
+```{r}
+m.fruit_rfi <-   readRDS(here("mod_outputs", "D_RFI_fruit.rds"))
+m.fruit_opcr <-  readRDS(here("mod_outputs", "D_opcr_fruit.rds"))
+m.fruit_rlga <-  readRDS(here("mod_outputs", "D_RLGA_fruit.rds"))
+
+pred.fruit_rfi <- pred(m.fruit_rfi, "Fruit") %>% mutate(w_percent1 =  Percentage * 0.282) %>% select(!Percentage)
+pred.fruit_opcr <- pred(m.fruit_opcr, "Fruit") %>% mutate(w_percent2 = Percentage * 0.618) %>% select(!Percentage)
+pred.fruit_rlga <- pred(m.fruit_rlga, "Fruit") %>% mutate(w_percent3 =  Percentage * 0.1) %>% select(!Percentage)
+
+
+pred.fruit <- right_join(pred.fruit_opcr, pred.fruit_rlga) %>% right_join(pred.fruit_rfi) %>% mutate(Percentage = w_percent1 + w_percent2 + w_percent3) %>% select(!c(w_percent1, w_percent2, w_percent3))
+rm(m.fruit_rlga, m.fruit_opcr, m.fruit_rfi, pred.fruit_opcr, pred.fruit_rlga, pred.fruit_rfi)
+```
+
+### Hard Invert
+
+```{r}
+weights %>% filter(diet == "hard_invert")
+```
+
+```{r}
+m.hard_dne <-  readRDS(here("mod_outputs", "D_dne_hard_invert.rds"))
+m.hard_all <-  readRDS(here("mod_outputs", "D_all_hard_invert.rds"))
+m.hard_rlga <- readRDS(here("mod_outputs", "D_RLGA_hard_invert.rds"))
+
+pred.hard_dne <- pred(m.hard_dne, "Hard Invert") %>% mutate(w_percent1 =  Percentage * 0.283) %>% select(!Percentage)
+pred.hard_rlga <- pred(m.hard_rlga, "Hard Invert") %>% mutate(w_percent2 =  Percentage * 0.168) %>% select(!Percentage)
+pred.hard_all <- pred(m.hard_all, "Hard Invert") %>% mutate(w_percent3 = Percentage * 0.549) %>% select(!Percentage)
+
+pred.hard <- right_join(pred.hard_all, pred.hard_rlga) %>% right_join(pred.hard_dne) %>% mutate(Percentage = w_percent1 + w_percent2 + w_percent3) %>% select(!c(w_percent1, w_percent2, w_percent3))
+rm(m.hard_rlga, m.hard_all, m.hard_dne, pred.hard_all, pred.hard_rlga, pred.hard_dne)
+```
+
+### Herptile
+
+```{r}
+weights %>% filter(diet == "herptile")
+```
+
+```{r}
+m.herp_rfi <-  readRDS(here("mod_outputs", "D_RFI_herptile.rds"))
+m.herp_dne <-  readRDS(here("mod_outputs", "D_dne_herptile.rds"))
+m.herp_opcr <- readRDS(here("mod_outputs", "D_opcr_herptile.rds"))
+m.herp_rlga <- readRDS(here("mod_outputs", "D_RLGA_herptile.rds"))
+m.herp_all <-  readRDS(here("mod_outputs", "D_all_herptile.rds"))
+
+pred.herp_rfi <- pred(m.herp_rfi, "Herptile") %>% mutate(w_percent1 =  Percentage * 0.006) %>% select(!Percentage)
+pred.herp_dne <- pred(m.herp_dne, "Herptile") %>% mutate(w_percent2 =  Percentage * 0.748) %>% select(!Percentage)
+pred.herp_opcr <- pred(m.herp_opcr, "Herptile") %>% mutate(w_percent3 = Percentage * 0.152) %>% select(!Percentage)
+pred.herp_rlga <- pred(m.herp_rlga, "Herptile") %>% mutate(w_percent4 =  Percentage * 0.088) %>% select(!Percentage)
+pred.herp_all <- pred(m.herp_all, "Herptile") %>% mutate(w_percent5 = Percentage * 0.006) %>% select(!Percentage)
+
+pred.herp <- right_join(pred.herp_rfi, pred.herp_dne) %>% right_join(pred.herp_opcr) %>% right_join(pred.herp_rlga) %>% right_join(pred.herp_all) %>% mutate(Percentage = w_percent1 + w_percent2 + w_percent3 + w_percent4 + w_percent5) %>% select(!c(w_percent1, w_percent2, w_percent3, w_percent4, w_percent5))
+rm(m.herp_rlga, m.herp_all, m.herp_dne, m.herp_opcr, m.herp_rfi, pred.herp_all, pred.herp_rlga, pred.herp_dne, pred.herp_rfi, pred.herp_opcr)
+```
+
+### Large Mammal
+```{r}
+weights %>% filter(diet == "large_mammal")
+```
+
+Large Mammal uses RLGA, and All
+```{r}
+m.large_RLGA <-  readRDS(here("mod_outputs", "D_RLGA_large_mammal.rds"))
+m.large_all <-   readRDS(here("mod_outputs", "D_all_large_mammal.rds"))
+
+pred.large_RLGA <- pred(m.large_RLGA, "Large Mammal") %>% mutate(w_percent1 = Percentage * 0.65) %>% select(!Percentage)
+pred.large_all <- pred(m.large_all, "Large Mammal") %>% mutate(w_percent2 =  Percentage * 0.35) %>% select(!Percentage)
+
+pred.large <- right_join(pred.large_all, pred.large_RLGA) %>% mutate(Percentage = w_percent1 + w_percent2 ) %>% select(!c(w_percent1, w_percent2))
+rm(m.large_RLGA, m.large_all, pred.large_RLGA, pred.large_all)
+```
+
+### Plant
+
+```{r}
+weights %>% filter(diet == "plant")
+```
+
+```{r}
+m.plant_opcr <-  readRDS(here("mod_outputs", "D_opcr_plant.rds"))
+m.plant_dne <-   readRDS(here("mod_outputs", "D_dne_plant.rds"))
+
+pred.plant_opcr <- pred(m.plant_opcr, "Plant") %>% mutate(w_percent1 = Percentage * 0.39) %>% select(!Percentage)
+pred.plant_dne <- pred(m.plant_dne, "Plant") %>% mutate(w_percent2 =  Percentage * 0.61) %>% select(!Percentage)
+
+pred.plant <- right_join(pred.plant_opcr, pred.plant_dne) %>% mutate(Percentage = w_percent1 + w_percent2 ) %>% select(!c(w_percent1, w_percent2))
+rm(m.plant_dne, m.plant_opcr, pred.plant_opcr, pred.plant_dne)
+```
+
+### Root
+
+```{r}
+weights %>% filter(diet == "root")
+```
+
+```{r}
+m.root_rlga <-  readRDS(here("mod_outputs", "D_rlga_root.rds"))
+
+pred.root <- pred(m.root_rlga, "Root") 
+
+rm(m.root_rlga)
+```
+
+### Seed
+
+```{r}
+weights %>% filter(diet == "seed")
+```
+
+```{r}
+m.seed_rlga <-  readRDS(here("mod_outputs", "D_RLGA_seed.rds"))
+m.seed_dne <-   readRDS(here("mod_outputs", "D_dne_seed.rds"))
+
+pred.seed_rlga <- pred(m.seed_rlga, "Seed") %>% mutate(w_percent1 = Percentage * 0.185) %>% select(!Percentage)
+pred.seed_dne <- pred(m.seed_dne, "Seed") %>% mutate(w_percent2 =  Percentage * 0.815) %>% select(!Percentage)
+
+pred.seed <- right_join(pred.seed_rlga, pred.seed_dne) %>% mutate(Percentage = w_percent1 + w_percent2 ) %>% select(!c(w_percent1, w_percent2))
+rm(m.seed_dne, m.seed_rlga, pred.seed_rlga, pred.seed_dne)
+```
+
+### Small Mammal
+
+```{r}
+weights %>% filter(diet == "small_mammal")
+```
+
+```{r}
+m.small_rlga <-  readRDS(here("mod_outputs", "D_RLGA_small_mammal.rds"))
+m.small_dne <-   readRDS(here("mod_outputs", "D_dne_small_mammal.rds"))
+
+pred.small_rlga <- pred(m.small_rlga, "Small Mammal") %>% mutate(w_percent1 = Percentage * 0.789) %>% select(!Percentage)
+pred.small_dne <- pred(m.small_dne, "Small Mammal") %>% mutate(w_percent2 =  Percentage * 0.211) %>% select(!Percentage)
+
+pred.small <- right_join(pred.small_rlga, pred.small_dne) %>% mutate(Percentage = w_percent1 + w_percent2 ) %>% select(!c(w_percent1, w_percent2))
+rm(m.small_dne, m.small_rlga, pred.small_rlga, pred.small_dne)
+```
+
+### Soft Invert
+
+```{r}
+weights %>% filter(diet == "soft_invert")
+```
+
+```{r}
+m.soft_opcr <-  readRDS(here("mod_outputs", "D_opcr_soft_invert.rds"))
+m.soft_dne <-   readRDS(here("mod_outputs", "D_dne_soft_invert.rds"))
+
+pred.soft_opcr <- pred(m.soft_opcr, "Soft Invert") %>% mutate(w_percent1 = Percentage * 0.096) %>% select(!Percentage)
+pred.soft_dne <- pred(m.soft_dne, "Soft Invert") %>% mutate(w_percent2 =  Percentage * 0.904) %>% select(!Percentage)
+
+pred.soft <- right_join(pred.soft_opcr, pred.soft_dne) %>% mutate(Percentage = w_percent1 + w_percent2 ) %>% select(!c(w_percent1, w_percent2))
+rm(m.soft_dne, m.soft_opcr, pred.soft_opcr, pred.soft_dne)
+```
+
+### Combine Into Weighted Predictions
+
+```{r}
+f_pred <- bind_rows(pred.bird, pred.carrion, pred.egg, pred.fish, pred.fruit, pred.hard, pred.herp,  pred.large, pred.plant, pred.root, pred.seed, pred.small, pred.soft) %>% write_csv(here("Data", "Fossil_Predictions_Weighted.csv"))
+
+rm(pred.bird, pred.carrion, pred.egg, pred.fish, pred.fruit, pred.hard, pred.herp,  pred.large, pred.plant, pred.root, pred.seed, pred.small, pred.soft)
+```
+
+### Generate Weighted Averages
+
+```{r}
+sc<- function(x) (x / 100)
+```
+
+```{r}
+tt <- f_pred %>% rename(pred ='.prediction') %>% 
+  mutate(pred = as.numeric(pred)) %>% 
+  pivot_wider(names_from = diet, values_from = Percentage) %>% 
+  mutate_at(vars(3:15), sc) %>% 
+  mutate_at(vars(3:15), ~ . * pred) %>% 
+  #select(!pred) #%>% 
+  group_by(Species) %>% 
+  summarise_at(vars(2:14), sum, na.rm=T ) %>% 
+ #write_csv(here("Data", "Fossil_Weighted_Predictions_New.csv"))
+```
+
+## Fig4 Horizontal Plots
+
+```{r}
+hp <- f_pred %>% 
+  mutate(Species = str_replace_all(Species, "californicus_PM_3702", "fatalis"),
+         Species = str_replace_all(Species, "_", " ")) %>%
+  ggplot(aes(x = Species, y = Percentage)) +
+  geom_col(aes(fill = forcats::fct_rev(.prediction))) + 
+  theme_classic() +
+  scale_fill_manual(values=c("#2171b5", "#6baed6", "#bdd7e7", "#eff3ff"), name = "Dietary\nImportance") +
+  #labs(x = "", title = {{title}}) +
+  guides(fill = guide_legend(reverse=F,
+                               title.theme = element_text(size = 8))) + 
+  theme(axis.text.x = element_text(angle = 50, hjust = 1),
+        axis.text.y = element_text(face = "italic"),
+        legend.position = c(0.95, 0.22),
+        strip.background = element_blank()) + 
+  coord_flip() + 
+  labs(x = "") + facet_wrap(~ diet, ncol = 7) 
+hp
+ggsave(here("Plots", "Fossil_Preds_Fig4.png"), width = 10, height = 4)
+ggsave(here("Plots", "Fossil_Preds_Fig4.pdf"), width = 10, height = 4)
+```
+
+
+
+# Cryptic Predictions
+This should be easier because the model percentages won't change
+### Functions
+```{r}
+cpred <- function(mod, col){
+c_dat %>% add_predicted_draws({{mod}}, allow_new_levels = TRUE, sample_new_levels = "uncertainty") %>% 
+ group_by(Species,.prediction) %>% 
+ summarise(Percentage=n()) %>% 
+ group_by(Species) %>% 
+ mutate(Percentage=Percentage/sum(Percentage)*100) %>% 
+  ungroup() %>%  
+  mutate(diet = add_column({{col}}),
+         .prediction = as.factor(.prediction))
+}
+
+```
+
+### Bird
+```{r}
+m.bird_RLGA <-  readRDS(here("mod_outputs", "D_RLGA_bird.rds"))
+m.bird_RFI <- readRDS(here("mod_outputs", "D_RFI_bird.rds"))
+m.bird_all <- readRDS(here("mod_outputs", "D_all_bird.rds"))
+pred.bird_RFI <- cpred(m.bird_RFI, "Bird") %>% mutate(w_percent1 = Percentage * 0.07) %>% select(!Percentage)
+pred.bird_RLGA <- cpred(m.bird_RLGA, "Bird") %>% mutate(w_percent2 = Percentage * 0.592) %>% select(!Percentage)
+pred.bird_all <- cpred(m.bird_all, "Bird") %>% mutate(w_percent3 =  Percentage * 0.338) %>% select(!Percentage)
+pred.bird <- right_join(pred.bird_all, pred.bird_RFI) %>% right_join(pred.bird_RLGA) %>% mutate(Percentage = w_percent1 + w_percent2 + w_percent3) %>% select(!c(w_percent1, w_percent2, w_percent3))
+rm(m.bird_RLGA, m.bird_RFI, m.bird_all, pred.bird_RLGA, pred.bird_RFI, pred.bird_all)
+```
+
+### Carrion
+```{r}
+m.carrion_opcr <-  readRDS(here("mod_outputs", "D_opcr_carrion.rds"))
+m.carrion_RLGA <- readRDS(here("mod_outputs", "D_RLGA_carrion.rds"))
+
+pred.carrion_OPCR <- cpred(m.carrion_opcr, "Carrion") %>% mutate(w_percent1 = Percentage * 0.566) %>% select(!Percentage)
+pred.carrion_RLGA <- cpred(m.carrion_RLGA, "Carrion") %>% mutate(w_percent2 =  Percentage * 0.434) %>% select(!Percentage)
+
+pred.carrion <- right_join(pred.carrion_OPCR, pred.carrion_RLGA) %>% mutate(Percentage = w_percent1 + w_percent2 ) %>% select(!c(w_percent1, w_percent2))
+rm(m.carrion_RLGA, m.carrion_opcr, pred.carrion_RLGA, pred.carrion_OPCR)
+```
+
+### Egg
+
+```{r}
+m.egg_rfi <-  readRDS(here("mod_outputs", "D_RFI_egg.rds"))
+m.egg_dne <- readRDS(here("mod_outputs", "D_dne_egg.rds"))
+
+pred.egg_rfi <- cpred(m.egg_rfi, "Egg") %>% mutate(w_percent1 = Percentage * 0.566) %>% select(!Percentage)
+pred.egg_dne <- cpred(m.egg_dne, "Egg") %>% mutate(w_percent2 =  Percentage * 0.434) %>% select(!Percentage)
+
+pred.egg <- right_join(pred.egg_rfi, pred.egg_dne) %>% mutate(Percentage = w_percent1 + w_percent2 ) %>% select(!c(w_percent1, w_percent2))
+rm(m.egg_dne, m.egg_rfi, pred.egg_rfi, pred.egg_dne)
+```
+
+### Fish
+
+```{r}
+m.fish_opcr <-  readRDS(here("mod_outputs", "D_opcr_fish.rds"))
+m.fish_rlga <- readRDS(here("mod_outputs", "D_RLGA_fish.rds"))
+
+pred.fish_opcr <- cpred(m.fish_opcr, "Fish") %>% mutate(w_percent1 = Percentage * 0.268) %>% select(!Percentage)
+pred.fish_rlga <- cpred(m.fish_rlga, "Fish") %>% mutate(w_percent2 =  Percentage * 0.732) %>% select(!Percentage)
+
+pred.fish <- right_join(pred.fish_opcr, pred.fish_rlga) %>% mutate(Percentage = w_percent1 + w_percent2 ) %>% select(!c(w_percent1, w_percent2))
+rm(m.fish_rlga, m.fish_opcr, pred.fish_opcr, pred.fish_rlga)
+```
+
+### Fruit
+
+```{r}
+m.fruit_rfi <- readRDS(here("mod_outputs", "D_RFI_fruit.rds"))
+m.fruit_opcr <-  readRDS(here("mod_outputs", "D_opcr_fruit.rds"))
+m.fruit_rlga <- readRDS(here("mod_outputs", "D_RLGA_fruit.rds"))
+
+pred.fruit_rfi <- cpred(m.fruit_rfi, "Fruit") %>% mutate(w_percent1 =  Percentage * 0.282) %>% select(!Percentage)
+pred.fruit_opcr <- cpred(m.fruit_opcr, "Fruit") %>% mutate(w_percent2 = Percentage * 0.618) %>% select(!Percentage)
+pred.fruit_rlga <- cpred(m.fruit_rlga, "Fruit") %>% mutate(w_percent3 =  Percentage * 0.1) %>% select(!Percentage)
+
+
+pred.fruit <- right_join(pred.fruit_opcr, pred.fruit_rlga) %>% right_join(pred.fruit_rfi) %>% mutate(Percentage = w_percent1 + w_percent2 + w_percent3) %>% select(!c(w_percent1, w_percent2, w_percent3))
+rm(m.fruit_rlga, m.fruit_opcr, m.fruit_rfi, pred.fruit_opcr, pred.fruit_rlga, pred.fruit_rfi)
+```
+
+### Hard Invert
+
+```{r}
+m.hard_dne <- readRDS(here("mod_outputs", "D_dne_hard_invert.rds"))
+m.hard_all <-  readRDS(here("mod_outputs", "D_all_hard_invert.rds"))
+m.hard_rlga <- readRDS(here("mod_outputs", "D_RLGA_hard_invert.rds"))
+
+pred.hard_dne <- cpred(m.hard_dne, "Hard Invert") %>% mutate(w_percent1 =  Percentage * 0.283) %>% select(!Percentage)
+pred.hard_rlga <- cpred(m.hard_rlga, "Hard Invert") %>% mutate(w_percent2 =  Percentage * 0.168) %>% select(!Percentage)
+pred.hard_all <- cpred(m.hard_all, "Hard Invert") %>% mutate(w_percent3 = Percentage * 0.549) %>% select(!Percentage)
+
+pred.hard <- right_join(pred.hard_all, pred.hard_rlga) %>% right_join(pred.hard_dne) %>% mutate(Percentage = w_percent1 + w_percent2 + w_percent3) %>% select(!c(w_percent1, w_percent2, w_percent3))
+rm(m.hard_rlga, m.hard_all, m.hard_dne, pred.hard_all, pred.hard_rlga, pred.hard_dne)
+```
+
+### Herptile
+
+```{r}
+m.herp_rfi <- readRDS(here("mod_outputs", "D_RFI_herptile.rds"))
+m.herp_dne <- readRDS(here("mod_outputs", "D_dne_herptile.rds"))
+m.herp_opcr <- readRDS(here("mod_outputs", "D_opcr_herptile.rds"))
+m.herp_rlga <- readRDS(here("mod_outputs", "D_RLGA_herptile.rds"))
+m.herp_all <-  readRDS(here("mod_outputs", "D_all_herptile.rds"))
+
+pred.herp_rfi <- cpred(m.herp_rfi, "Herptile") %>% mutate(w_percent1 =  Percentage * 0.006) %>% select(!Percentage)
+pred.herp_dne <- cpred(m.herp_dne, "Herptile") %>% mutate(w_percent2 =  Percentage * 0.748) %>% select(!Percentage)
+pred.herp_opcr <- cpred(m.herp_opcr, "Herptile") %>% mutate(w_percent3 = Percentage * 0.152) %>% select(!Percentage)
+pred.herp_rlga <- cpred(m.herp_rlga, "Herptile") %>% mutate(w_percent4 =  Percentage * 0.088) %>% select(!Percentage)
+pred.herp_all <- cpred(m.herp_all, "Herptile") %>% mutate(w_percent5 = Percentage * 0.006) %>% select(!Percentage)
+
+pred.herp <- right_join(pred.herp_rfi, pred.herp_dne) %>% right_join(pred.herp_opcr) %>% right_join(pred.herp_rlga) %>% right_join(pred.herp_all) %>% mutate(Percentage = w_percent1 + w_percent2 + w_percent3 + w_percent4 + w_percent5) %>% select(!c(w_percent1, w_percent2, w_percent3, w_percent4, w_percent5))
+rm(m.herp_rlga, m.herp_all, m.herp_dne, m.herp_opcr, m.herp_rfi, pred.herp_all, pred.herp_rlga, pred.herp_dne, pred.herp_rfi, pred.herp_opcr)
+```
+
+### Large Mammal
+
+```{r}
+m.large_RLGA <-  readRDS(here("mod_outputs", "D_RLGA_large_mammal.rds"))
+m.large_all <- readRDS(here("mod_outputs", "D_all_large_mammal.rds"))
+
+pred.large_RLGA <- cpred(m.large_RLGA, "Large Mammal") %>% mutate(w_percent1 = Percentage * 0.65) %>% select(!Percentage)
+pred.large_all <- cpred(m.large_all, "Large Mammal") %>% mutate(w_percent2 =  Percentage * 0.35) %>% select(!Percentage)
+
+pred.large <- right_join(pred.large_all, pred.large_RLGA) %>% mutate(Percentage = w_percent1 + w_percent2 ) %>% select(!c(w_percent1, w_percent2))
+rm(m.large_RLGA, m.large_all, pred.large_RLGA, pred.large_all)
+```
+
+### Plant
+
+```{r}
+m.plant_opcr <-  readRDS(here("mod_outputs", "D_opcr_plant.rds"))
+m.plant_dne <- readRDS(here("mod_outputs", "D_dne_plant.rds"))
+
+pred.plant_opcr <- cpred(m.plant_opcr, "Plant") %>% mutate(w_percent1 = Percentage * 0.39) %>% select(!Percentage)
+pred.plant_dne <- cpred(m.plant_dne, "Plant") %>% mutate(w_percent2 =  Percentage * 0.61) %>% select(!Percentage)
+
+pred.plant <- right_join(pred.plant_opcr, pred.plant_dne) %>% mutate(Percentage = w_percent1 + w_percent2 ) %>% select(!c(w_percent1, w_percent2))
+rm(m.plant_dne, m.plant_opcr, pred.plant_opcr, pred.plant_dne)
+```
+
+### Root
+
+```{r}
+m.root_rlga <-  readRDS(here("mod_outputs", "D_rlga_root.rds"))
+
+pred.root <- cpred(m.root_rlga, "Root") 
+
+rm(m.root_rlga)
+```
+
+### Seed
+
+```{r}
+m.seed_rlga <-  readRDS(here("mod_outputs", "D_RLGA_seed.rds"))
+m.seed_dne <- readRDS(here("mod_outputs", "D_dne_seed.rds"))
+
+pred.seed_rlga <- cpred(m.seed_rlga, "Seed") %>% mutate(w_percent1 = Percentage * 0.185) %>% select(!Percentage)
+pred.seed_dne <- cpred(m.seed_dne, "Seed") %>% mutate(w_percent2 =  Percentage * 0.815) %>% select(!Percentage)
+
+pred.seed <- right_join(pred.seed_rlga, pred.seed_dne) %>% mutate(Percentage = w_percent1 + w_percent2 ) %>% select(!c(w_percent1, w_percent2))
+rm(m.seed_dne, m.seed_rlga, pred.seed_rlga, pred.seed_dne)
+```
+
+### Small Mammal
+
+```{r}
+m.small_rlga <-  readRDS(here("mod_outputs", "D_RLGA_small_mammal.rds"))
+m.small_dne <- readRDS(here("mod_outputs", "D_dne_small_mammal.rds"))
+
+pred.small_rlga <- cpred(m.small_rlga, "Small Mammal") %>% mutate(w_percent1 = Percentage * 0.789) %>% select(!Percentage)
+pred.small_dne <- cpred(m.small_dne, "Small Mammal") %>% mutate(w_percent2 =  Percentage * 0.211) %>% select(!Percentage)
+
+pred.small <- right_join(pred.small_rlga, pred.small_dne) %>% mutate(Percentage = w_percent1 + w_percent2 ) %>% select(!c(w_percent1, w_percent2))
+rm(m.small_dne, m.small_rlga, pred.small_rlga, pred.small_dne)
+```
+
+### Soft Invert
+
+```{r}
+m.soft_opcr <-  readRDS(here("mod_outputs", "D_opcr_soft_invert.rds"))
+m.soft_dne <- readRDS(here("mod_outputs", "D_dne_soft_invert.rds"))
+
+pred.soft_opcr <- cpred(m.soft_opcr, "Soft Invert") %>% mutate(w_percent1 = Percentage * 0.096) %>% select(!Percentage)
+pred.soft_dne <- cpred(m.soft_dne, "Soft Invert") %>% mutate(w_percent2 =  Percentage * 0.904) %>% select(!Percentage)
+
+pred.soft <- right_join(pred.soft_opcr, pred.soft_dne) %>% mutate(Percentage = w_percent1 + w_percent2 ) %>% select(!c(w_percent1, w_percent2))
+rm(m.soft_dne, m.soft_opcr, pred.soft_opcr, pred.soft_dne)
+```
+
+### Combine Into Weighted Predictions
+
+```{r}
+c_pred <- bind_rows(pred.bird, pred.carrion, pred.egg, pred.fish, pred.fruit, pred.hard, pred.herp,  pred.large, pred.plant, pred.root, pred.seed, pred.small, pred.soft) %>% write_csv("Data/Cryptic_Predictions_Weighted.csv")
+
+rm(pred.bird, pred.carrion, pred.egg, pred.fish, pred.fruit, pred.hard, pred.herp,  pred.large, pred.plant, pred.root, pred.seed, pred.small, pred.soft)
+```
+
+### Generate Weighted Averages
+
+```{r}
+c_pred %>% rename(pred = '.prediction') %>%  
+  mutate(pred = as.numeric(pred)) %>% 
+  pivot_wider(names_from = diet, values_from = Percentage) %>% 
+  mutate_at(vars(3:15), sc) %>% 
+  mutate_at(vars(3:15), ~ . * pred) %>% 
+  #select(!pred) #%>% 
+  group_by(Species) %>% 
+  summarise_at(vars(2:14), sum, na.rm=T ) %>% 
+  write_csv(here("Data", "Cryptic_Weighted_Predictions_New.csv"))
+```
+
+## Fig3 Horizontal Plots
+
+```{r}
+hp <- c_pred %>% 
+  mutate(Species = str_replace_all(Species, "_", " ")) %>% 
+  ggplot(aes(x = Species, y = Percentage)) +
+  geom_col(aes(fill = forcats::fct_rev(.prediction)), alpha = 0.9) + 
+  theme_classic() +
+scale_fill_viridis_d( direction = 1, option = "A", begin = 0.15 , end = 0.88, name = "Dietary\nImportance") +
+  #labs(x = "", title = {{title}}) +
+  guides(fill = guide_legend(reverse=F,
+                               title.theme = element_text(size = 8))) + 
+  theme(axis.text.x = element_text(angle = 50, hjust = 1),
+        axis.text.y = element_text(face = "italic"),
+        legend.position = c(0.95, 0.22),
+        strip.background = element_blank()) + 
+  coord_flip() + 
+  labs(x = "") + facet_wrap(~ diet, ncol = 7) 
+hp
+ggsave(here("Plots", "Cryptic_Preds_Fig3.png"), width = 10, height = 4)
+ggsave(here("Plots", "Cryptic_Preds_Fig3.pdf"), width = 10, height = 4)
+```
+
+# Extant Predictions
+
+```{r}
+expred <- function(mod, col){
+dat %>% add_predicted_draws({{mod}}, allow_new_levels = TRUE, sample_new_levels = "uncertainty") %>% 
+ group_by(Species,.prediction) %>% 
+ summarise(Percentage=n()) %>% 
+ group_by(Species) %>% 
+ mutate(Percentage=Percentage/sum(Percentage)*100) %>% 
+  ungroup() %>%  
+  mutate(diet = add_column({{col}}),
+         .prediction = as.factor(.prediction))
+}
+
+```
+
+### Bird
+```{r}
+m.bird_RLGA <-  readRDS(here("mod_outputs", "D_RLGA_bird.rds"))
+m.bird_RFI <- readRDS(here("mod_outputs", "D_RFI_bird.rds"))
+m.bird_all <- readRDS(here("mod_outputs", "D_all_bird.rds"))
+pred.bird_RFI <- expred(m.bird_RFI, "Bird") %>% mutate(w_percent1 = Percentage * 0.07) %>% select(!Percentage)
+pred.bird_RLGA <- expred(m.bird_RLGA, "Bird") %>% mutate(w_percent2 = Percentage * 0.592) %>% select(!Percentage)
+pred.bird_all <- expred(m.bird_all, "Bird") %>% mutate(w_percent3 =  Percentage * 0.338) %>% select(!Percentage)
+pred.bird <- right_join(pred.bird_all, pred.bird_RFI) %>% right_join(pred.bird_RLGA) %>% mutate(Percentage = w_percent1 + w_percent2 + w_percent3) %>% select(!c(w_percent1, w_percent2, w_percent3))
+rm(m.bird_RLGA, m.bird_RFI, m.bird_all, pred.bird_RLGA, pred.bird_RFI, pred.bird_all)
+```
+
+### Carrion
+```{r}
+m.carrion_opcr <-  readRDS(here("mod_outputs", "D_opcr_carrion.rds"))
+m.carrion_RLGA <- readRDS(here("mod_outputs", "D_RLGA_carrion.rds"))
+
+pred.carrion_OPCR <- expred(m.carrion_opcr, "Carrion") %>% mutate(w_percent1 = Percentage * 0.566) %>% select(!Percentage)
+pred.carrion_RLGA <- expred(m.carrion_RLGA, "Carrion") %>% mutate(w_percent2 =  Percentage * 0.434) %>% select(!Percentage)
+
+pred.carrion <- right_join(pred.carrion_OPCR, pred.carrion_RLGA) %>% mutate(Percentage = w_percent1 + w_percent2 ) %>% select(!c(w_percent1, w_percent2))
+rm(m.carrion_RLGA, m.carrion_opcr, pred.carrion_RLGA, pred.carrion_OPCR)
+```
+
+### Egg
+
+```{r}
+m.egg_rfi <-  readRDS(here("mod_outputs", "D_RFI_egg.rds"))
+m.egg_dne <- readRDS(here("mod_outputs", "D_dne_egg.rds"))
+
+pred.egg_rfi <- expred(m.egg_rfi, "Egg") %>% mutate(w_percent1 = Percentage * 0.566) %>% select(!Percentage)
+pred.egg_dne <- expred(m.egg_dne, "Egg") %>% mutate(w_percent2 =  Percentage * 0.434) %>% select(!Percentage)
+
+pred.egg <- right_join(pred.egg_rfi, pred.egg_dne) %>% mutate(Percentage = w_percent1 + w_percent2 ) %>% select(!c(w_percent1, w_percent2))
+rm(m.egg_dne, m.egg_rfi, pred.egg_rfi, pred.egg_dne)
+```
+
+### Fish
+
+```{r}
+m.fish_opcr <-  readRDS(here("mod_outputs", "D_opcr_fish.rds"))
+m.fish_rlga <- readRDS(here("mod_outputs", "D_RLGA_fish.rds"))
+
+pred.fish_opcr <- expred(m.fish_opcr, "Fish") %>% mutate(w_percent1 = Percentage * 0.268) %>% select(!Percentage)
+pred.fish_rlga <- expred(m.fish_rlga, "Fish") %>% mutate(w_percent2 =  Percentage * 0.732) %>% select(!Percentage)
+
+pred.fish <- right_join(pred.fish_opcr, pred.fish_rlga) %>% mutate(Percentage = w_percent1 + w_percent2 ) %>% select(!c(w_percent1, w_percent2))
+rm(m.fish_rlga, m.fish_opcr, pred.fish_opcr, pred.fish_rlga)
+```
+
+### Fruit
+
+```{r}
+m.fruit_rfi <- readRDS(here("mod_outputs", "D_RFI_fruit.rds"))
+m.fruit_opcr <-  readRDS(here("mod_outputs", "D_opcr_fruit.rds"))
+m.fruit_rlga <- readRDS(here("mod_outputs", "D_RLGA_fruit.rds"))
+
+pred.fruit_rfi <- expred(m.fruit_rfi, "Fruit") %>% mutate(w_percent1 =  Percentage * 0.282) %>% select(!Percentage)
+pred.fruit_opcr <- expred(m.fruit_opcr, "Fruit") %>% mutate(w_percent2 = Percentage * 0.618) %>% select(!Percentage)
+pred.fruit_rlga <- expred(m.fruit_rlga, "Fruit") %>% mutate(w_percent3 =  Percentage * 0.1) %>% select(!Percentage)
+
+
+pred.fruit <- right_join(pred.fruit_opcr, pred.fruit_rlga) %>% right_join(pred.fruit_rfi) %>% mutate(Percentage = w_percent1 + w_percent2 + w_percent3) %>% select(!c(w_percent1, w_percent2, w_percent3))
+rm(m.fruit_rlga, m.fruit_opcr, m.fruit_rfi, pred.fruit_opcr, pred.fruit_rlga, pred.fruit_rfi)
+```
+
+### Hard Invert
+
+```{r}
+m.hard_dne <- readRDS(here("mod_outputs", "D_dne_hard_invert.rds"))
+m.hard_all <-  readRDS(here("mod_outputs", "D_all_hard_invert.rds"))
+m.hard_rlga <- readRDS(here("mod_outputs", "D_RLGA_hard_invert.rds"))
+
+pred.hard_dne <- expred(m.hard_dne, "Hard Invert") %>% mutate(w_percent1 =  Percentage * 0.283) %>% select(!Percentage)
+pred.hard_rlga <- expred(m.hard_rlga, "Hard Invert") %>% mutate(w_percent2 =  Percentage * 0.168) %>% select(!Percentage)
+pred.hard_all <- expred(m.hard_all, "Hard Invert") %>% mutate(w_percent3 = Percentage * 0.549) %>% select(!Percentage)
+
+pred.hard <- right_join(pred.hard_all, pred.hard_rlga) %>% right_join(pred.hard_dne) %>% mutate(Percentage = w_percent1 + w_percent2 + w_percent3) %>% select(!c(w_percent1, w_percent2, w_percent3))
+rm(m.hard_rlga, m.hard_all, m.hard_dne, pred.hard_all, pred.hard_rlga, pred.hard_dne)
+```
+
+### Herptile
+
+```{r}
+m.herp_rfi <- readRDS(here("mod_outputs", "D_RFI_herptile.rds"))
+m.herp_dne <- readRDS(here("mod_outputs", "D_dne_herptile.rds"))
+m.herp_opcr <- readRDS(here("mod_outputs", "D_opcr_herptile.rds"))
+m.herp_rlga <- readRDS(here("mod_outputs", "D_RLGA_herptile.rds"))
+m.herp_all <-  readRDS(here("mod_outputs", "D_all_herptile.rds"))
+
+pred.herp_rfi <- expred(m.herp_rfi, "Herptile") %>% mutate(w_percent1 =  Percentage * 0.006) %>% select(!Percentage)
+pred.herp_dne <- expred(m.herp_dne, "Herptile") %>% mutate(w_percent2 =  Percentage * 0.748) %>% select(!Percentage)
+pred.herp_opcr <- expred(m.herp_opcr, "Herptile") %>% mutate(w_percent3 = Percentage * 0.152) %>% select(!Percentage)
+pred.herp_rlga <- expred(m.herp_rlga, "Herptile") %>% mutate(w_percent4 =  Percentage * 0.088) %>% select(!Percentage)
+pred.herp_all <- expred(m.herp_all, "Herptile") %>% mutate(w_percent5 = Percentage * 0.006) %>% select(!Percentage)
+
+pred.herp <- right_join(pred.herp_rfi, pred.herp_dne) %>% right_join(pred.herp_opcr) %>% right_join(pred.herp_rlga) %>% right_join(pred.herp_all) %>% mutate(Percentage = w_percent1 + w_percent2 + w_percent3 + w_percent4 + w_percent5) %>% select(!c(w_percent1, w_percent2, w_percent3, w_percent4, w_percent5))
+rm(m.herp_rlga, m.herp_all, m.herp_dne, m.herp_opcr, m.herp_rfi, pred.herp_all, pred.herp_rlga, pred.herp_dne, pred.herp_rfi, pred.herp_opcr)
+```
+
+### Large Mammal
+
+```{r}
+m.large_RLGA <-  readRDS(here("mod_outputs", "D_RLGA_large_mammal.rds"))
+m.large_all <- readRDS(here("mod_outputs", "D_all_large_mammal.rds"))
+
+pred.large_RLGA <- expred(m.large_RLGA, "Large Mammal") %>% mutate(w_percent1 = Percentage * 0.65) %>% select(!Percentage)
+pred.large_all <- expred(m.large_all, "Large Mammal") %>% mutate(w_percent2 =  Percentage * 0.35) %>% select(!Percentage)
+
+pred.large <- right_join(pred.large_all, pred.large_RLGA) %>% mutate(Percentage = w_percent1 + w_percent2 ) %>% select(!c(w_percent1, w_percent2))
+rm(m.large_RLGA, m.large_all, pred.large_RLGA, pred.large_all)
+```
+
+### Plant
+
+```{r}
+m.plant_opcr <-  readRDS(here("mod_outputs", "D_opcr_plant.rds"))
+m.plant_dne <- readRDS(here("mod_outputs", "D_dne_plant.rds"))
+
+pred.plant_opcr <- expred(m.plant_opcr, "Plant") %>% mutate(w_percent1 = Percentage * 0.39) %>% select(!Percentage)
+pred.plant_dne <- expred(m.plant_dne, "Plant") %>% mutate(w_percent2 =  Percentage * 0.61) %>% select(!Percentage)
+
+pred.plant <- right_join(pred.plant_opcr, pred.plant_dne) %>% mutate(Percentage = w_percent1 + w_percent2 ) %>% select(!c(w_percent1, w_percent2))
+rm(m.plant_dne, m.plant_opcr, pred.plant_opcr, pred.plant_dne)
+```
+
+### Root
+
+```{r}
+m.root_rlga <-  readRDS(here("mod_outputs", "D_rlga_root.rds"))
+
+pred.root <- expred(m.root_rlga, "Root") 
+
+rm(m.root_rlga)
+```
+
+### Seed
+
+```{r}
+m.seed_rlga <-  readRDS(here("mod_outputs", "D_RLGA_seed.rds"))
+m.seed_dne <- readRDS(here("mod_outputs", "D_dne_seed.rds"))
+
+pred.seed_rlga <- expred(m.seed_rlga, "Seed") %>% mutate(w_percent1 = Percentage * 0.185) %>% select(!Percentage)
+pred.seed_dne <- expred(m.seed_dne, "Seed") %>% mutate(w_percent2 =  Percentage * 0.815) %>% select(!Percentage)
+
+pred.seed <- right_join(pred.seed_rlga, pred.seed_dne) %>% mutate(Percentage = w_percent1 + w_percent2 ) %>% select(!c(w_percent1, w_percent2))
+rm(m.seed_dne, m.seed_rlga, pred.seed_rlga, pred.seed_dne)
+```
+
+### Small Mammal
+
+```{r}
+m.small_rlga <-  readRDS(here("mod_outputs", "D_RLGA_small_mammal.rds"))
+m.small_dne <- readRDS(here("mod_outputs", "D_dne_small_mammal.rds"))
+
+pred.small_rlga <- expred(m.small_rlga, "Small Mammal") %>% mutate(w_percent1 = Percentage * 0.789) %>% select(!Percentage)
+pred.small_dne <- expred(m.small_dne, "Small Mammal") %>% mutate(w_percent2 =  Percentage * 0.211) %>% select(!Percentage)
+
+pred.small <- right_join(pred.small_rlga, pred.small_dne) %>% mutate(Percentage = w_percent1 + w_percent2 ) %>% select(!c(w_percent1, w_percent2))
+rm(m.small_dne, m.small_rlga, pred.small_rlga, pred.small_dne)
+```
+
+### Soft Invert
+
+```{r}
+m.soft_opcr <-  readRDS(here("mod_outputs", "D_opcr_soft_invert.rds"))
+m.soft_dne <- readRDS(here("mod_outputs", "D_dne_soft_invert.rds"))
+
+pred.soft_opcr <- expred(m.soft_opcr, "Soft Invert") %>% mutate(w_percent1 = Percentage * 0.096) %>% select(!Percentage)
+pred.soft_dne <- expred(m.soft_dne, "Soft Invert") %>% mutate(w_percent2 =  Percentage * 0.904) %>% select(!Percentage)
+
+pred.soft <- right_join(pred.soft_opcr, pred.soft_dne) %>% mutate(Percentage = w_percent1 + w_percent2 ) %>% select(!c(w_percent1, w_percent2))
+rm(m.soft_dne, m.soft_opcr, pred.soft_opcr, pred.soft_dne)
+```
+
+### Combine Into Weighted Predictions
+
+```{r}
+e_pred <- bind_rows(pred.bird, pred.carrion, pred.egg, pred.fish, pred.fruit, pred.hard, pred.herp,  pred.large, pred.plant, pred.root, pred.seed, pred.small, pred.soft) %>% write_csv(here("Data", "Extant_Predictions_Weighted.csv"))
+
+rm(pred.bird, pred.carrion, pred.egg, pred.fish, pred.fruit, pred.hard, pred.herp,  pred.large, pred.plant, pred.root, pred.seed, pred.small, pred.soft)
+```
+
+### Generate Weighted Averages
+
+```{r}
+tt <- e_pred %>% rename(pred = '.prediction') %>%  
+  mutate(pred = as.numeric(pred)) %>% 
+  pivot_wider(names_from = diet, values_from = Percentage) %>% 
+  mutate_at(vars(3:15), sc) %>% 
+  mutate_at(vars(3:15), ~ . * pred) %>% 
+  #select(!pred) #%>% 
+  group_by(Species) %>% 
+  summarise_at(vars(2:14), sum, na.rm=T ) %>% 
+  write_csv(here("Data", "Extant_Weighted_Predictions_New.csv"))
+```
