@@ -26,7 +26,7 @@ Here is what I've learned:
 
 #### Files and Functions
 ```{r}
-pacman::p_load(tidyverse, rmarkdown, brms, cmdstanr, phytools, geiger, caret)
+pacman::p_load(tidyverse, rmarkdown, brms, cmdstanr, phytools, geiger, caret, here)
 
 # Dirichlet Script
 source("Dirichlet_Prior.R")
@@ -39,7 +39,7 @@ options(brms.backend = "cmdstanr")
 #### Read and Wrangle Data
 ```{r}
 # Read Tree
-phylo <- ape::read.nexus("Carnivora_MCC_2.tre")
+phylo <- ape::read.nexus("Data/Carnivora_MCC_2.tre")
 
 # Read fossil data and calculate body size estimate ^1/3
 fos_dat_1 <- read_csv("fossil_carnivoran_data.csv") %>% 
@@ -73,18 +73,18 @@ dat1 <- dat %>% drop_na(bird)
 #Run Models 
 These scripts run the models, generate the rds files, and generate the `Test_weights_all.csv` file. 
 ```{r include=FALSE}
-render("Mod_Test_Bird.Rmd") 
-render("Mod_Test_Carrion.Rmd")
-render("Mod_Test_Egg.Rmd")
-render("Mod_Test_Fish.Rmd")
-render("Mod_Test_Fruit.Rmd")
-render("Mod_Test_Hard_Invert.Rmd")
-render("Mod_Test_Herptile.Rmd")
-render("Mod_Test_Large_Mammal.Rmd")
-render("Mod_Test_Plant.Rmd")
-render("Mod_Test_Root.Rmd")
-render("Mod_Test_Seed.Rmd")
-render("Mod_Test_Small_Mammal.Rmd")
-render("Mod_Test_Soft_Invert.Rmd")
+render("Mod_Bird.Rmd") 
+render("Mod_Carrion.Rmd")
+render("Mod_Egg.Rmd")
+render("Mod_Fish.Rmd")
+render("Mod_Fruit.Rmd")
+render("Mod_Hard_Invert.Rmd")
+render("Mod_Herptile.Rmd")
+render("Mod_Large_Mammal.Rmd")
+render("Mod_Plant.Rmd")
+render("Mod_Root.Rmd")
+render("Mod_Seed.Rmd")
+render("Mod_Small_Mammal.Rmd")
+render("Mod_Soft_Invert.Rmd")
 ```
 
