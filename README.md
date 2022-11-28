@@ -14,7 +14,7 @@ GitHub repo for the manuscript. All scripts necessary to perform the analyses an
 
 ## Layout:
 
-- The contents of this repo is split up into 3 main directories:`Code`, `Data`, and `Plots`. We use the package [here](https://here.r-lib.org/) to deal with the repo structure. Currently anyone can download the repo **as is** and run the code without dealing with paths (if all packages are installed).
+- The contents of this repo is split up into 3 main directories:`Code`, `Data`, and `Plots`. We use the package [here](https://here.r-lib.org/) to deal with the repo structure. Currently anyone can download the repo ***as is*** and run the code without dealing with paths (if all packages are installed).
 
 ## **`Code`** 
 
@@ -31,9 +31,18 @@ GitHub repo for the manuscript. All scripts necessary to perform the analyses an
 
 - We performed Posterior Predictive Checks on every model that was assigned a loo model weight > 0. The model outputs are stored in the `Code/Models/mod_outputs` directory. The `posterior_pred_plots.Rmd` script calls these and plots them in the same way as the prior predictive plots. **Figure_S3_Posterior_Pred_Checks.pdf** in the `Plots` dir shows the results, which look quite good (mean is mostly centered on empirical values with little uncertainty on most food items). 
 
-- We checked the accuracy of our model predictions compared to the empirical ranks for each species. This script is in `Code/Accuracy_Predictions.Rmd` and the results are reported in Table 4 of the text. 
+- We checked the accuracy of our model predictions compared to the empirical ranks for each species. This script is in `Code/Accuracy_Predictions.Rmd` and the results are reported in Table 4 of the text. We report these results as percentages of estimates that are the exact rank, and within 1 rank, which we consider a good estimate. We estimate 1000 draws from the posterior of each model, then model average over them using the LOO weights, then estimate the accuracy of the predictions. `Data/Prediction_Table.csv` gives the mean predictions from the 1000 samples, and `Data/Accuracy_Table.csv` provides the values in table 4. The `Code/Accuracy_Predictions.Rmd` script contains a lot of custom functions, parallel computing, and is slow. Reach out with questions :)
+
+- Our third means of checking the predictive power of our models is by checking that the LOO cross validation provides acceptable results. There is a lot of information on CV and LOO CV out there (try starting with this [Excellent FAQ Page](https://mc-stan.org/loo/articles/online-only/faq.html)!) In addition to model comparison, which we did using model weights generated from LOO scores, we are interested in the stability of our estimates. If a species is removed from the analysis, does that alter the prediction? The Pareto-$K$ diagnostic score reports just that. If, when the sample is removed from the analysis, the posterior changes, then there is a high Pareto-$K$, and a small Pareto-$K$ means that the estimate is stable without the particular sample. We gathered these scores in the `Code/Accuracy_Predictions.Rmd` script described above, and they are reported along side the additional predictions in the `Data/Prediction_Table.csv` file. 
 
 ############
+
+Weighted Predictions New runs 
+
+
+####
+OLD Past THis
+####
 - The `Weighted_Predictions_Fig3_Fig4.Rmd` script generates weighted posterior predictions and weighted averages for the extant-with-data, cryptic and fossil taxa, and produces Figures 3 & 4. 
 
 - The `Diet_Space_Ordination_and_Clustering.Rmd` script contains the polychoric PCA analysis that generates a multivariate diet space, the clustering analysis that generates Figure 1B, and the diet space projection of cryptic and fossil taxa used to make Table 4.

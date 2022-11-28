@@ -140,7 +140,7 @@ pred_db %>%
              within_1 = (n2/89) * 100) %>% 
   mutate_if(is.numeric, round, digits = 1) %>% 
   select(!c(n2, n1)) %>% 
-  arrange(desc(perfect_match)) %>% write_csv(file = here("Data", "Accuracy_Table_Cont.csv")) #%>% 
+  arrange(desc(perfect_match)) %>% write_csv(file = here("Data", "Accuracy_Table.csv")) #%>% 
 #laTex table for manuscript
  # arrange(item) %>% 
  # kbl(format = "latex") %>% 
