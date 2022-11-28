@@ -1,25 +1,12 @@
 ---
 title: "Run All Models"
-output: html_notebook
+#output: html_notebook
 ---
 
 #Run all models in one script
 This script reads in the scripts and runs the models one by one, so we don't have to open each model script individually. This way the data only has to be loaded once, and wrangled once. 
 
-26 September
-I have these all set up.
-Now I need to run this script and collect all the models. 
-Then run the accuracy funtions over them, add in the weights, then estimate the weighted predictions, then the accuracy. Whew! 
-
-
-13 Sept 2022
-Adding a confusion matrix to the scripts.
-Here is what I've learned: 
-- The intercept prior needs to be bigger, making sure to cover the empirical data in a `pp_check` command. This NEEDS TO BE DONE FOR EACH FOOD ITEM!
-- The effect sizes can and should remain normal(0,1)
-- the priors should work across all models for each dietary item. 
-- The larger priors on intercepts seem to always have better accuracy than the Dirichlet priors. 
-- Extremely vague priors means perfect accuracy in confusion matrix, but horrible overfiting, ie terrible pareto-k values. There is a push and pull here. Minimize overfitting but maximize confusion matrix accuracy.  
+The outputs are stored in the `~Code/Models/mod_outputs` file. Note: Just the models with the highest looic weights are saved. If weight = 0, then the model is not saved. We did this using the `brms::model_weights(., weights = "stacking")` command. 
 
 
 #Setup
@@ -27,6 +14,8 @@ Here is what I've learned:
 #### Files and Functions
 ```{r}
 pacman::p_load(tidyverse, rmarkdown, brms, cmdstanr, phytools, geiger, caret, here)
+
+here::i_am('Code/Mod_All.Rmd')
 
 # Dirichlet Script
 source("Dirichlet_Prior.R")
@@ -39,13 +28,13 @@ options(brms.backend = "cmdstanr")
 #### Read and Wrangle Data
 ```{r}
 # Read Tree
-phylo <- ape::read.nexus("Data/Carnivora_MCC_2.tre")
+phylo <- ape::read.nexus(here("Data", "Carnivora_MCC_2.tre"))
 
 # Read fossil data and calculate body size estimate ^1/3
-fos_dat_1 <- read_csv("fossil_carnivoran_data.csv") %>% 
+fos_dat_1 <- read_csv(here("Data", "fossil_carnivoran_data.csv")) %>% 
   mutate(log_cuberoot_mass = log(mass_kg^(1/3)))
 # Read extant data
-dat <- read.delim("Master_Data.txt") %>% 
+dat <- read.delim(here("Data", "Master_Data.txt")) %>% 
   mutate(mass_kg = exp(log_cuberoot_mass)^3,
          phylo = Species) %>% 
   # drop taxa with missing m2 data
@@ -73,18 +62,18 @@ dat1 <- dat %>% drop_na(bird)
 #Run Models 
 These scripts run the models, generate the rds files, and generate the `Test_weights_all.csv` file. 
 ```{r include=FALSE}
-render("Mod_Bird.Rmd") 
-render("Mod_Carrion.Rmd")
-render("Mod_Egg.Rmd")
-render("Mod_Fish.Rmd")
-render("Mod_Fruit.Rmd")
-render("Mod_Hard_Invert.Rmd")
-render("Mod_Herptile.Rmd")
-render("Mod_Large_Mammal.Rmd")
-render("Mod_Plant.Rmd")
-render("Mod_Root.Rmd")
-render("Mod_Seed.Rmd")
-render("Mod_Small_Mammal.Rmd")
-render("Mod_Soft_Invert.Rmd")
+render(here("Code/Models", "Mod_Bird.Rmd"))
+render(here("Code/Models", "Mod_Carrion.Rmd"))
+render(here("Code/Models", "Mod_Egg.Rmd"))
+render(here("Code/Models", "Mod_Fish.Rmd"))
+render(here("Code/Models", "Mod_Fruit.Rmd"))
+render(here("Code/Models", "Mod_Hard_Invert.Rmd"))
+render(here("Code/Models", "Mod_Herptile.Rmd"))
+render(here("Code/Models", "Mod_Large_Mammal.Rmd"))
+render(here("Code/Models", "Mod_Plant.Rmd"))
+render(here("Code/Models", "Mod_Root.Rmd"))
+render(here("Code/Models", "Mod_Seed.Rmd"))
+render(here("Code/Models", "Mod_Small_Mammal.Rmd"))
+render(here("Code/Models", "Mod_Soft_Invert.Rmd"))
 ```
 

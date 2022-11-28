@@ -1,0 +1,76 @@
+---
+title: "Run All Prior Pred Checks"
+#output: html_notebook
+---
+
+# Run all Prior Predictive Checks in one script.
+
+This script runs through the 13 Prior Predictive Check scripts. Each of the 13 tries out 8 different prior distributions on the food item distributions. The best $Normal$, and $Student-*T*$ distributions are selected manually based on the mean and distribution of each bar plot for each food item rank. See individual scripts for more details. 
+
+The outputs are stored in `Code/Prior_Pred_Checks/prior_pred_outputs`. They are used to make figure S2. The code for figure S2 is in the `prior_pred_plots.Rmd` script. 
+
+#### Files and Functions
+```{r}
+pacman::p_load(tidyverse, rmarkdown, brms, cmdstanr, phytools, geiger, here)
+
+here::i_am('Code/Prior_Pred_Checks_All.Rmd')
+
+# Dirichlet Script
+source("Dirichlet_Prior.R")
+#Functions
+scale2 <- function(x, na.rm = TRUE) (x - mean(x, na.rm = na.rm)) / sd(x, na.rm)
+add1 <- function(x, na.rm = TRUE) (x + 1)
+options(brms.backend = "cmdstanr")
+```
+
+#### Read and Wrangle Data
+```{r}
+# Read Tree
+phylo <- ape::read.nexus(here("Data", "Carnivora_MCC_2.tre"))
+
+# Read fossil data and calculate body size estimate ^1/3
+fos_dat_1 <- read_csv(here("Data", "fossil_carnivoran_data.csv")) %>% 
+  mutate(log_cuberoot_mass = log(mass_kg^(1/3)))
+# Read extant data
+dat <- read.delim(here("Data", "Master_Data.txt")) %>% 
+  mutate(mass_kg = exp(log_cuberoot_mass)^3,
+         phylo = Species) %>% 
+  # drop taxa with missing m2 data
+  drop_na(m2_dne) %>% 
+  #combine extant and fossil dat for tip dropping and standardizing
+  bind_rows(fos_dat_1) %>% 
+  # Standardize all data together
+  mutate_at(vars(4:11), scale2) %>% 
+  mutate_at(vars(12:24), add1) %>% 
+  mutate_at(vars(12:24), as.ordered) 
+
+
+row.names(dat)<-dat$Species
+# Remove extra tips (but keep fossil tips!)
+carn_treedata<-treedata(phylo, dat, warnings = FALSE)
+phylo<-carn_treedata$phy
+A <- ape::vcv.phylo(phylo, corr = TRUE)
+
+
+#Separate the model inputs
+dat1 <- dat %>% drop_na(bird)
+
+```
+
+#Run Models 
+These scripts run the models, generate the rds files, and generate the `Test_weights_all.csv` file. 
+```{r include=FALSE}
+render(here("Code/Prior_Pred_Checks", "Bird_Prior_Check.Rmd"))
+render(here("Code/Prior_Pred_Checks", "Carrion_Prior_Check.Rmd"))
+render(here("Code/Prior_Pred_Checks", "Egg_Prior_Check.Rmd"))
+render(here("Code/Prior_Pred_Checks", "Fish_Prior_Check.Rmd"))
+render(here("Code/Prior_Pred_Checks", "Fruit_Prior_Check.Rmd"))
+render(here("Code/Prior_Pred_Checks", "Hard_Invert_Prior_Check.Rmd"))
+render(here("Code/Prior_Pred_Checks", "Herptile_Prior_Check.Rmd"))
+render(here("Code/Prior_Pred_Checks", "Large_Mammal_Prior_Check.Rmd"))
+render(here("Code/Prior_Pred_Checks", "Plant_Prior_Check.Rmd"))
+render(here("Code/Prior_Pred_Checks", "Root_Prior_Check.Rmd"))
+render(here("Code/Prior_Pred_Checks", "Seed_Prior_Check.Rmd"))
+render(here("Code/Prior_Pred_Checks", "Small_Mammal_Prior_Check.Rmd"))
+render(here("Code/Prior_Pred_Checks", "Soft_Invert_Prior_Check.Rmd"))
+```

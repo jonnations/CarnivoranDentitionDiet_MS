@@ -1,109 +1,9 @@
 ---
 title: "R Notebook"
-output: html_notebook
+#output: html_notebook
 ---
 # root
- Similar to root and some others, there are almost all 1's for root, so the model just predicts that they are all 1's. 
-Setup
-```{r}
-pacman::p_load(tidyverse, rmarkdown, brms, cmdstanr, phytools, geiger)
-source("Dirichlet_Prior.R")
-scale2 <- function(x, na.rm = TRUE) (x - mean(x, na.rm = na.rm)) / sd(x, na.rm)
-add1 <- function(x, na.rm = TRUE) (x + 1)
-options(brms.backend = "cmdstanr")
-phylo <- ape::read.nexus("Carnivora_MCC_2.tre")
-fos_dat_1 <- read_csv("fossil_carnivoran_data.csv") %>% 
-  mutate(log_cuberoot_mass = log(mass_kg^(1/3)))
-dat <- read.delim("Master_Data.txt") %>% 
-  mutate(mass_kg = exp(log_cuberoot_mass)^3,
-         phylo = Species) %>% 
-  drop_na(m2_dne) %>% 
-  bind_rows(fos_dat_1) %>% 
-  mutate_at(vars(4:11), scale2) %>% 
-  mutate_at(vars(12:24), add1) %>% 
-  mutate_at(vars(12:24), as.ordered) 
-row.names(dat)<-dat$Species
-carn_treedata<-treedata(phylo, dat, warnings = FALSE)
-phylo<-carn_treedata$phy
-A <- ape::vcv.phylo(phylo, corr = TRUE)
-dat1 <- dat %>% drop_na(root)
-```
 
-
-# Priors
-
-#### Plot
-```{r}
-dat1 %>% ggplot(aes(x =root)) + geom_bar()
-```
-
-#### Set
-```{r}
-p1 <- c(set_prior("normal(1,1)", class = "Intercept"))
-
-p2 <- c(set_prior("normal(2,1)", class = "Intercept"))
-
-p3 <- c(set_prior("normal(0,3)", class = "Intercept"))
-
-p4 <- c(set_prior("normal(1,3)", class = "Intercept"))
-
-p5 <- c(set_prior("student_t(3,1,2)", class = "Intercept"))
-
-p6 <- c(set_prior("student_t(3,1,3)", class = "Intercept"))
-
-p7 <- c(set_prior("student_t(3,2,3)", class = "Intercept"))
-
-p8 <- c(set_prior("student_t(3,2,1)", class = "Intercept"))
-
-p9 = prior = c(set_prior("induced_dirichlet(rep_vector(1, nthres+1),0", class = "Intercept"))
-```
-
-### Prior Models
-```{r, include=FALSE}
-m1 <-  brm(root ~ 1, 
-           data = dat1,family = cumulative(), prior = p1,
-           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
-m2 <-  brm(root ~ 1, data = dat1,family = cumulative(), prior = p2,
-           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
-m3 <-  brm(root ~ 1, 
-           data = dat1,family = cumulative(), prior = p3,
-           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
-m4 <-  brm(root ~ 1, 
-           data = dat1, family = cumulative(), prior = p4,
-           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
-m5 <-  brm(root ~ 1, 
-           data = dat1, family = cumulative(), prior = p5,
-           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
-m6 <-  brm(root ~ 1, 
-           data = dat1, family = cumulative(), prior = p6,
-           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
-m7 <-  brm(root ~ 1, 
-           data = dat1, family = cumulative(), prior = p7,
-           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
-m8 <-  brm(root ~ 1, 
-           data = dat1, family = cumulative(), prior = p8,
-           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
-m9 <-  brm(root ~ 1, 
-           data = dat1, family = cumulative(), prior = p9,
-           refresh = 0, chains = 4,  cores = 4, stanvars = dirichlet_prior_stanvar, sample_prior = 'only')
-```
-
-
-#### Prior Checks  
-```{r}
-pp_check(m1, type = 'bars', ndraws = 1000) + ylim(0, 90)
-pp_check(m2, type = 'bars', ndraws = 1000) + ylim(0, 90) 
-pp_check(m3, type = 'bars', ndraws = 1000) + ylim(0, 90)
-pp_check(m4, type = 'bars', ndraws = 1000) + ylim(0, 90)
-pp_check(m5, type = 'bars', ndraws = 1000) + ylim(0, 90)
-pp_check(m6, type = 'bars', ndraws = 1000) + ylim(0, 90)
-pp_check(m7, type = 'bars', ndraws = 1000) + ylim(0, 90)
-pp_check(m8, type = 'bars', ndraws = 1000) + ylim(0, 90) 
-pp_check(m9, type = 'bars', ndraws = 1000) + ylim(0, 90) + ggtitle('dirichlet')
-```
-
-## N(2,1)
-## S(3,2,1)
 
 #RLGA
 
@@ -497,14 +397,14 @@ mw_root
 ```
 
 ```{r}
-weights_all <- read_csv(file = "Test_weights_all.csv") %>% 
+weights_all <- read_csv(file = here("Data", "Test_weights_all.csv")) %>% 
   bind_rows(mw_root) %>% 
-  write_csv(file = "Test_weights_all.csv")
+  write_csv(file = here("Data", "Test_weights_all.csv"))
 ```
 
 #### Write Models
 
 ```{r}
-mn_RLGA %>% write_rds("new_mod_outputs/root_mn_RLGA.Rds")
+mn_RLGA %>% write_rds(file = here("Code/Models/mod_outputs", "root_mn_RLGA.Rds"))
 ```
 

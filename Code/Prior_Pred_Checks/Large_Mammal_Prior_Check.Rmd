@@ -1,0 +1,86 @@
+---
+title: "large_mammal Prior Predictive Check"
+#output: html_notebook
+---
+
+# Priors
+
+#### Plot
+
+```{r}
+dat1 %>% ggplot(aes(x =large_mammal)) + geom_bar()
+```
+
+#### Set
+```{r}
+p1 <- c(set_prior("normal(1,1)", class = "Intercept"))
+
+p2 <- c(set_prior("normal(1,2)", class = "Intercept"))
+
+p3 <- c(set_prior("normal(0,3)", class = "Intercept"))
+
+p4 <- c(set_prior("normal(1,3)", class = "Intercept"))
+
+p5 <- c(set_prior("student_t(3,1,2)", class = "Intercept"))
+
+p6 <- c(set_prior("student_t(3,1,3)", class = "Intercept"))
+
+p7 <- c(set_prior("student_t(3,2,3)", class = "Intercept"))
+
+p8 <- c(set_prior("student_t(3,1,1)", class = "Intercept"))
+
+p9 = prior = c(set_prior("induced_dirichlet(rep_vector(1, nthres+1),0", class = "Intercept"))
+```
+
+### Prior Models
+```{r, include=FALSE}
+m1 <-  brm(large_mammal ~ 1, 
+           data = dat1,family = cumulative(), prior = p1,
+           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
+m2 <-  brm(large_mammal ~ 1, data = dat1,family = cumulative(), prior = p2,
+           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
+m3 <-  brm(large_mammal ~ 1, 
+           data = dat1,family = cumulative(), prior = p3,
+           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
+m4 <-  brm(large_mammal ~ 1, 
+           data = dat1, family = cumulative(), prior = p4,
+           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
+m5 <-  brm(large_mammal ~ 1, 
+           data = dat1, family = cumulative(), prior = p5,
+           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
+m6 <-  brm(large_mammal ~ 1, 
+           data = dat1, family = cumulative(), prior = p6,
+           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
+m7 <-  brm(large_mammal ~ 1, 
+           data = dat1, family = cumulative(), prior = p7,
+           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
+m8 <-  brm(large_mammal ~ 1, 
+           data = dat1, family = cumulative(), prior = p8,
+           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
+m9 <-  brm(large_mammal ~ 1, 
+           data = dat1, family = cumulative(), prior = p9,
+           refresh = 0, chains = 4,  cores = 4, stanvars = dirichlet_prior_stanvar, sample_prior = 'only')
+```
+
+#### Prior Checks  
+```{r}
+pp_check(m1, type = 'bars', ndraws = 1000) + ylim(0, 90)
+pp_check(m2, type = 'bars', ndraws = 1000) + ylim(0, 90) 
+pp_check(m3, type = 'bars', ndraws = 1000) + ylim(0, 90)
+pp_check(m4, type = 'bars', ndraws = 1000) + ylim(0, 90)
+pp_check(m5, type = 'bars', ndraws = 1000) + ylim(0, 90)
+pp_check(m6, type = 'bars', ndraws = 1000) + ylim(0, 90)
+pp_check(m7, type = 'bars', ndraws = 1000) + ylim(0, 90)
+pp_check(m8, type = 'bars', ndraws = 1000) + ylim(0, 90) 
+pp_check(m9, type = 'bars', ndraws = 1000) + ylim(0, 90) + ggtitle('dirichlet')
+```
+
+## Normal(1,1), and Student(3,1,1)
+Save these models
+```{r}
+m1 %>% write_rds(file = here("Code/Prior_Pred_Checks/prior_pred_outputs", "large_mammal_N11.Rds"))
+m8 %>% write_rds(file = here("Code/Prior_Pred_Checks/prior_pred_outputs", "large_mammal_S311.Rds"))
+m9 %>% write_rds(file = here("Code/Prior_Pred_Checks/prior_pred_outputs", "large_mammal_D.Rds"))
+```
+
+

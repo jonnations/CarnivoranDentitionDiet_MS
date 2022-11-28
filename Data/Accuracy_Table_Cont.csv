@@ -1,0 +1,14 @@
+item,perfect_match,within_1
+root,89.9,96.6
+seed,79.8,93.3
+large_mammal,75.3,93.3
+fish,71.9,96.6
+plant,70.8,98.9
+fruit,67.4,100
+soft_invert,65.2,87.6
+hard_invert,64,96.6
+small_mammal,60.7,93.3
+egg,59.6,85.4
+bird,56.2,100
+carrion,52.8,94.4
+herptile,52.8,89.9

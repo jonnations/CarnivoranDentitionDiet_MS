@@ -1,0 +1,62 @@
+---
+title: "R Notebook"
+#output: html_notebook
+---
+
+# Posterior Predictive Plots
+
+#### Shown in Figure S3
+
+```{r}
+pacman::p_load(tidyverse, brms, patchwork, here)
+```
+
+
+```{r}
+p1  <- read_rds(here("Code/Models/mod_outputs", "bird_md_ALL.Rds"))           %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Bird All")
+p2  <- read_rds(here("Code/Models/mod_outputs", "bird_md_RLGA.Rds"))          %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Bird RLGA")
+p3  <- read_rds(here("Code/Models/mod_outputs", "bird_mn_RFI.Rds"))           %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Bird RFI")
+p4  <- read_rds(here("Code/Models/mod_outputs", "carrion_md_OPCR.Rds"))       %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Carrion OPCR")
+p5  <- read_rds(here("Code/Models/mod_outputs", "carrion_md_RLGA.Rds"))       %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Carrion RLGA")
+p6  <- read_rds(here("Code/Models/mod_outputs", "carrion_ms_DNE.Rds"))        %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Carrion DNE")
+p7  <- read_rds(here("Code/Models/mod_outputs", "egg_md_RFI.Rds"))            %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Egg RFI")
+p8  <- read_rds(here("Code/Models/mod_outputs", "egg_mn_DNE.Rds"))            %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Egg DNE")
+p9  <- read_rds(here("Code/Models/mod_outputs", "egg_mn_RLGA.Rds"))           %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Egg RLGA")
+p10 <- read_rds(here("Code/Models/mod_outputs", "fish_ms_OPCR.Rds"))          %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Fish OPCR")
+p11 <- read_rds(here("Code/Models/mod_outputs", "fish_ms_RLGA.Rds"))          %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Fish RLGA")
+p12 <- read_rds(here("Code/Models/mod_outputs", "fruit_mn_RFI.Rds"))          %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Fruit RFI")
+p13 <- read_rds(here("Code/Models/mod_outputs", "fruit_ms_OPCR.Rds"))         %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Fruit OPCR")
+p14 <- read_rds(here("Code/Models/mod_outputs", "fruit_ms_RLGA.Rds"))         %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Fruit RLGA")
+p15 <- read_rds(here("Code/Models/mod_outputs", "hard_invert_md_ALL.Rds"))    %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Hard Invert. All")
+p16 <- read_rds(here("Code/Models/mod_outputs", "hard_invert_md_RLGA.Rds"))   %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Hard Invert. RLGA")
+p17 <- read_rds(here("Code/Models/mod_outputs", "hard_invert_mn_DNE.Rds"))    %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Hard Invert. DNE")
+p18 <- read_rds(here("Code/Models/mod_outputs", "herptile_md_DNE.Rds"))       %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Herptile DNE")
+p19 <- read_rds(here("Code/Models/mod_outputs", "herptile_md_OPCR.Rds"))      %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Herptile OPCR")
+p20 <- read_rds(here("Code/Models/mod_outputs", "large_mammal_ms_ALL.Rds"))   %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Large Mammal All")
+p21 <- read_rds(here("Code/Models/mod_outputs", "large_mammal_ms_RLGA.Rds"))  %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Large Mammal RLGA")
+p22 <- read_rds(here("Code/Models/mod_outputs", "plant_md_ALL.Rds"))          %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Plant All")
+p23 <- read_rds(here("Code/Models/mod_outputs", "plant_md_DNE.Rds"))          %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Plant DNE")
+p24 <- read_rds(here("Code/Models/mod_outputs", "plant_md_OPCR.Rds"))         %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Plant OPCR")
+p25 <- read_rds(here("Code/Models/mod_outputs", "root_mn_RLGA.Rds"))          %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Root RLGA")
+p26 <- read_rds(here("Code/Models/mod_outputs", "seed_mn_DNE.Rds"))           %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Seed DNE")
+p27 <- read_rds(here("Code/Models/mod_outputs", "seed_mn_RLGA.Rds"))          %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Seed RLGA")
+p28 <- read_rds(here("Code/Models/mod_outputs", "small_mammal_md_DNE.Rds"))   %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Small Mammal DNE")
+p29 <- read_rds(here("Code/Models/mod_outputs", "small_mammal_md_RLGA.Rds"))  %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Small Mammal RLGA")
+p30 <- read_rds(here("Code/Models/mod_outputs", "soft_invert_md_OPCR.Rds"))   %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Soft Invert. OPCR")
+p31 <- read_rds(here("Code/Models/mod_outputs", "soft_invert_mn_DNE.Rds"))    %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Soft Invert. DNE")
+```
+
+# Plot  
+```{r}
+plot <- wrap_plots(p1, p2,  p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19,
+ p20, p21, p22, p23, p24, p25, p26, p27, p28, p29, p30, p31, ncol=3, guides = "collect") + plot_annotation(
+  title = "Posterior Predictive Checks",
+  caption = 
+"Figure S3: Results from posterior predictive checks of the models with model weights >0 for each food item. The box plots represent the empirical count of each ranking\n
+for each food item (n=89 total). The point intervals represent the 89% probability intervals of the prior distributions. The mean values of the point intervals (dark blue) match\n 
+the empirical count of ranks (light blue box plot) for each food item, with limited uncertainty, indicating a good model fit to the data.",
+theme = theme(plot.caption = element_text(hjust = 0)))
+
+ggsave(here("Plots", "Figure_S3_Posterior_Pred_Checks.pdf"), width = 10, height = 39, limitsize = FALSE)
+```
+

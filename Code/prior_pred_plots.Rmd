@@ -1,0 +1,68 @@
+---
+title: "R Notebook"
+#output: html_notebook
+---
+
+PP Plots
+
+```{r}
+pacman::p_load(tidyverse, brms, patchwork, here)
+```
+
+
+```{r}
+p1 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "bird_D.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Bird Dirichlet")
+p2 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "bird_N02.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Bird Normal(0,2)")
+p3 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "bird_S302.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Bird Student(3,0,2)")
+p4 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "carrion_D.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Carrion Dirichlet")
+p5 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "carrion_N12.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Carrion Normal(1,2)")
+p6 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "carrion_S322.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Carrion Student(3,2,2)")
+p7 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "egg_D.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Egg Dirichlet")
+p8 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "egg_N12.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Egg Normal(1,2)")
+p9 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "egg_S322.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Egg Student(3,2,2)")
+p10 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "fish_D.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Fish Dirichlet")
+p11 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "fish_N12.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Fish Normal(1,2)")
+p12 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "fish_S322.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Fish Student(3,2,2)")
+p13 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "fruit_D.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Fruit Dirichlet")
+p14 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "fruit_N02.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Fruit Normal(0,2)")
+p15 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "fruit_S302.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Fruit Student(3,0,2)")
+p16 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "hard_invert_D.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Hard Invert. Dirichlet")
+p17 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "hard_invert_N-12.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Hard Invert. Normal(-1,2)")
+p18 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "hard_invert_S3-12.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Hard Invert. Student(3,-1,2)")
+p19 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "herptile_D.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Herptile Dirichlet")
+p20 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "herptile_N03.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Herptile Normal(0,3)")
+p21 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "herptile_S303.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Herptile Student(3,0,3)")
+p22 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "large_mammal_D.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Large Mammal Dirichlet")
+p23 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "large_mammal_N11.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Large Mammal Normal(1,1)")
+p24 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "large_mammal_S311.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Large Mammal Student(3,1,1)")
+p25 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "plant_D.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Plant Dirichlet")
+p26 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "plant_N11.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Plant Normal(1,1)")
+p27 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "plant_S311.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Plant Student(3,1,1)")
+p28 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "root_D.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Root Dirichlet")
+p29 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "root_N21.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Root Normal(2,1)")
+p30 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "root_S321.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Root Student(3,2,1)")
+p31 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "seed_D.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Seed Dirichlet")
+p32 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "seed_N21.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Seed Normal(2,1)")
+p33 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "seed_S321.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Seed Student(3,2,1)")
+p34 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "small_mammal_D.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Small Mammal Dirichlet")
+p35 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "small_mammal_N-11.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Small Mammal Normal(-1,1)")
+p36 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "small_mammal_S3-12.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Small Mammal Student(3,-1,2)")
+p37 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "soft_invert_D.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Soft Invert. Dirichlet")
+p38 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "soft_invert_N11.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Soft Invert. Normal(1,1)")
+p39 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "soft_invert_S212.Rds")) %>% pp_check(type = 'bars',ndraws = 1000, probs = c(0.055, 0.945)) + ylim(0, 90) + ggtitle("Soft Invert. Student(2,1,2)")
+```
+
+# Plot  
+```{r}
+plot <- wrap_plots(p1, p2,  p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19,
+ p20, p21, p22, p23, p24, p25, p26, p27, p28, p29, p30, p31, p32, p33, p34, p35, p36, p37, p38, p39, ncol=3, guides = "collect") + plot_annotation(
+  title = "Prior Predictive Checks",
+  caption = 
+"Figure S2: Results from prior predictive checks of Normal, Student-T, and Dirichlet distributions for each food item. The box plots represent the empirical count of each ranking\n
+for each food item (n=89 total). The point intervals represent the 89% probability intervals of the prior distributions. The Normal and Student-T distributions that best match\n
+the empirical counts of each food item ranks are shown, and are used for each tooth metric for each food item, then compared using Leave One Out Cross Validation.",
+theme = theme(plot.caption = element_text(hjust = 0)))
+
+ggsave(here("Plots", "Figure_S2_Prior_Pred_Checks.pdf"), width = 10, height = 50, limitsize = FALSE)
+```
+

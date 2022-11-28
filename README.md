@@ -1,4 +1,6 @@
-# CarnivoranDentitionDiet_MS
+
+#Carnivoran Dentition Diet"
+
 Predicting multivariate ecology using phenotypic data yields novel insights into the diets of cryptic and extinct taxa
 =========
 
@@ -6,22 +8,32 @@ GitHub repo for the manuscript. All scripts necessary to perform the analyses an
 
 ## Required Packages:
 
-- pacman, tidyverse, tidybayes, brms, cmdstanr, phytools, geiger, mclust, polycor, NbClust, ggstar, janitor, here
+- pacman, tidyverse, tidybayes, brms, cmdstanr, phytools, geiger, mclust, polycor, NbClust, ggstar, janitor, here, caret
 
 - All of these packages should be available in CRAN. See the brms [FAQ](https://github.com/paul-buerkner/brms#faq) for details on installing Stan, cmndstanr, and brms. 
 
 ## Layout:
 
-- The contents of this repo is split up into 4 main directories:`Code`, `Data`, `mod_outputs`, and `Plots`. We use the package [here](https://here.r-lib.org/) to deal with the repo structure, allowing anyone to download the repo as is and run the code without dealing with paths. 
+- The contents of this repo is split up into 3 main directories:`Code`, `Data`, and `Plots`. We use the package [here](https://here.r-lib.org/) to deal with the repo structure. Currently anyone can download the repo as is and run the code without dealing with paths (if all packages are installed).
 
 ## **`Code`** 
 
+#### Prior Predictive Checks and Model Estimation
 - All of the models, prior and posterior checking, predictions, data wrangling, etc. are found in this directory.
 
-- The bulk of our results are from the multilevel models generated in [**brms**](https://github.com/paul-buerkner/brms). The scripts containing the models for each food item are in the `Code/Models/` directory and labeled `D_Mods_FOODITEM.Rmd`. Each script contains 5 models. To run all of these, visit the script `Code/D_All_Models.Rmd`, which wrangles the data and calls each food item script individually. ***This Must Be Run Before the Plotting or Prediction Scripts*** because the brms model objects are necessary for those. The outputs of the models will be stored in the `mod_outputs` directory (see below). These are imported later for predictive and plotting scripts (rather than running the whole thing again).
+- The bulk of our results are from the multilevel models generated in [**brms**](https://github.com/paul-buerkner/brms). The scripts containing the models for each food item are in the `Code/Models/` directory and labeled `Mods_FOODITEM.Rmd`. Each script contains 15 models. To run all of these, visit the script `Code/D_All_Models.Rmd`, which wrangles the data and calls each food item script individually. ***This Must Be Run Before the Plotting or Prediction Scripts*** because the brms model objects are necessary for those. The outputs of the models will be stored in the `Code/Models/mod_outputs` directory (see below). These are imported later for predictive and plotting scripts (rather than running the whole thing again).
 
-- All of our ordinal **brms** models use a Dirichlet Prior on the threshold (aka cutpoint) values. The Dirichet prior script is found in `Dirichlet_Prior.R`. We used the Stan code described in [this Stan Discourse post](https://discourse.mc-stan.org/t/dirichlet-prior-on-ordinal-regression-cutpoints-in-brms/20640/3), written by [Staffan Betnèr](https://github.com/StaffanBetner), to create this prior. This code was generated from and informed by the case study by [Michael Betancourt](https://betanalpha.github.io/) found [here](https://betanalpha.github.io/assets/case_studies/ordinal_regression.html). We included the prior predictive checks in the script `Prior_Predictive_Checks.Rmd`.It is by no means necessary to use this Dirichlet prior to estimate the cutpoints. A normal or student-t distribution will also work and provide very similar estimates. However, our posterior predictive checks showed that the Dirichlet prior was a little more accurate. We set the mean intercept	$\phi$ to 0 rather than have the model estimate it, which performed better in our simulations. See comment #9 in the discourse post.
+- All of our ordinal **brms** models use one of three priors on the response variable (the ranks): A Normal distribution, a Student-$T$ distribution, and a  Dirichlet Prior on the threshold (aka cutpoint) values. The Dirichet prior script is found in `Dirichlet_Prior.R`. We used the Stan code described in [this Stan Discourse post](https://discourse.mc-stan.org/t/dirichlet-prior-on-ordinal-regression-cutpoints-in-brms/20640/3), written by [Staffan Betnèr](https://github.com/StaffanBetner), to create this prior. This code was generated from and informed by the case study by [Michael Betancourt](https://betanalpha.github.io/) found [here](https://betanalpha.github.io/assets/case_studies/ordinal_regression.html). We set the mean intercept	$\phi$ to 0 rather than have the model estimate it, which performed better in our simulations. See comment #9 in the discourse post.
 
+- To determine the parameters for each prior distribution on the response variables, we ran prior predictive checks. Similar to the model scripts, these are in the `Code/Prior_Pred_Checks/` directory and labeled `FOODITEM_Prior_Check.Rmd`. The script `Prior_Pred_Checks_All.Rmd` runs all 13 of these scripts, and stores the outputs in the `Code/Prior_Pred_Checks/prior_pred_outputs` directory. **Figure_S2_Prior_Pred_Checks.pdf**, stored in the `Plots dir`, shows the prior distributions that we used for each tooth metric for each food item. Note that we used a $N$(0,1) prior on all of our predictor variables, as they are all scaled to a mean of 0 and an sd of 1, and this loosely regularizing prior keeps the models in check but still allows for large effect sizes. 
+
+#### Posterior Model Verification
+
+- We performed Posterior Predictive Checks on every model that was assigned a loo model weight > 0. The model outputs are stored in the `Code/Models/mod_outputs` directory. The `posterior_pred_plots.Rmd` script calls these and plots them in the same way as the prior predictive plots. **Figure_S3_Posterior_Pred_Checks.pdf** in the `Plots` dir shows the results, which look quite good (mean is mostly centered on empirical values with little uncertainty on most food items). 
+
+- We checked the accuracy of our model predictions compared to the empirical ranks for each species. This script is in `Code/Accuracy_Predictions.Rmd` and the results are reported in Table 4 of the text. 
+
+############
 - The `Weighted_Predictions_Fig3_Fig4.Rmd` script generates weighted posterior predictions and weighted averages for the extant-with-data, cryptic and fossil taxa, and produces Figures 3 & 4. 
 
 - The `Diet_Space_Ordination_and_Clustering.Rmd` script contains the polychoric PCA analysis that generates a multivariate diet space, the clustering analysis that generates Figure 1B, and the diet space projection of cryptic and fossil taxa used to make Table 4.

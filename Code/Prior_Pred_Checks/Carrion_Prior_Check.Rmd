@@ -1,0 +1,86 @@
+---
+title: "carrion Prior Predictive Check"
+#output: html_notebook
+---
+
+# Priors
+
+#### Plot
+
+```{r}
+dat1 %>% ggplot(aes(x =carrion)) + geom_bar()
+```
+
+#### Set
+```{r}
+p1 <- c(set_prior("normal(1,1)", class = "Intercept"))
+
+p2 <- c(set_prior("normal(1,2)", class = "Intercept"))
+
+p3 <- c(set_prior("normal(2,1)", class = "Intercept"))
+
+p4 <- c(set_prior("normal(2,3)", class = "Intercept"))
+
+p5 <- c(set_prior("student_t(3,1,1)", class = "Intercept"))
+
+p6 <- c(set_prior("student_t(3,2,2)", class = "Intercept"))
+
+p7 <- c(set_prior("student_t(2,2,2)", class = "Intercept"))
+
+p8 <- c(set_prior("student_t(3,2,2)", class = "Intercept"))
+
+p9 = prior = c(set_prior("induced_dirichlet(rep_vector(1, nthres+1),0", class = "Intercept"))
+```
+
+### Prior Models
+```{r, include=FALSE}
+m1 <-  brm(carrion ~ 1, 
+           data = dat1,family = cumulative(), prior = p1,
+           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
+m2 <-  brm(carrion ~ 1, data = dat1,family = cumulative(), prior = p2,
+           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
+m3 <-  brm(carrion ~ 1, 
+           data = dat1,family = cumulative(), prior = p3,
+           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
+m4 <-  brm(carrion ~ 1, 
+           data = dat1, family = cumulative(), prior = p4,
+           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
+m5 <-  brm(carrion ~ 1, 
+           data = dat1, family = cumulative(), prior = p5,
+           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
+m6 <-  brm(carrion ~ 1, 
+           data = dat1, family = cumulative(), prior = p6,
+           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
+m7 <-  brm(carrion ~ 1, 
+           data = dat1, family = cumulative(), prior = p7,
+           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
+m8 <-  brm(carrion ~ 1, 
+           data = dat1, family = cumulative(), prior = p8,
+           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
+m9 <-  brm(carrion ~ 1, 
+           data = dat1, family = cumulative(), prior = p9,
+           refresh = 0, chains = 4,  cores = 4, stanvars = dirichlet_prior_stanvar, sample_prior = 'only')
+```
+
+#### Prior Checks  
+```{r}
+pp_check(m1, type = 'bars', ndraws = 1000) + ylim(0, 90)
+pp_check(m2, type = 'bars', ndraws = 1000) + ylim(0, 90) 
+pp_check(m3, type = 'bars', ndraws = 1000) + ylim(0, 90)
+pp_check(m4, type = 'bars', ndraws = 1000) + ylim(0, 90)
+pp_check(m5, type = 'bars', ndraws = 1000) + ylim(0, 90)
+pp_check(m6, type = 'bars', ndraws = 1000) + ylim(0, 90)
+pp_check(m7, type = 'bars', ndraws = 1000) + ylim(0, 90)
+pp_check(m8, type = 'bars', ndraws = 1000) + ylim(0, 90) 
+pp_check(m9, type = 'bars', ndraws = 1000) + ylim(0, 90) + ggtitle('dirichlet')
+```
+
+## Normal(1,2), and Student(3,2,2)
+Save these models
+```{r}
+m2 %>% write_rds(file = here("Code/Prior_Pred_Checks/prior_pred_outputs", "carrion_N12.Rds"))
+m6 %>% write_rds(file = here("Code/Prior_Pred_Checks/prior_pred_outputs", "carrion_S322.Rds"))
+m9 %>% write_rds(file = here("Code/Prior_Pred_Checks/prior_pred_outputs", "carrion_D.Rds"))
+```
+
+

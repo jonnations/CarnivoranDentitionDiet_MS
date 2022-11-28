@@ -1,85 +1,8 @@
 ---
 title: "R Notebook"
-output: html_notebook
+#output: html_notebook
 ---
 # Bird
- Similar to root and some others, there are almost all 1's for bird, so the model just predicts that they are all 1's. 
-Setup
-
-
-# Priors
-
-#### Plot
-```{r}
-dat1 %>% ggplot(aes(x =bird)) + geom_bar()
-```
-
-#### Set
-```{r}
-p1 <- c(set_prior("normal(0,1)", class = "Intercept"))
-
-p2 <- c(set_prior("normal(0,2)", class = "Intercept"))
-
-p3 <- c(set_prior("normal(0,0.5)", class = "Intercept"))
-
-p4 <- c(set_prior("normal(0,3)", class = "Intercept"))
-
-p5 <- c(set_prior("student_t(3,0,1)", class = "Intercept"))
-
-p6 <- c(set_prior("student_t(3,0,2)", class = "Intercept"))
-
-p7 <- c(set_prior("student_t(2,0,1)", class = "Intercept"))
-
-p8 <- c(set_prior("student_t(3,0,2)", class = "Intercept"))
-
-p9 = prior = c(set_prior("induced_dirichlet(rep_vector(1, nthres+1),0", class = "Intercept"))
-```
-
-### Prior Models
-```{r, include=FALSE}
-m1 <-  brm(bird ~ 1, 
-           data = dat1,family = cumulative(), prior = p1,
-           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
-m2 <-  brm(bird ~ 1, data = dat1,family = cumulative(), prior = p2,
-           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
-m3 <-  brm(bird ~ 1, 
-           data = dat1,family = cumulative(), prior = p3,
-           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
-m4 <-  brm(bird ~ 1, 
-           data = dat1, family = cumulative(), prior = p4,
-           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
-m5 <-  brm(bird ~ 1, 
-           data = dat1, family = cumulative(), prior = p5,
-           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
-m6 <-  brm(bird ~ 1, 
-           data = dat1, family = cumulative(), prior = p6,
-           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
-m7 <-  brm(bird ~ 1, 
-           data = dat1, family = cumulative(), prior = p7,
-           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
-m8 <-  brm(bird ~ 1, 
-           data = dat1, family = cumulative(), prior = p8,
-           refresh = 0, chains = 4,  cores = 4, sample_prior = 'only')
-m9 <-  brm(bird ~ 1, 
-           data = dat1, family = cumulative(), prior = p9,
-           refresh = 0, chains = 4,  cores = 4, stanvars = dirichlet_prior_stanvar, sample_prior = 'only')
-```
-
-#### Prior Checks  
-```{r}
-pp_check(m1, type = 'bars', ndraws = 1000) + ylim(0, 90)
-pp_check(m2, type = 'bars', ndraws = 1000) + ylim(0, 90) 
-pp_check(m3, type = 'bars', ndraws = 1000) + ylim(0, 90)
-pp_check(m4, type = 'bars', ndraws = 1000) + ylim(0, 90)
-pp_check(m5, type = 'bars', ndraws = 1000) + ylim(0, 90)
-pp_check(m6, type = 'bars', ndraws = 1000) + ylim(0, 90)
-pp_check(m7, type = 'bars', ndraws = 1000) + ylim(0, 90)
-pp_check(m8, type = 'bars', ndraws = 1000) + ylim(0, 90) 
-pp_check(m9, type = 'bars', ndraws = 1000) + ylim(0, 90) + ggtitle('dirichlet')
-```
-
-## N(0,2)
-## S(3,0,2)
 
 #RLGA
 
@@ -440,7 +363,7 @@ mw_bird
 ```
 
 ```{r}
-write_csv(mw_bird, file = "Test_weights_all.csv")
+write_csv(mw_bird, file = here("Data", "Test_weights_all.csv"))
 ```
 
 
@@ -448,8 +371,8 @@ write_csv(mw_bird, file = "Test_weights_all.csv")
 #### Write Models
 
 ```{r}
-md_RLGA %>% write_rds("new_mod_outputs/bird_md_RLGA.Rds")
-md_ALL %>%  write_rds("new_mod_outputs/bird_md_ALL.Rds")
-mn_RFI %>%  write_rds("new_mod_outputs/bird_mn_RFI.Rds")
+md_RLGA %>% write_rds(file = here("Code/Models/mod_outputs", "bird_md_RLGA.Rds"))
+md_ALL %>%  write_rds(file = here("Code/Models/mod_outputs", "bird_md_ALL.Rds"))
+mn_RFI %>%  write_rds(file = here("Code/Models/mod_outputs", "bird_mn_RFI.Rds"))
 ```
 
