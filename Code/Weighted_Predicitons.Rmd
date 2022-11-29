@@ -1,6 +1,5 @@
 ---
 title: "Weighted_Predictions"
-output: html_notebook
 ---
 
 # Prediction methods

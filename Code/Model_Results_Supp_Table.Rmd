@@ -1,6 +1,5 @@
 ---
 title: "Model Output Table"
-output: html_notebook
 ---
 
 # Model Output table
