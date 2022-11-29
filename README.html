@@ -430,11 +430,11 @@ this loosely regularizing prior keeps the models in check but still
 allows for large effect sizes.</p></li>
 </ul>
 </div>
-<div id="posterior-model-verification" class="section level4">
-<h4>Posterior Model Verification</h4>
+<div id="model-posterior-validation-accuracy-checks" class="section level4">
+<h4>Model Posterior Validation &amp; Accuracy Checks</h4>
 <ul>
-<li><p>We performed Posterior Predictive Checks on every model that was
-assigned a loo model weight &gt; 0. The model outputs are stored in the
+<li><p>We performed Posterior Predictive Checks on every model that has
+a loo model weight &gt; 0. The model outputs are stored in the
 <code>Code/Models/mod_outputs</code> directory. The
 <code>posterior_pred_plots.Rmd</code> script calls these and plots them
 in the same way as the prior predictive plots.
@@ -442,37 +442,47 @@ in the same way as the prior predictive plots.
 <code>Plots</code> dir shows the results, which look quite good (mean is
 mostly centered on empirical values with little uncertainty on most food
 items).</p></li>
-<li><p>We checked the accuracy of our model predictions compared to the
-empirical ranks for each species. This script is in
-<code>Code/Accuracy_Predictions.Rmd</code> and the results are reported
-in Table 4 of the text. We report these results as percentages of
-estimates that are the exact rank, and within 1 rank, which we consider
-a good estimate. We estimate 1000 draws from the posterior of each
-model, then model average over them using the LOO weights, then estimate
-the accuracy of the predictions. <code>Data/Prediction_Table.csv</code>
-gives the mean predictions from the 1000 samples, and
+<li><p>We checked the accuracy of our model predictions by comparing
+them to the empirical ranks for each species. This script is in
+<code>Code/Accuracy_Predictions.Rmd</code>, and the results are reported
+in Table 4 of the text and are saved as
+<code>Data/Accuracy_Table.csv</code>. We report these results as
+percentages of estimates that are the exact rank, and within 1 rank
+(which we consider a good estimate in this ranking scale). We estimate
+1000 draws from the posterior of each model, then model average over
+them using the LOO weights, then estimate the accuracy of the
+predictions. <code>Data/Prediction_Table.csv</code> gives the mean
+predictions from the 1000 samples, and
 <code>Data/Accuracy_Table.csv</code> provides the values in table 4. The
-<code>Code/Accuracy_Predictions.Rmd</code> script contains a lot of
-custom functions, some parallel computing, and is time intensive. Reach
-out with questions :)</p></li>
-<li><p>Our third means of validating the predictive power of our models
-is by confirming that the LOO cross validation provides acceptable
-results. There is a lot of information on CV and LOO CV out there (try
-starting with this <a href="https://mc-stan.org/loo/articles/online-only/faq.html">Excellent
-FAQ Page</a>). In addition to model comparison, which we did using model
-weights generated from LOO scores, we are interested in the stability of
-our estimates. If a species is removed from the analysis, does that
-alter the prediction? The Pareto-<span class="math inline">\(K\)</span>
-diagnostic score reports just that. If, when the sample is removed from
-the analysis, the posterior changes, then there is a high Pareto-<span class="math inline">\(K\)</span>, and a small Pareto-<span class="math inline">\(K\)</span> means that the estimate is stable
+<code>Code/Accuracy_Predictions.Rmd</code> script contains a few custom
+functions, some parallel computing, and is time intensive. Reach out
+with questions :)</p></li>
+<li><p>Our third method of validating the predictive power of our models
+is interrogating our predictive accuracy and model fit using
+leave-one-out cross validation. There is a lot of information on CV, LOO
+CV, and the Pareto-Smoothed-Importance-Sampling (PSIS) method of LOO
+approximation out there (try starting with this <a href="https://mc-stan.org/loo/articles/online-only/faq.html">Excellent
+FAQ Page</a> from the <code>LOO</code> package). In addition to model
+comparison, which we did above by using model weights generated from LOO
+scores, we are interested in the stability of our estimates within
+individual models. If a species is removed from the analysis, does that
+alter the prediction of other species? The Pareto-<span class="math inline">\(K\)</span> diagnostic score answers that. If, when
+the sample is removed from the analysis, the posterior changes
+substantially, it produces a high Pareto-<span class="math inline">\(K\)</span> estimate, and a small Pareto-<span class="math inline">\(K\)</span> means that the estimate is stable
 without the particular sample. We gathered these scores in the
 <code>Code/Accuracy_Predictions.Rmd</code> script described above, and
 they are reported along side the additional predictions in the
 <code>Data/Prediction_Table.csv</code> file.</p></li>
 </ul>
+</div>
+<div id="posterior-predicitons-of-extant-data-rich-data-deficient-and-fossil-taxa" class="section level4">
+<h4>Posterior Predicitons of Extant Data-Rich, Data-Deficient, and
+Fossil Taxa</h4>
 <div id="section" class="section level12">
 <p class="heading"></p>
-<p>Weighted Predictions New runs</p>
+<p>Weighted Predictions New is the next thing Also the model figures!
+Those should be above validation? Or a separate file below (maybe
+this)</p>
 </div>
 </div>
 <div id="section-1" class="section level4">
