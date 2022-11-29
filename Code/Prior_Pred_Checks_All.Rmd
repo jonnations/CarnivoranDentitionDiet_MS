@@ -1,6 +1,5 @@
 ---
 title: "Run All Prior Pred Checks"
-#output: html_notebook
 ---
 
 # Run all Prior Predictive Checks in one script.

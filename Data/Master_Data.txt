@@ -1,106 +1,106 @@
-Species	Family	Discrete	m1_opcr	m2_opcr	m1_dne	m2_dne	RFI_m1	RFI_m2	RLGA	log_cuberoot_mass	large_mammal	small_mammal	bird	herptile	fish	egg	carrion	hard_invert	soft_invert	seed	fruit	root	plant
-Ailuropoda_melanoleuca	Ursidae	Herbivore	133.12	206.38	0.070729	0.063514	0.3833711	0.2937344	1.4275585	1.59022818	0	1	0	0	1	0	0	0	0	0	0	0	3
-Ailurus_fulgens	Ailuridae	Herbivore	99.62	110.62	0.079922	0.079639	0.452552	0.4310733	1.4142072	0.547629387	0	1	1	0	0	1	0	0	1	1	1	1	3
-Arctictis_binturong	Viverridae	Frugivore	71.12	41.5	0.053706	0.03446	0.4691966	0.4535101	1.1861227	0.854982863	0	2	2	0	1	0	2	2	2	0	3	0	2
-Arctonyx_collaris	Mustelidae	Omnivore	99.62	61.25	0.081657	0.05033	0.4344466	0.544532	1.1837382	0.70001429	0	0	1	1	0	0	0	3	3	1	3	1	1
-Atilax_paludinosus	Herpestidae	Omnivore	64.75	41.5	0.056742	0.052028	0.4622921	0.437708	1.0127798	0.426992763	0	3	1	3	1	1	1	3	1	1	2	0	0
-Bassariscus_astutus	Procyonidae	Omnivore	67.25	76.25	0.081705	0.071389	0.5714647	0.4991596	1.1009056	0.003438867	0	3	1	1	1	0	1	3	3	1	3	0	2
-Bdeogale_jacksoni	Herpestidae	Omnivore	83.75	72.75	0.062544	0.055654	0.4966383	0.5013212	1.959717989	0.3054302	0	3	2	2	0	2	2	3	1	0	0	0	0
-Canis_adustus	Canidae	Omnivore	90.5	87.62	0.069330645	0.062737667	0.60083042	0.469628416	0.9875579	0.780361143	0	3	1	1	0	1	1	3	2	1	3	0	1
-Cerdocyon_thous	Canidae	Carnivore	64.88	66.88	0.067559003	0.064144192	0.585277368	0.513754322	0.9907795	0.582582789	0	2	2	2	1	1	2	2	0	0	2	0	1
-Civettictis_civetta	Viverridae	Omnivore	107	97.62	0.075849	0.074364	0.579601	0.5034261	1.186401	0.830395077	0	2	2	2	1	2	2	2	2	0	2	0	2
-Conepatus_mesoleucus	Mustelidae	Insectivore	82.12	53.38	0.073369	0.047432	0.4655879	0.3255179	1.2401183	0.397358436	0	1	1	1	0	1	1	3	3	1	2	0	0
-Crossarchus_obscurus	Herpestidae	Omnivore	125.25	NA	0.073669	NA	0.6763917	NA	1.71201	0.11098631	0	1	1	1	0	2	0	3	3	0	1	0	0
-Cynictis_penicillata	Herpestidae	Insectivore	57.25	54	0.074071	0.074076	0.6349513	0.6239403	1.1155013	-0.121564238	0	2	2	2	0	1	1	3	3	1	1	0	1
-Enhydra_lutris	Mustelidae	Piscivore	125.38	68.88	0.051036	0.03789	0.4153282	0.3903999	1.313	1.103647	0	0	0	0	3	0	0	3	2	0	0	0	0
-Felis_silvestris	Felidae	Carnivore	28.38	0	0.047616	0	0.6443494	0	0	0.50672898	0	3	1	1	1	0	0	1	0	0	1	0	1
-Fossa_fossana	Eupleridae	Carnivore	70	55.25	0.083868	0.076767	0.6048468	0.5527129	1.2318369	0.205778227	0	2	0	2	0	0	0	3	0	0	0	0	0
-Galerella_sanguinea	Herpestidae	Omnivore	48.12	NA	0.083688	NA	0.5270939	NA	0.7705539	-0.203039527	0	2	1	2	0	1	1	3	1	0	1	0	0
-Galictis_cuja	Mustelidae	Carnivore	33.88	28.88	0.057122	0.042359	0.5706	0.4332245	0.6273779	0	0	3	2	2	0	1	0	1	0	0	1	0	0
-Helarctos_malayanus	Ursidae	Omnivore	102.38	152.75	0.051489	0.066383	0.4100491	0.3819306	1.6197749	1.34812662	0	1	0	0	1	0	0	3	3	0	3	1	1
-Helogale_parvula	Herpestidae	Insectivore	58.12	55.62	0.06934	0.056863	0.7060941	0.6210172	1.1562243	-0.422150409	0	1	0	1	0	1	0	3	3	0	1	0	0
-Hydrictis_maculicollis	Mustelidae	Piscivore	106.12	56.5	0.082695	0.045001	0.5270371	0.4320222	0.899769	0.476812678	0	0	1	2	3	0	0	3	1	0	0	0	0
-Ichneumia_albicauda	Herpestidae	Insectivore	81.25	112.38	0.083	0.068521	0.6644157	0.5731358	1.36277	0.42959726	0	1	0	2	0	0	1	3	3	0	1	0	0
-Leopardus_wiedii	Felidae	Carnivore	39.88	0	0.043621	0	0.5369976	0	0	0.395012554	0	3	3	2	0	0	0	1	0	0	1	0	0
-Lontra_canadensis	Mustelidae	Piscivore	92.75	59.75	0.072033	0.039843	0.515222	0.3713446	1.3176886	0.696769923	0	1	1	2	3	0	0	3	1	0	1	0	1
-Lutra_lutra	Mustelidae	Piscivore	147	115.12	0.073453	0.050751	0.5335126	0.4849644	0.9771992	0.727509032	0	2	2	3	3	0	0	3	0	0	1	0	0
-Lutrogale_perspicillata	Mustelidae	Piscivore	91.5	77.88	0.07283	0.044188	0.5380622	0.4202428	1.0039739	0.729151221	0	2	1	2	3	0	0	2	1	0	0	0	0
-Lycalopex_gymnocercus	Canidae	Omnivore	67.25	63	0.068031167	0.062159046	0.598137455	0.498682532	0.8986358	0.504504982	0	3	2	1	1	0	2	2	2	0	2	0	0
-Lycalopex_sechurae	Canidae	Omnivore	61.25	57	0.070937702	0.060368056	0.629202268	0.501324631	1.0210425	0.481049058	0	2	1	1	0	2	2	2	0	2	3	0	0
-Lycalopex_vetulus	Canidae	Omnivore	59.12	74.12	0.068215542	0.057054383	0.591405906	0.44842593	1.143079	0.481007329	0	2	1	1	0	0	0	3	0	0	3	0	0
-Martes_americana	Mustelidae	Carnivore	61.5	32.88	0.052622	0.037306	0.5718012	0.4078119	0.7765543	-0.045009886	0	3	2	2	2	2	2	2	2	0	2	0	0
-Mellivora_capensis	Mustelidae	Carnivore	38.25	0	0.047499	0	0.485592	0	0.5860398	0.732407822	0	3	1	1	0	0	1	3	3	0	1	1	0
-Melursus_ursinus	Ursidae	Omnivore	75.38	113.62	0.055867	0.056249	0.4174143	0.3845186	1.5881151	1.535056695	0	0	0	1	0	0	1	3	0	1	3	1	1
-Mephitis_mephitis	Mephitidae	Omnivore	48.25	53	0.078589	0.04809	0.5514092	0.5002191	1.0882631	0.291821524	0	2	2	0	0	2	0	3	3	0	2	0	0
-Mungotictis_decemlineata	Eupleridae	Insectivore	49.88	37	0.074346	0.058777	0.6554206	0.4825213	0.9950298	-0.140008533	0	1	1	1	0	1	0	3	3	0	0	0	0
-Nandinia_binotata	Nandiniidae	Omnivore	58.12	38.25	0.054894	0.038295	0.5273942	0.4471802	0.8061497	0.257812004	0	1	2	0	0	0	1	1	0	0	3	0	0
-Nasua_nasua	Procyonidae	Omnivore	63.12	62	0.065085	0.062005	0.5099441	0.4931237	1.9676313	0.442844275	0	1	1	1	1	1	1	3	3	0	3	0	1
-Nasuella_olivacea	Procyonidae	Omnivore	80.5	96.12	0.065459	0.065757	0.504159	0.5082047	2.1752936	0.09755405	0	0	0	2	0	0	1	3	3	0	3	1	1
-Neovison_vison	Mustelidae	Carnivore	75.38	49.38	0.062869	0.04647	0.5506722	0.4413474	0.7066534	-0.003550002	0	2	2	2	2	2	1	1	1	0	0	0	0
-Nyctereutes_procyonoides	Canidae	Omnivore	101.25	54.88	0.068831395	0.055939369	0.690231375	0.538803064	0.9488082	0.479549073	0	2	2	2	2	2	2	2	2	2	2	2	2
-Otocyon_megalotis	Canidae	Insectivore	59.88	49.5	0.061241298	0.053098796	0.582088553	0.544059514	1.595193875	0.4701761	0	1	1	1	0	1	1	3	1	1	2	0	1
-Paguma_larvata	Viverridae	Frugivore	118.88	49	0.062607	0.041106	0.4608703	0.4978496	1.1686176	0.486205008	0	3	2	1	1	0	0	3	0	0	3	0	1
-Parahyaena_brunnea	Hyaenidae	Carnivore	103.25	0	0.055154	0	0.5489232	0	0.2924467	1.253562243	0	2	2	2	0	2	3	2	0	0	2	0	0
-Pekania_pennanti	Mustelidae	Carnivore	89.88	83.38	0.059205	0.041038	0.5153342	0.2994516	0.7611714	0.44058528	0	3	3	2	0	1	3	1	1	0	1	0	0
-Poecilogale_albinucha	Mustelidae	Carnivore	44.62	0	0.0494	0	0.5558952	0	0.5050564	-0.392378717	0	3	1	0	0	0	0	0	0	0	0	0	0
-Potos_flavus	Procyonidae	Frugivore	104.25	84.5	0.051327	0.062418	0.3786918	0.3202268	2.3164313	0.297579856	0	0	0	0	0	0	0	1	1	0	3	0	1
-Procyon_lotor	Procyonidae	Omnivore	69.75	94.88	0.078495	0.066908	0.5481413	0.4563632	1.6235198	0.617394429	0	3	2	2	2	1	0	3	0	3	3	0	1
-Proteles_cristatus	Hyaenidae	Insectivore	14	0	0.031118	0	0.6479798	0	0	1.3	0	0	0	0	0	0	0	3	1	0	0	0	0
-Spilogale_putorius	Mephitidae	Omnivore	54	51.75	0.069604	0.05777	0.5430703	0.4783962	1.0332975	-0.18943195	0	3	2	1	0	1	2	3	3	0	1	0	2
-Taxidea_taxus	Mustelidae	Carnivore	69.62	37	0.066739	0.052717	0.543427	0.5351455	0.9920533	0.686504344	0	3	2	2	1	2	0	2	1	1	0	0	0
-Urocyon_cinereoargenteus	Canidae	Omnivore	72.25	85.62	0.067284973	0.066173268	0.554622087	0.450493209	0.9699766	0.447944334	0	3	2	0	0	0	1	3	1	2	3	0	0
-Viverra_zibetha	Viverridae	Carnivore	79.88	36.62	0.070178	0.066112	0.5739236	0.5386486	0.9415484	0.737873148	0	2	1	1	1	1	0	1	1	0	3	0	0
-Viverricula_indica	Viverridae	Carnivore	65.62	52.12	0.07656	0.054698	0.6306044	0.535653	1.0553015	0.35706666	0	3	1	1	1	0	0	3	3	0	3	0	3
-Vormela_peregusna	Mustelidae	Carnivore	39	NA	0.064927	NA	0.6155518	NA	0.6706857	-0.173552376	0	3	2	2	0	0	0	3	0	0	1	0	1
-Vulpes_chama	Canidae	Carnivore	59.88	46.88	0.062503294	0.05280627	0.589410049	0.477312005	0.9522351	0.357171707	0	3	2	2	0	2	1	2	2	0	1	0	1
-Vulpes_macrotis	Canidae	Carnivore	49.75	60.38	0.063379171	0.060569074	0.626291249	0.47974247	0.748356638	0.5013569	0	3	1	1	0	0	1	1	0	0	1	0	1
-Vulpes_rueppellii	Canidae	Omnivore	64.75	47.5	0.066508673	0.05663617	0.61379819	0.443980166	0.8869508	0.392881922	0	2	2	2	0	0	0	2	0	0	2	0	2
-Vulpes_velox	Canidae	Omnivore	48.5	42.25	0.058180579	0.051920328	0.554576861	0.406089424	0.752732361	0.2454022	0	3	2	2	1	1	2	2	1	1	1	0	1
-Vulpes_vulpes	Canidae	Omnivore	75.25	54.88	0.064031244	0.059695189	0.630924749	0.46385028	0.7758084	0.524282871	0	3	2	0	1	1	1	2	2	2	2	0	0
-Vulpes_zerda	Canidae	Omnivore	51.25	51.62	0.063696489	0.058355988	0.595810546	0.469406523	1.0560992	0.091818376	0	2	2	2	0	1	0	3	1	0	2	2	0
-Canis_aureus	Canidae	Omnivore	86.25	47.12	0.065594562	0.055374872	0.597617246	0.495023971	0.8095978	0.755953021	1	3	2	1	1	0	2	1	0	1	2	0	0
-Canis_simensis	Canidae	Carnivore	50.12	46.25	0.060620027	0.0536745	0.580463128	0.48287166	0.7950058	0.888192027	1	3	1	0	0	1	0	0	0	0	0	0	1
-Chrysocyon_brachyurus	Canidae	Omnivore	82.25	55.75	0.063545115	0.055210522	0.583360169	0.450006114	0.8685346	1.049841916	1	3	2	2	0	0	0	2	0	0	3	0	0
-Cryptoprocta_ferox	Eupleridae	Carnivore	43.62	0	0.051472	0	0.6367071	0	0.243618	0.7504306	1	3	2	2	0	1	0	2	0	0	0	0	0
-Eira_barbara	Mustelidae	Omnivore	42.75	25.88	0.056576	0.037128	0.4916013	0.423064	0.7258297	0.473161637	1	3	2	2	0	0	2	2	2	0	3	0	0
-Gulo_gulo	Mustelidae	Carnivore	80.75	57.25	0.049206	0.034571	0.4960968	0.4406772	0.5995253	0.849619427	1	3	1	0	1	0	3	0	1	0	1	0	0
-Hyaena_hyaena	Hyaenidae	Carnivore	63.5	0	0.059846	0	0.5600044	0	0.356498	1.185786869	1	1	2	2	0	0	3	2	0	0	2	0	0
-Leptailurus_serval	Felidae	Carnivore	43.25	0	0.044934	0	0.6413194	0	0	0.39501255	1	3	2	2	0	0	0	2	0	0	0	0	1
-Lynx_canadensis	Felidae	Carnivore	29	0	0.042244	0	0.5702588	0	0	0.756784394	1	3	1	0	0	0	1	0	0	0	0	0	0
-Prionailurus_bengalensis	Felidae	Carnivore	23.12	0	0.0593	0	0.6580096	0	0	0.340933263	1	3	3	3	0	0	1	2	1	0	0	0	1
-Procyon_cancrivorus	Procyonidae	Omnivore	82.88	78.88	0.078495	0.066908	0.5306937	0.4433818	1.6072135	0.645369326	1	2	1	2	1	0	0	2	0	0	3	0	0
-Pteronura_brasiliensis	Mustelidae	Piscivore	124.62	129.38	0.084652	0.037216	0.5631957	0.3830088	0.911731	1.086032179	1	1	0	1	3	0	0	1	0	0	0	0	0
-Tremarctos_ornatus	Ursidae	Herbivore	138.75	219.12	0.06131	0.064045	0.4750622	0.4230374	1.5371211	1.604540701	1	1	1	0	0	0	1	1	1	0	3	0	3
-Vulpes_lagopus	Canidae	Carnivore	43.62	44.88	0.05744022	0.045314904	0.570527338	0.411570598	0.6907301	0.425527575	1	3	3	0	2	3	2	2	2	0	1	0	0
-Canis_latrans	Canidae	Omnivore	80.88	57.62	0.066780069	0.058849947	0.598847017	0.47079111	0.7267341	0.827999301	2	3	2	2	2	0	2	2	0	0	2	0	1
-Canis_mesomelas	Canidae	Omnivore	77.38	65.75	0.06592319	0.057937615	0.646338471	0.502955063	0.7842536	0.703295291	2	2	2	2	0	0	2	2	0	0	2	0	2
-Caracal_caracal	Felidae	Carnivore	25	0	0.041436	0	0.675876	0	0	0.827311301	2	3	3	1	1	0	1	1	0	0	1	0	1
-Ursus_arctos	Ursidae	Omnivore	92.62	96.62	0.055196	0.056483	0.5556589	0.4324583	1.6561096	1.75986014	2	1	2	0	2	2	2	2	2	2	2	2	2
-Acinonyx_jubatus	Felidae	Carnivore	22.75	0	0.049662	0	0.6743835	0	0	1.307838372	3	1	1	0	0	0	0	0	0	0	0	0	0
-Canis_lupus	Canidae	Carnivore	56.88	66.45	0.052174552	0.043325208	0.51723056	0.433498491	0.6760716	1.152699248	3	2	2	1	1	1	1	1	0	0	1	0	1
-Catopuma_temminckii	Felidae	Carnivore	77.25	0	0.050941	0	0.604396	0	0	0.681550267	3	3	1	2	0	0	0	0	0	0	0	0	0
-Crocuta_crocuta	Hyaenidae	Carnivore	47.25	0	0.046056	0	0.5588393	0	0.1597876	1.382996749	3	1	1	1	1	1	2	1	1	0	1	0	0
-Cuon_alpinus	Canidae	Omnivore	54	38.62	0.053241451	0.042151505	0.601815189	0.444717614	0.5955485	0.920003313	3	2	1	1	0	0	1	1	0	0	1	0	1
-Lycalopex_culpaeus	Canidae	Omnivore	60.25	46.25	0.065671689	0.057516812	0.612311183	0.507568876	0.7791104	0.717882932	3	3	1	1	0	1	1	1	0	0	2	0	0
-Lycaon_pictus	Canidae	Carnivore	40.88	32.75	0.052619756	0.038998639	0.567973643	0.427998484	0.6714358	1.030347333	3	2	0	2	0	2	1	0	0	0	0	0	0
-Neofelis_nebulosa	Felidae	Carnivore	45.12	0	0.04319	0	0.573101	0	0	0.901460047	3	3	1	0	1	0	0	0	0	0	0	0	0
-Panthera_leo	Felidae	Carnivore	37.88	0	0.041149	0	0.5147224	0	0	1.688845394	3	1	1	1	1	1	1	1	0	0	1	0	1
-Panthera_onca	Felidae	Carnivore	26.5	0	0.046583	0	0.5861459	0	0	1.476713023	3	3	1	3	1	1	0	1	0	0	1	0	1
-Panthera_pardus	Felidae	Carnivore	39.38	0	0.042369	0	0.6077104	0	0	1.319635467	3	1	1	1	1	0	0	1	0	0	1	0	1
-Puma_concolor	Felidae	Carnivore	38	0	0.041959	0	0.6534976	0	0	1.329377586	3	3	1	1	0	0	0	0	0	0	0	0	1
-Speothos_venaticus	Canidae	Carnivore	44.25	17.5	0.056962919	0.034982842	0.60751581	0.45366012	0.5633992	0.614812435	3	3	2	2	0	0	0	0	0	0	1	0	0
-Uncia_uncia	Felidae	Carnivore	49	0	0.044306	0	0.6241956	0	0	1.160413363	3	2	2	0	0	0	1	0	0	0	0	0	1
-Ursus_maritimus	Ursidae	Carnivore	62.62	102.12	0.056284	0.055407	0.480285	0.418153	1.4780226	1.972699109	3	1	1	0	1	1	2	1	1	0	1	0	1
-Arctogalidia_trivirgata	Viverridae	NA	93.25	50.25	0.064291	0.038079	0.5160383	0.5352555	1.1731327	0.281066491	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
-Bassaricyon_alleni	Procyonidae	Frugivore	40.38	29.62	0.054792	0.028756	0.4123519	0.2625535	2.2535234	0.096560025	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
-Catopuma_badia	Felidae	NA	30.5	0	0.048604	0	0.649503	0	0	0.41080677	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
-Chrotogale_owstoni	Viverridae	Omnivore	79.62	65.75	0.079101	0.061807	0.5890956	0.4877962	1.6334342	0.394696478	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
-Cynogale_bennettii	Viverridae	NA	176.25	128.75	0.078617	0.061428	0.5192607	0.4956966	1.6946118	0.482037199	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
-Galidia_elegans	Eupleridae	NA	55.12	NA	0.069924	NA	0.5960898	NA	0.7813599	-0.070240344	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
-Galidictis_fasciata	Eupleridae	NA	124.38	64.62	0.0804	NA	0.6955435	0.659842	0.9971994	-0.199285061	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
-Hemigalus_derbyanus	Viverridae	Insectivore	89	58.38	0.081911	0.061961	0.5772668	0.5565514	1.9415259	0.077750762	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
-Herpestes_brachyurus	Herpestidae	NA	66.38	44.5	0.074749	0.055817	0.6357918	0.5904035	1.1630738	0.11124187	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
-Mydaus_javanensis	Mephitidae	Insectivore	103.38	83	0.100941	0.068386	0.5488862	0.4152925	1.2207607	0.305430244	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
-Paradoxurus_musanga	Viverridae	NA	83.5	49.75	0.06748	0.044707	0.4071457	0.4569807	1.267533	0.387716937	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
-Pardofelis_marmorata	Felidae	Carnivore	27.25	0	0.046358	0	0.6257861	0	0	0.346367626	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
-Prionodon_linsang	Prionodontidae	Omnivore	64.75	14.75	0.068992	0.030028	0.6794019	0.5438272	0.4575292	-0.126194882	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+Species	Family	Discrete	m1_opcr	m2_opcr	m1_dne	m2_dne	RFI_m1	RFI_m2	RLGA	log_cuberoot_mass	large_mammal	small_mammal	bird	herptile	fish	egg	carrion	hard_invert	soft_invert	seed	fruit	root	plant	hopkins_pineda	hopkins_van_valk	pineda	pantheria
+Felis_silvestris	Felidae	Carnivore	28.38	0	0.047616	0	0.6443494	0	0	0.50672898	0	3	1	1	1	0	0	1	0	0	1	0	1	Hypercarnivore	Hypercarnivore	Carnivore	Carnivore
+Galictis_cuja	Mustelidae	Carnivore	33.88	28.88	0.057122	0.042359	0.5706	0.4332245	0.6273779	0	0	3	2	2	0	1	0	1	0	0	1	0	0	Hypercarnivore	Hypercarnivore	NA	Carnivore
+Leopardus_wiedii	Felidae	Carnivore	39.88	0	0.043621	0	0.5369976	0	0	0.395012554	0	3	3	2	0	0	0	1	0	0	1	0	0	Hypercarnivore	Hypercarnivore	NA	Carnivore
+Poecilogale_albinucha	Mustelidae	Carnivore	44.62	0	0.0494	0	0.5558952	0	0.5050564	-0.392378717	0	3	1	0	0	0	0	0	0	0	0	0	0	Hypercarnivore	Hypercarnivore	NA	Carnivore
+Canis_simensis	Canidae	Carnivore	50.12	46.25	0.060620027	0.0536745	0.580463128	0.48287166	0.7950058	0.888192027	1	3	1	0	0	1	0	0	0	0	0	0	1	Hypercarnivore	Hypercarnivore	NA	Carnivore
+Cryptoprocta_ferox	Eupleridae	Carnivore	43.62	0	0.051472	0	0.6367071	0	0.243618	0.7504306	1	3	2	2	0	1	0	2	0	0	0	0	0	Hypercarnivore	Hypercarnivore	NA	Carnivore
+Gulo_gulo	Mustelidae	Carnivore	80.75	57.25	0.049206	0.034571	0.4960968	0.4406772	0.5995253	0.849619427	1	3	1	0	1	0	3	0	1	0	1	0	0	Hypercarnivore	Hypercarnivore	Carnivore	Carnivore
+Leptailurus_serval	Felidae	Carnivore	43.25	0	0.044934	0	0.6413194	0	0	0.39501255	1	3	2	2	0	0	0	2	0	0	0	0	1	Hypercarnivore	Hypercarnivore	NA	Carnivore
+Lynx_canadensis	Felidae	Carnivore	29	0	0.042244	0	0.5702588	0	0	0.756784394	1	3	1	0	0	0	1	0	0	0	0	0	0	Hypercarnivore	Hypercarnivore	NA	Carnivore
+Prionailurus_bengalensis	Felidae	Carnivore	23.12	0	0.0593	0	0.6580096	0	0	0.340933263	1	3	3	3	0	0	1	2	1	0	0	0	1	Hypercarnivore	Hypercarnivore	NA	Carnivore
+Pteronura_brasiliensis	Mustelidae	Piscivore	124.62	129.38	0.084652	0.037216	0.5631957	0.3830088	0.911731	1.086032179	1	1	0	1	3	0	0	1	0	0	0	0	0	Hypercarnivore	Hypercarnivore	NA	Carnivore
+Caracal_caracal	Felidae	Carnivore	25	0	0.041436	0	0.675876	0	0	0.827311301	2	3	3	1	1	0	1	1	0	0	1	0	1	Hypercarnivore	Hypercarnivore	NA	Carnivore
+Acinonyx_jubatus	Felidae	Carnivore	22.75	0	0.049662	0	0.6743835	0	0	1.307838372	3	1	1	0	0	0	0	0	0	0	0	0	0	Hypercarnivore	Hypercarnivore	Carnivore	Carnivore
+Canis_lupus	Canidae	Carnivore	56.88	66.45	0.052174552	0.043325208	0.51723056	0.433498491	0.6760716	1.152699248	3	2	2	1	1	1	1	1	0	0	1	0	1	Hypercarnivore	Hypercarnivore	Carnivore	Carnivore
+Catopuma_temminckii	Felidae	Carnivore	77.25	0	0.050941	0	0.604396	0	0	0.681550267	3	3	1	2	0	0	0	0	0	0	0	0	0	Hypercarnivore	Hypercarnivore	NA	Carnivore
+Crocuta_crocuta	Hyaenidae	Carnivore	47.25	0	0.046056	0	0.5588393	0	0.1597876	1.382996749	3	1	1	1	1	1	2	1	1	0	1	0	0	Hypercarnivore	Hypercarnivore	Carnivore	Carnivore
+Cuon_alpinus	Canidae	Omnivore	54	38.62	0.053241451	0.042151505	0.601815189	0.444717614	0.5955485	0.920003313	3	2	1	1	0	0	1	1	0	0	1	0	1	Hypercarnivore	Hypercarnivore	NA	Carnivore
+Lycaon_pictus	Canidae	Carnivore	40.88	32.75	0.052619756	0.038998639	0.567973643	0.427998484	0.6714358	1.030347333	3	2	0	2	0	2	1	0	0	0	0	0	0	Hypercarnivore	Hypercarnivore	NA	Carnivore
+Neofelis_nebulosa	Felidae	Carnivore	45.12	0	0.04319	0	0.573101	0	0	0.901460047	3	3	1	0	1	0	0	0	0	0	0	0	0	Hypercarnivore	Hypercarnivore	NA	Carnivore
+Panthera_leo	Felidae	Carnivore	37.88	0	0.041149	0	0.5147224	0	0	1.688845394	3	1	1	1	1	1	1	1	0	0	1	0	1	Hypercarnivore	Hypercarnivore	Carnivore	Carnivore
+Panthera_onca	Felidae	Carnivore	26.5	0	0.046583	0	0.5861459	0	0	1.476713023	3	3	1	3	1	1	0	1	0	0	1	0	1	Hypercarnivore	Hypercarnivore	NA	Carnivore
+Panthera_pardus	Felidae	Carnivore	39.38	0	0.042369	0	0.6077104	0	0	1.319635467	3	1	1	1	1	0	0	1	0	0	1	0	1	Hypercarnivore	Hypercarnivore	NA	Carnivore
+Puma_concolor	Felidae	Carnivore	38	0	0.041959	0	0.6534976	0	0	1.329377586	3	3	1	1	0	0	0	0	0	0	0	0	1	Hypercarnivore	Hypercarnivore	NA	Carnivore
+Speothos_venaticus	Canidae	Carnivore	44.25	17.5	0.056962919	0.034982842	0.60751581	0.45366012	0.5633992	0.614812435	3	3	2	2	0	0	0	0	0	0	1	0	0	Hypercarnivore	Hypercarnivore	NA	Carnivore
+Uncia_uncia	Felidae	Carnivore	49	0	0.044306	0	0.6241956	0	0	1.160413363	3	2	2	0	0	0	1	0	0	0	0	0	1	Hypercarnivore	Hypercarnivore	NA	Carnivore
+Pardofelis_marmorata	Felidae	Carnivore	27.25	0	0.046358	0	0.6257861	0	0	0.346367626	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	Hypercarnivore	Hypercarnivore	NA	Carnivore
+Vulpes_macrotis	Canidae	Carnivore	49.75	60.38	0.063379171	0.060569074	0.626291249	0.47974247	0.748356638	0.5013569	0	3	1	1	0	0	1	1	0	0	1	0	1	Hypercarnivore	Hypercarnivore	NA	NA
+Hyaena_hyaena	Hyaenidae	Carnivore	63.5	0	0.059846	0	0.5600044	0	0.356498	1.185786869	1	1	2	2	0	0	3	2	0	0	2	0	0	Hypercarnivore	Hypercarnivore	NA	Omnivore
+Ursus_maritimus	Ursidae	Carnivore	62.62	102.12	0.056284	0.055407	0.480285	0.418153	1.4780226	1.972699109	3	1	1	0	1	1	2	1	1	0	1	0	1	Hypercarnivore	Hypercarnivore	Carnivore	Omnivore
+Cynictis_penicillata	Herpestidae	Insectivore	57.25	54	0.074071	0.074076	0.6349513	0.6239403	1.1155013	-0.121564238	0	2	2	2	0	1	1	3	3	1	1	0	1	Hypocarnivore-Invertivorous	Hypocarnivore	NA	Carnivore
+Helogale_parvula	Herpestidae	Insectivore	58.12	55.62	0.06934	0.056863	0.7060941	0.6210172	1.1562243	-0.422150409	0	1	0	1	0	1	0	3	3	0	1	0	0	Hypocarnivore-Invertivorous	Hypocarnivore	NA	Carnivore
+Mungotictis_decemlineata	Eupleridae	Insectivore	49.88	37	0.074346	0.058777	0.6554206	0.4825213	0.9950298	-0.140008533	0	1	1	1	0	1	0	3	3	0	0	0	0	Hypocarnivore-Invertivorous	Hypocarnivore	NA	Carnivore
+Enhydra_lutris	Mustelidae	Piscivore	125.38	68.88	0.051036	0.03789	0.4153282	0.3903999	1.313	1.103647	0	0	0	0	3	0	0	3	2	0	0	0	0	Hypocarnivore-Invertivorous	Hypocarnivore	NA	Omnivore
+Fossa_fossana	Eupleridae	Carnivore	70	55.25	0.083868	0.076767	0.6048468	0.5527129	1.2318369	0.205778227	0	2	0	2	0	0	0	3	0	0	0	0	0	Hypocarnivore-Invertivorous	Hypocarnivore	NA	Omnivore
+Galerella_sanguinea	Herpestidae	Omnivore	48.12	NA	0.083688	NA	0.5270939	NA	0.7705539	-0.203039527	0	2	1	2	0	1	1	3	1	0	1	0	0	Hypocarnivore-Invertivorous	Hypocarnivore	Insectivore	Omnivore
+Lycalopex_vetulus	Canidae	Omnivore	59.12	74.12	0.068215542	0.057054383	0.591405906	0.44842593	1.143079	0.481007329	0	2	1	1	0	0	0	3	0	0	3	0	0	Hypocarnivore-Invertivorous	Hypocarnivore	NA	Omnivore
+Chrotogale_owstoni	Viverridae	Omnivore	79.62	65.75	0.079101	0.061807	0.5890956	0.4877962	1.6334342	0.394696478	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	Hypocarnivore-Invertivorous	Hypocarnivore	NA	Omnivore
+Hemigalus_derbyanus	Viverridae	Insectivore	89	58.38	0.081911	0.061961	0.5772668	0.5565514	1.9415259	0.077750762	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	Hypocarnivore-Invertivorous	Hypocarnivore	NA	Omnivore
+Ichneumia_albicauda	Herpestidae	Insectivore	81.25	112.38	0.083	0.068521	0.6644157	0.5731358	1.36277	0.42959726	0	1	0	2	0	0	1	3	3	0	1	0	0	Hypocarnivore-Omnivorous	Hypocarnivore	NA	Carnivore
+Otocyon_megalotis	Canidae	Insectivore	59.88	49.5	0.061241298	0.053098796	0.582088553	0.544059514	1.595193875	0.4701761	0	1	1	1	0	1	1	3	1	1	2	0	1	Hypocarnivore-Omnivorous	Hypocarnivore	Insectivore	Carnivore
+Ailuropoda_melanoleuca	Ursidae	Herbivore	133.12	206.38	0.070729	0.063514	0.3833711	0.2937344	1.4275585	1.59022818	0	1	0	0	1	0	0	0	0	0	0	0	3	Hypocarnivore-Omnivorous	Hypocarnivore	Herbivore	Herbivore
+Ailurus_fulgens	Ailuridae	Herbivore	99.62	110.62	0.079922	0.079639	0.452552	0.4310733	1.4142072	0.547629387	0	1	1	0	0	1	0	0	1	1	1	1	3	Hypocarnivore-Omnivorous	Hypocarnivore	Herbivore	Herbivore
+Arctictis_binturong	Viverridae	Frugivore	71.12	41.5	0.053706	0.03446	0.4691966	0.4535101	1.1861227	0.854982863	0	2	2	0	1	0	2	2	2	0	3	0	2	Hypocarnivore-Omnivorous	Hypocarnivore	NA	Herbivore
+Helarctos_malayanus	Ursidae	Omnivore	102.38	152.75	0.051489	0.066383	0.4100491	0.3819306	1.6197749	1.34812662	0	1	0	0	1	0	0	3	3	0	3	1	1	Hypocarnivore-Omnivorous	Hypocarnivore	NA	Herbivore
+Nandinia_binotata	Nandiniidae	Omnivore	58.12	38.25	0.054894	0.038295	0.5273942	0.4471802	0.8061497	0.257812004	0	1	2	0	0	0	1	1	0	0	3	0	0	Hypocarnivore-Omnivorous	Hypocarnivore	NA	Herbivore
+Bassaricyon_alleni	Procyonidae	Frugivore	40.38	29.62	0.054792	0.028756	0.4123519	0.2625535	2.2535234	0.096560025	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	Hypocarnivore-Omnivorous	Hypocarnivore	NA	NA
+Arctonyx_collaris	Mustelidae	Omnivore	99.62	61.25	0.081657	0.05033	0.4344466	0.544532	1.1837382	0.70001429	0	0	1	1	0	0	0	3	3	1	3	1	1	Hypocarnivore-Omnivorous	Hypocarnivore	NA	Omnivore
+Atilax_paludinosus	Herpestidae	Omnivore	64.75	41.5	0.056742	0.052028	0.4622921	0.437708	1.0127798	0.426992763	0	3	1	3	1	1	1	3	1	1	2	0	0	Hypocarnivore-Omnivorous	Hypocarnivore	NA	Omnivore
+Bassariscus_astutus	Procyonidae	Omnivore	67.25	76.25	0.081705	0.071389	0.5714647	0.4991596	1.1009056	0.003438867	0	3	1	1	1	0	1	3	3	1	3	0	2	Hypocarnivore-Omnivorous	Hypocarnivore	NA	Omnivore
+Cerdocyon_thous	Canidae	Carnivore	64.88	66.88	0.067559003	0.064144192	0.585277368	0.513754322	0.9907795	0.582582789	0	2	2	2	1	1	2	2	0	0	2	0	1	Hypocarnivore-Omnivorous	Hypocarnivore	NA	Omnivore
+Civettictis_civetta	Viverridae	Omnivore	107	97.62	0.075849	0.074364	0.579601	0.5034261	1.186401	0.830395077	0	2	2	2	1	2	2	2	2	0	2	0	2	Hypocarnivore-Omnivorous	Hypocarnivore	NA	Omnivore
+Lycalopex_sechurae	Canidae	Omnivore	61.25	57	0.070937702	0.060368056	0.629202268	0.501324631	1.0210425	0.481049058	0	2	1	1	0	2	2	2	0	2	3	0	0	Hypocarnivore-Omnivorous	Hypocarnivore	NA	Omnivore
+Melursus_ursinus	Ursidae	Omnivore	75.38	113.62	0.055867	0.056249	0.4174143	0.3845186	1.5881151	1.535056695	0	0	0	1	0	0	1	3	0	1	3	1	1	Hypocarnivore-Omnivorous	Hypocarnivore	NA	Omnivore
+Nasua_nasua	Procyonidae	Omnivore	63.12	62	0.065085	0.062005	0.5099441	0.4931237	1.9676313	0.442844275	0	1	1	1	1	1	1	3	3	0	3	0	1	Hypocarnivore-Omnivorous	Hypocarnivore	NA	Omnivore
+Nasuella_olivacea	Procyonidae	Omnivore	80.5	96.12	0.065459	0.065757	0.504159	0.5082047	2.1752936	0.09755405	0	0	0	2	0	0	1	3	3	0	3	1	1	Hypocarnivore-Omnivorous	Hypocarnivore	NA	Omnivore
+Nyctereutes_procyonoides	Canidae	Omnivore	101.25	54.88	0.068831395	0.055939369	0.690231375	0.538803064	0.9488082	0.479549073	0	2	2	2	2	2	2	2	2	2	2	2	2	Hypocarnivore-Omnivorous	Hypocarnivore	NA	Omnivore
+Paguma_larvata	Viverridae	Frugivore	118.88	49	0.062607	0.041106	0.4608703	0.4978496	1.1686176	0.486205008	0	3	2	1	1	0	0	3	0	0	3	0	1	Hypocarnivore-Omnivorous	Hypocarnivore	NA	Omnivore
+Potos_flavus	Procyonidae	Frugivore	104.25	84.5	0.051327	0.062418	0.3786918	0.3202268	2.3164313	0.297579856	0	0	0	0	0	0	0	1	1	0	3	0	1	Hypocarnivore-Omnivorous	Hypocarnivore	NA	Omnivore
+Procyon_lotor	Procyonidae	Omnivore	69.75	94.88	0.078495	0.066908	0.5481413	0.4563632	1.6235198	0.617394429	0	3	2	2	2	1	0	3	0	3	3	0	1	Hypocarnivore-Omnivorous	Hypocarnivore	Granivore	Omnivore
+Spilogale_putorius	Mephitidae	Omnivore	54	51.75	0.069604	0.05777	0.5430703	0.4783962	1.0332975	-0.18943195	0	3	2	1	0	1	2	3	3	0	1	0	2	Hypocarnivore-Omnivorous	Hypocarnivore	NA	Omnivore
+Viverricula_indica	Viverridae	Carnivore	65.62	52.12	0.07656	0.054698	0.6306044	0.535653	1.0553015	0.35706666	0	3	1	1	1	0	0	3	3	0	3	0	3	Hypocarnivore-Omnivorous	Hypocarnivore	NA	Omnivore
+Vulpes_zerda	Canidae	Omnivore	51.25	51.62	0.063696489	0.058355988	0.595810546	0.469406523	1.0560992	0.091818376	0	2	2	2	0	1	0	3	1	0	2	2	0	Hypocarnivore-Omnivorous	Hypocarnivore	NA	Omnivore
+Eira_barbara	Mustelidae	Omnivore	42.75	25.88	0.056576	0.037128	0.4916013	0.423064	0.7258297	0.473161637	1	3	2	2	0	0	2	2	2	0	3	0	0	Hypocarnivore-Omnivorous	Hypocarnivore	NA	Omnivore
+Procyon_cancrivorus	Procyonidae	Omnivore	82.88	78.88	0.078495	0.066908	0.5306937	0.4433818	1.6072135	0.645369326	1	2	1	2	1	0	0	2	0	0	3	0	0	Hypocarnivore-Omnivorous	Hypocarnivore	NA	Omnivore
+Tremarctos_ornatus	Ursidae	Herbivore	138.75	219.12	0.06131	0.064045	0.4750622	0.4230374	1.5371211	1.604540701	1	1	1	0	0	0	1	1	1	0	3	0	3	Hypocarnivore-Omnivorous	Hypocarnivore	NA	Omnivore
+Ursus_arctos	Ursidae	Omnivore	92.62	96.62	0.055196	0.056483	0.5556589	0.4324583	1.6561096	1.75986014	2	1	2	0	2	2	2	2	2	2	2	2	2	Hypocarnivore-Omnivorous	Hypocarnivore	Herbivore	Omnivore
+Arctogalidia_trivirgata	Viverridae	NA	93.25	50.25	0.064291	0.038079	0.5160383	0.5352555	1.1731327	0.281066491	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	Hypocarnivore-Omnivorous	Hypocarnivore	NA	Omnivore
+Mydaus_javanensis	Mephitidae	Insectivore	103.38	83	0.100941	0.068386	0.5488862	0.4152925	1.2207607	0.305430244	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	Hypocarnivore-Omnivorous	Hypocarnivore	NA	Omnivore
+Bdeogale_jacksoni	Herpestidae	Omnivore	83.75	72.75	0.062544	0.055654	0.4966383	0.5013212	1.959717989	0.3054302	0	3	2	2	0	2	2	3	1	0	0	0	0	Mesocarnivore	Mesocarnivore	NA	Carnivore
+Hydrictis_maculicollis	Mustelidae	Piscivore	106.12	56.5	0.082695	0.045001	0.5270371	0.4320222	0.899769	0.476812678	0	0	1	2	3	0	0	3	1	0	0	0	0	Mesocarnivore	Mesocarnivore	NA	Carnivore
+Lontra_canadensis	Mustelidae	Piscivore	92.75	59.75	0.072033	0.039843	0.515222	0.3713446	1.3176886	0.696769923	0	1	1	2	3	0	0	3	1	0	1	0	1	Mesocarnivore	Mesocarnivore	NA	Carnivore
+Lutra_lutra	Mustelidae	Piscivore	147	115.12	0.073453	0.050751	0.5335126	0.4849644	0.9771992	0.727509032	0	2	2	3	3	0	0	3	0	0	1	0	0	Mesocarnivore	Mesocarnivore	Carnivore	Carnivore
+Lutrogale_perspicillata	Mustelidae	Piscivore	91.5	77.88	0.07283	0.044188	0.5380622	0.4202428	1.0039739	0.729151221	0	2	1	2	3	0	0	2	1	0	0	0	0	Mesocarnivore	Mesocarnivore	NA	Carnivore
+Martes_americana	Mustelidae	Carnivore	61.5	32.88	0.052622	0.037306	0.5718012	0.4078119	0.7765543	-0.045009886	0	3	2	2	2	2	2	2	2	0	2	0	0	Mesocarnivore	Mesocarnivore	NA	Carnivore
+Taxidea_taxus	Mustelidae	Carnivore	69.62	37	0.066739	0.052717	0.543427	0.5351455	0.9920533	0.686504344	0	3	2	2	1	2	0	2	1	1	0	0	0	Mesocarnivore	Mesocarnivore	NA	Carnivore
+Vormela_peregusna	Mustelidae	Carnivore	39	NA	0.064927	NA	0.6155518	NA	0.6706857	-0.173552376	0	3	2	2	0	0	0	3	0	0	1	0	1	Mesocarnivore	Mesocarnivore	Carnivore	Carnivore
+Vulpes_rueppellii	Canidae	Omnivore	64.75	47.5	0.066508673	0.05663617	0.61379819	0.443980166	0.8869508	0.392881922	0	2	2	2	0	0	0	2	0	0	2	0	2	Mesocarnivore	Mesocarnivore	NA	Carnivore
+Vulpes_velox	Canidae	Omnivore	48.5	42.25	0.058180579	0.051920328	0.554576861	0.406089424	0.752732361	0.2454022	0	3	2	2	1	1	2	2	1	1	1	0	1	Mesocarnivore	Mesocarnivore	NA	Carnivore
+Vulpes_vulpes	Canidae	Omnivore	75.25	54.88	0.064031244	0.059695189	0.630924749	0.46385028	0.7758084	0.524282871	0	3	2	0	1	1	1	2	2	2	2	0	0	Mesocarnivore	Mesocarnivore	Carnivore	Carnivore
+Vulpes_lagopus	Canidae	Carnivore	43.62	44.88	0.05744022	0.045314904	0.570527338	0.411570598	0.6907301	0.425527575	1	3	3	0	2	3	2	2	2	0	1	0	0	Mesocarnivore	Mesocarnivore	NA	Carnivore
+Canis_latrans	Canidae	Omnivore	80.88	57.62	0.066780069	0.058849947	0.598847017	0.47079111	0.7267341	0.827999301	2	3	2	2	2	0	2	2	0	0	2	0	1	Mesocarnivore	Mesocarnivore	NA	Carnivore
+Lycalopex_culpaeus	Canidae	Omnivore	60.25	46.25	0.065671689	0.057516812	0.612311183	0.507568876	0.7791104	0.717882932	3	3	1	1	0	1	1	1	0	0	2	0	0	Mesocarnivore	Mesocarnivore	NA	Carnivore
+Herpestes_brachyurus	Herpestidae	NA	66.38	44.5	0.074749	0.055817	0.6357918	0.5904035	1.1630738	0.11124187	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	Mesocarnivore	Mesocarnivore	NA	Carnivore
+Neovison_vison	Mustelidae	Carnivore	75.38	49.38	0.062869	0.04647	0.5506722	0.4413474	0.7066534	-0.003550002	0	3	2	2	2	2	1	1	1	0	0	0	0	Mesocarnivore	Mesocarnivore	NA	NA
+Canis_adustus	Canidae	Omnivore	90.5	87.62	0.069330645	0.062737667	0.60083042	0.469628416	0.9875579	0.780361143	0	3	1	1	0	1	1	3	2	1	3	0	1	Mesocarnivore	Mesocarnivore	NA	Omnivore
+Crossarchus_obscurus	Herpestidae	Omnivore	125.25	NA	0.073669	NA	0.6763917	NA	1.71201	0.11098631	0	1	1	1	0	2	0	3	3	0	1	0	0	Mesocarnivore	Mesocarnivore	NA	Omnivore
+Lycalopex_gymnocercus	Canidae	Omnivore	67.25	63	0.068031167	0.062159046	0.598137455	0.498682532	0.8986358	0.504504982	0	3	2	1	1	0	2	2	2	0	2	0	0	Mesocarnivore	Mesocarnivore	NA	Omnivore
+Mellivora_capensis	Mustelidae	Carnivore	38.25	0	0.047499	0	0.485592	0	0.5860398	0.732407822	0	3	1	1	0	0	1	3	3	0	1	1	0	Mesocarnivore	Mesocarnivore	NA	Omnivore
+Mephitis_mephitis	Mephitidae	Omnivore	48.25	53	0.078589	0.04809	0.5514092	0.5002191	1.0882631	0.291821524	0	2	2	0	0	2	0	3	3	0	2	0	0	Mesocarnivore	Mesocarnivore	NA	Omnivore
+Urocyon_cinereoargenteus	Canidae	Omnivore	72.25	85.62	0.067284973	0.066173268	0.554622087	0.450493209	0.9699766	0.447944334	0	3	2	0	0	0	1	3	1	2	3	0	0	Mesocarnivore	Mesocarnivore	NA	Omnivore
+Vulpes_chama	Canidae	Carnivore	59.88	46.88	0.062503294	0.05280627	0.589410049	0.477312005	0.9522351	0.357171707	0	3	2	2	0	2	1	2	2	0	1	0	1	Mesocarnivore	Mesocarnivore	NA	Omnivore
+Canis_aureus	Canidae	Omnivore	86.25	47.12	0.065594562	0.055374872	0.597617246	0.495023971	0.8095978	0.755953021	1	3	2	1	1	0	2	1	0	1	2	0	0	Mesocarnivore	Mesocarnivore	Carnivore	Omnivore
+Chrysocyon_brachyurus	Canidae	Omnivore	82.25	55.75	0.063545115	0.055210522	0.583360169	0.450006114	0.8685346	1.049841916	1	3	2	2	0	0	0	2	0	0	3	0	0	Mesocarnivore	Mesocarnivore	NA	Omnivore
+Canis_mesomelas	Canidae	Omnivore	77.38	65.75	0.06592319	0.057937615	0.646338471	0.502955063	0.7842536	0.703295291	2	2	2	2	0	0	2	2	0	0	2	0	2	Mesocarnivore	Mesocarnivore	NA	Omnivore
+Cynogale_bennettii	Viverridae	NA	176.25	128.75	0.078617	0.061428	0.5192607	0.4956966	1.6946118	0.482037199	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	Mesocarnivore	Mesocarnivore	NA	Omnivore
+Galidia_elegans	Eupleridae	NA	55.12	NA	0.069924	NA	0.5960898	NA	0.7813599	-0.070240344	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	Mesocarnivore	Mesocarnivore	NA	Omnivore
+Prionodon_linsang	Prionodontidae	Omnivore	64.75	14.75	0.068992	0.030028	0.6794019	0.5438272	0.4575292	-0.126194882	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	Mesocarnivore	Mesocarnivore	NA	Omnivore
+Conepatus_mesoleucus	Mustelidae	Insectivore	82.12	53.38	0.073369	0.047432	0.4655879	0.3255179	1.2401183	0.397358436	0	1	1	1	0	1	1	3	3	1	2	0	0	NA	NA	NA	NA
+Parahyaena_brunnea	Hyaenidae	Carnivore	103.25	0	0.055154	0	0.5489232	0	0.2924467	1.253562243	0	2	2	2	0	2	3	2	0	0	2	0	0	NA	NA	NA	NA
+Pekania_pennanti	Mustelidae	Carnivore	89.88	83.38	0.059205	0.041038	0.5153342	0.2994516	0.7611714	0.44058528	0	3	3	2	0	1	3	1	1	0	1	0	0	NA	NA	NA	NA
+Proteles_cristatus	Hyaenidae	Insectivore	14	0	0.031118	0	0.6479798	0	0	1.3	0	0	0	0	0	0	0	3	1	0	0	0	0	NA	NA	NA	NA
+Viverra_zibetha	Viverridae	Carnivore	79.88	36.62	0.070178	0.066112	0.5739236	0.5386486	0.9415484	0.737873148	0	2	1	1	1	1	0	1	1	0	3	0	0	NA	NA	NA	NA
+Catopuma_badia	Felidae	NA	30.5	0	0.048604	0	0.649503	0	0	0.41080677	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+Galidictis_fasciata	Eupleridae	NA	124.38	64.62	0.0804	NA	0.6955435	0.659842	0.9971994	-0.199285061	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+Paradoxurus_musanga	Viverridae	NA	83.5	49.75	0.06748	0.044707	0.4071457	0.4569807	1.267533	0.387716937	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA

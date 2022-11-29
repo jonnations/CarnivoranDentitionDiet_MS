@@ -353,7 +353,7 @@ display: none;
 
 
 <div id="carnivoran-dentition-ordinal-diet-rankings" class="section level1">
-<h1># Carnivoran Dentition &amp; Ordinal Diet Rankings</h1>
+<h1>Carnivoran Dentition &amp; Ordinal Diet Rankings</h1>
 <div id="predicting-multivariate-ecology-using-phenotypic-data-yields-novel-insights-into-the-diets-of-cryptic-and-extinct-taxa" class="section level2">
 <h2>Predicting multivariate ecology using phenotypic data yields novel
 insights into the diets of cryptic and extinct taxa</h2>
@@ -363,8 +363,12 @@ analyses and generate the plots from this manuscript are found here.</p>
 <div id="required-packages" class="section level2">
 <h2>Required Packages:</h2>
 <ul>
-<li><p>pacman, tidyverse, tidybayes, brms, cmdstanr, phytools, geiger,
-mclust, polycor, NbClust, ggstar, janitor, here, caret</p></li>
+<li><p><code>pacman</code>, <code>here</code>, <code>brms</code>,
+<code>cmdstanr</code>, <code>tidyverse</code>, <code>tidybayes</code>,
+<code>phytools</code>, <code>geiger</code>, <code>mclust</code>,
+<code>polycor</code>, <code>NbClust</code>, <code>ggstar</code>,
+<code>janitor</code>, <code>caret</code>, <code>scico</code>,
+<code>furrr</code> (for parallel computing)</p></li>
 <li><p>All of these packages should be available in CRAN. See the brms
 <a href="https://github.com/paul-buerkner/brms#faq">FAQ</a> for details
 on installing Stan, cmndstanr, and brms. <a href="http://trinker.github.io/pacman/vignettes/Introduction_to_pacman.html">pacman</a>
@@ -376,7 +380,7 @@ makes it easy to install and load multiple packages.</p></li>
 <ul>
 <li>The contents of this repo is split up into 3 main
 directories:<code>Code</code>, <code>Data</code>, and
-<code>Plots</code>. We use the awesome package called “<a href="https://here.r-lib.org/">here</a>” to deal with the repo
+<code>Plots</code>. We use the awesome package “<a href="https://here.r-lib.org/">here</a>” to deal with the repo
 structure. Currently anyone can download the repo <strong><em>as
 is</em></strong> and run the code without dealing with paths (if all
 packages are installed).</li>
@@ -400,8 +404,8 @@ wrangles the data and calls each food item script individually.
 Scripts</em></strong> because the brms model objects are necessary for
 those. The outputs of the models will be stored in the
 <code>Code/Models/mod_outputs</code> directory (see below). These are
-imported later for predictive and plotting scripts (rather than running
-the whole thing again).</p></li>
+imported later for predictive and plotting scripts (it’s better than
+running all the models again).</p></li>
 <li><p>All of our ordinal <strong>brms</strong> models use one of three
 priors on the response variable (the ranks): A Normal distribution, a
 Student-<span class="math inline">\(T\)</span> distribution, and a
@@ -478,6 +482,34 @@ they are reported along side the additional predictions in the
 <div id="posterior-predicitons-of-extant-data-rich-data-deficient-and-fossil-taxa" class="section level4">
 <h4>Posterior Predicitons of Extant Data-Rich, Data-Deficient, and
 Fossil Taxa</h4>
+<ul>
+<li>We generate model_averaged predictions of the Fossil and
+Data-Deficient Taxa, as well as the Data-Rich Extant Taxa, in the script
+<code>Code/Weighted_Predictions.Rmd</code>. This generates four
+<code>Data</code> files:
+<ol style="list-style-type: decimal">
+<li><code>Data/Model_Averaged_Post_Sims.csv</code> - 1000 posterior
+probability draws of the model averaged probabilities for each
+species/food item from the extant, data rich taxa. Columns are the
+probabilities of the 4 rankings, plus a weighted importance score for
+each row. <em>Warning, &gt;1m rows.</em></li>
+<li><code>Data/Extant_Predictions_Summary.csv</code> - The means of each
+of the 1000 draws from the <code>Model_Averaged_Post_Sims.csv</code>
+data frame. 13 * 89 = 1157 rows.</li>
+<li><code>Data/Model_Averaged_Post_Sims_Crypt_Fos.csv</code> - The same
+as above, but for the data deficient extant and fossil taxa.</li>
+<li><code>Data/Crypt_Fos_Predictions_Summary.csv</code> - same as 2, but
+for the data deficient extant and fossil taxa.<br />
+</li>
+</ol></li>
+<li>The summary files are used to generate figures 4 &amp; 5, and some
+of the values are reported in the text. The larger <code>Sims</code>
+files are used in the nearest neighbor predictions below. This script
+uses several custom functions to perform the tasks and makes use of <a href="http://mjskay.github.io/tidybayes/articles/tidybayes.html"><code>tidybayes</code></a>.</li>
+</ul>
+</div>
+<div id="nearest-neighbor-calculations" class="section level4">
+<h4>Nearest Neighbor Calculations</h4>
 <div id="section" class="section level12">
 <p class="heading"></p>
 <p>Weighted Predictions New is the next thing Also the model figures!
