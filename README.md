@@ -14,7 +14,7 @@ GitHub repo for the manuscript. All scripts necessary to perform the analyses an
 
 ## Layout:
 
-- The contents of this repo is split up into 3 main directories:`Code`, `Data`, and `Plots`. We use the package [here](https://here.r-lib.org/) to deal with the repo structure. Currently anyone can download the repo ***as is*** and run the code without dealing with paths (if all packages are installed).
+- The contents of this repo is split up into 3 main directories:`Code`, `Data`, and `Plots`. We use the awesome package called  "[here](https://here.r-lib.org/)" to deal with the repo structure. Currently anyone can download the repo ***as is*** and run the code without dealing with paths (if all packages are installed).
 
 ## **`Code`** 
 
