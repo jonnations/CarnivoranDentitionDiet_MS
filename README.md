@@ -8,7 +8,7 @@ GitHub repo for the manuscript. All scripts necessary to perform the analyses an
 
 ## Required Packages:
 
-- pacman, tidyverse, tidybayes, brms, cmdstanr, phytools, geiger, mclust, polycor, NbClust, ggstar, janitor, here, caret
+- pacman, tidyverse, tidybayes, brms, cmdstanr, phytools, geiger, mclust, polycor, NbClust, ggstar, janitor, here, caret, scico
 
 - All of these packages should be available in CRAN. See the brms [FAQ](https://github.com/paul-buerkner/brms#faq) for details on installing Stan, cmndstanr, and brms. [pacman](http://trinker.github.io/pacman/vignettes/Introduction_to_pacman.html) makes it easy to install and load multiple packages. 
 
@@ -27,17 +27,22 @@ GitHub repo for the manuscript. All scripts necessary to perform the analyses an
 
 - To determine the parameters for each prior distribution on the response variables, we ran prior predictive checks. Similar to the model scripts, these are in the `Code/Prior_Pred_Checks/` directory and labeled `FOODITEM_Prior_Check.Rmd`. The script `Prior_Pred_Checks_All.Rmd` runs all 13 of these scripts, and stores the outputs in the `Code/Prior_Pred_Checks/prior_pred_outputs` directory. **Figure_S2_Prior_Pred_Checks.pdf**, stored in the `Plots dir`, shows the prior distributions that we used for each tooth metric for each food item. Note that we used a $N$(0,1) prior on all of our predictor variables, as they are all scaled to a mean of 0 and an sd of 1, and this loosely regularizing prior keeps the models in check but still allows for large effect sizes. 
 
-#### Posterior Model Verification
+#### Model Posterior Validation & Accuracy Checks
 
-- We performed Posterior Predictive Checks on every model that was assigned a loo model weight > 0. The model outputs are stored in the `Code/Models/mod_outputs` directory. The `posterior_pred_plots.Rmd` script calls these and plots them in the same way as the prior predictive plots. **Figure_S3_Posterior_Pred_Checks.pdf** in the `Plots` dir shows the results, which look quite good (mean is mostly centered on empirical values with little uncertainty on most food items). 
+- We performed Posterior Predictive Checks on every model that has a loo model weight > 0. The model outputs are stored in the `Code/Models/mod_outputs` directory. The `posterior_pred_plots.Rmd` script calls these and plots them in the same way as the prior predictive plots. **Figure_S3_Posterior_Pred_Checks.pdf** in the `Plots` dir shows the results, which look quite good (mean is mostly centered on empirical values with little uncertainty on most food items). 
 
-- We checked the accuracy of our model predictions compared to the empirical ranks for each species. This script is in `Code/Accuracy_Predictions.Rmd` and the results are reported in Table 4 of the text. We report these results as percentages of estimates that are the exact rank, and within 1 rank, which we consider a good estimate. We estimate 1000 draws from the posterior of each model, then model average over them using the LOO weights, then estimate the accuracy of the predictions. `Data/Prediction_Table.csv` gives the mean predictions from the 1000 samples, and `Data/Accuracy_Table.csv` provides the values in table 4. The `Code/Accuracy_Predictions.Rmd` script contains a lot of custom functions, some parallel computing, and is time intensive. Reach out with questions :)
+- We checked the accuracy of our model predictions by comparing them to the empirical ranks for each species. This script is in `Code/Accuracy_Predictions.Rmd`, and the results are reported in Table 4 of the text and are saved as `Data/Accuracy_Table.csv`. We report these results as percentages of estimates that are the exact rank, and within 1 rank (which we consider a good estimate in this ranking scale). We estimate 1000 draws from the posterior of each model, then model average over them using the LOO weights, then estimate the accuracy of the predictions. `Data/Prediction_Table.csv` gives the mean predictions from the 1000 samples, and `Data/Accuracy_Table.csv` provides the values in table 4. The `Code/Accuracy_Predictions.Rmd` script contains a few custom functions, some parallel computing, and is time intensive. Reach out with questions :)
 
-- Our third means of validating the predictive power of our models is by confirming that the LOO cross validation provides acceptable results. There is a lot of information on CV and LOO CV out there (try starting with this [Excellent FAQ Page](https://mc-stan.org/loo/articles/online-only/faq.html)!) In addition to model comparison, which we did using model weights generated from LOO scores, we are interested in the stability of our estimates. If a species is removed from the analysis, does that alter the prediction? The Pareto-$K$ diagnostic score reports just that. If, when the sample is removed from the analysis, the posterior changes, then there is a high Pareto-$K$, and a small Pareto-$K$ means that the estimate is stable without the particular sample. We gathered these scores in the `Code/Accuracy_Predictions.Rmd` script described above, and they are reported along side the additional predictions in the `Data/Prediction_Table.csv` file. 
+- Our third method of validating the predictive power of our models is interrogating our predictive accuracy and model fit using leave-one-out cross validation. There is a lot of information on CV, LOO CV, and the Pareto-Smoothed-Importance-Sampling (PSIS) method of LOO approximation out there (try starting with this [Excellent FAQ Page](https://mc-stan.org/loo/articles/online-only/faq.html) from the `LOO` package). In addition to model comparison, which we did above by using model weights generated from LOO scores, we are interested in the stability of our estimates within individual models. If a species is removed from the analysis, does that alter the prediction of other species? The Pareto-$K$ diagnostic score answers that. If, when the sample is removed from the analysis, the posterior changes substantially, it produces a high Pareto-$K$ estimate, and a small Pareto-$K$ means that the estimate is stable without the particular sample. We gathered these scores in the `Code/Accuracy_Predictions.Rmd` script described above, and they are reported along side the additional predictions in the `Data/Prediction_Table.csv` file. 
+
+#### Posterior Predicitons of Extant Data-Rich, Data-Deficient, and Fossil Taxa
+
+- We generate model_averaged predictions of the Fossil and Data-Deficient Taxa, as well as the Data-Rich Extant Taxa, in the script `Code/Weighted_Predictions.Rmd`. 
 
 ############
 
-Weighted Predictions New runs 
+Weighted Predictions New is the next thing
+Also the model figures! Those should be above validation? Or a separate file below (maybe this)
 
 
 ####

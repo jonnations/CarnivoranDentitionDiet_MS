@@ -1,0 +1,632 @@
+---
+title: "Weighted_Predictions"
+output: html_notebook
+---
+
+# Prediction methods
+
+
+```{r}
+pacman::p_load(geiger, tidyverse, patchwork, tidybayes, here)
+
+here::i_am('Code/Weighted_Predicitons.Rmd')
+
+options(dplyr.summarise.inform = FALSE)
+scale2 <- function(x, na.rm = TRUE) (x - mean(x, na.rm = na.rm)) / sd(x, na.rm)
+add1 <- function(x, na.rm = TRUE) (x + 1)
+mode <- function(codes){
+  which.max(tabulate(codes))
+}
+```
+
+#### Data
+
+```{r}
+# Read fossil data and calculate body size estimate ^1/3
+fos_dat_1 <- read_csv(here("Data", "fossil_carnivoran_data.csv")) %>% 
+  mutate(log_cuberoot_mass = log(mass_kg^(1/3)))
+# Read extant data
+dat <- read.delim(here("Data", "Master_Data.txt")) %>% 
+  mutate(mass_kg = exp(log_cuberoot_mass)^3,
+         phylo = Species) %>% 
+  # drop taxa with missing m2 data
+  drop_na(m2_dne) %>% 
+  #combine extant and fossil dat for tip dropping and standardizing
+  bind_rows(fos_dat_1) %>% 
+  # Standardize all data together
+  mutate_at(vars(4:11), scale2) %>% 
+  mutate_at(vars(12:24), add1) %>% 
+  mutate_at(vars(12:24), as.ordered)  
+
+rm(fos_dat_1)
+row.names(dat)<-dat$Species
+
+fos_dat <- dat %>% drop_na(m1_tooth_length)
+cryp_sp <- c("Arctogalidia_trivirgata", "Bassaricyon_alleni", "Catopuma_badia", "Chrotogale_owstoni", "Cynogale_bennettii", "Galidia_elegans", "Galidictis_fasciata", "Hemigalus_derbyanus", "Herpestes_brachyurus", "Mydaus_javanensis", "Paradoxurus_musanga", "Pardofelis_marmorata", "Prionodon_linsang")
+c_dat <- dat %>% filter(Species %in% cryp_sp)
+dat <- dat %>% drop_na(bird)
+
+cfdat <- fos_dat %>% bind_rows(c_dat) %>%  mutate(Species=recode(Species, "Smilodon_californicus_PM_3702"="Smilodon_fatalis"))
+
+weights = read_csv(here("Data", "Test_weights_all.csv"))
+```
+# Extant Predictions  
+
+
+#### Functions  
+```{r}
+expred <- function(mod, weight){
+  epred_draws({{mod}}, newdata = dat, ndraws = 1000, probs = c(0.055, 0.945)) %>% 
+    as.data.frame() %>% 
+    select(Species, .draw, .category, .epred) %>% 
+    arrange(Species, .draw, .category) %>% 
+    pivot_wider(names_from = .category, values_from = .epred) %>% 
+    mutate_at(3:6, ~ . * {{weight}}) %>% 
+    mutate(.draw = as.factor(.draw)) %>% 
+    rename(P1 = "1",
+           P2 = "2",
+           P3 = "3",
+           P4 = "4")
+}
+
+
+pred <- function(dat, item){ 
+  dat %>% group_by(Species, .draw) %>% 
+  summarise_at(c("P1", "P2", "P3", "P4"), sum) %>% 
+  mutate(wa_rank = P1 + (2 * P2) + (3 * P3) + (4 * P4),
+          item = {{item}})
+}
+```
+
+The first function uses the `epred_draws` function from `tidybayes` to generate a dataframe of probabilities for each ranking 1000 predicted draws from the posterior of the model. Then it multiplies the values by the model weights (which get summed after to produce a posterior distribution of model averaged predictions for each rank).
+
+The second function generates a weighted importance score (weighted average) for each posterior draw. 
+
+#### Bird  
+```{r}
+bird.w <- weights %>% filter(diet == "bird")
+bird.w
+```
+
+
+Bird uses RFI, RLGA, and All
+```{r}
+#Pull probabilities, then multiply by weight
+pred.bird_RLGA <- expred(readRDS(here("Code/Models/mod_outputs/bird_md_RLGA.Rds")),  bird.w[[2]][[1]])
+pred.bird_all <-  expred(readRDS(here("Code/Models/mod_outputs", "bird_md_ALL.Rds")),   bird.w[[2]][[2]])
+pred.bird_RFI <-  expred(readRDS(here("Code/Models/mod_outputs", "bird_mn_RFI.rds")),   bird.w[[2]][[3]])
+
+#sum weights
+pred.bird <- bind_rows(pred.bird_all, pred.bird_RFI, pred.bird_RLGA) %>% 
+#then calculate weighted average (weighted importance score)
+  pred(., "bird")
+#remove excess dataframes
+rm( pred.bird_RFI , pred.bird_RLGA, pred.bird_all )
+```
+
+
+#### Carrion
+```{r}
+carrion.w <- weights %>% filter(diet == "carrion")
+carrion.w
+```
+
+```{r}
+pred.carrion_RLGA <- expred(readRDS(here("Code/Models/mod_outputs", "carrion_md_RLGA.Rds")), carrion.w[[2]][[1]])
+pred.carrion_OPCR <- expred(readRDS(here("Code/Models/mod_outputs", "carrion_md_OPCR.Rds")), carrion.w[[2]][[2]])
+
+pred.carrion <- bind_rows(pred.carrion_OPCR, pred.carrion_RLGA) %>% pred(., "carrion")
+
+rm( pred.carrion_OPCR , pred.carrion_RLGA)
+```
+
+#### Egg  
+```{r}
+egg.w <- weights %>% filter(diet == "egg")
+egg.w
+```
+
+```{r}
+pred.egg_RFI <- expred(readRDS(here("Code/Models/mod_outputs", "egg_md_RFI.Rds")),   egg.w[[2]][[1]])
+pred.egg_DNE <- expred(readRDS(here("Code/Models/mod_outputs", "egg_mn_DNE.Rds")),   egg.w[[2]][[2]])
+pred.egg_RLGA <- expred(readRDS(here("Code/Models/mod_outputs", "egg_mn_RLGA.Rds")), egg.w[[2]][[3]])
+
+pred.egg <- bind_rows(pred.egg_DNE, pred.egg_RFI, pred.egg_RLGA) %>% pred(., "egg")
+
+rm( pred.egg_DNE , pred.egg_RFI, pred.egg_RLGA)
+```
+
+#### Fish 
+
+```{r}
+fish.w <- weights %>% filter(diet == "fish")
+fish.w
+```
+
+```{r}
+pred.fish_RLGA <- expred(readRDS(here("Code/Models/mod_outputs", "fish_ms_RLGA.Rds")), fish.w[[2]][[1]])
+pred.fish_OPCR <- expred(readRDS(here("Code/Models/mod_outputs", "fish_ms_OPCR.Rds")), fish.w[[2]][[2]])
+
+pred.fish <- bind_rows(pred.fish_OPCR, pred.fish_RLGA) %>% pred(., "fish")
+
+rm( pred.fish_OPCR , pred.fish_RLGA)
+```
+### Fruit
+
+```{r}
+fruit.w <- weights %>% filter(diet == "fruit")
+fruit.w
+```
+
+```{r}
+pred.fruit_OPCR <- expred(readRDS(here("Code/Models/mod_outputs", "fruit_ms_OPCR.Rds")), fruit.w[[2]][[1]])
+pred.fruit_RLGA <- expred(readRDS(here("Code/Models/mod_outputs", "fruit_ms_RLGA.Rds")), fruit.w[[2]][[2]])
+pred.fruit_RFI <- expred(readRDS(here("Code/Models/mod_outputs", "fruit_mn_RFI.Rds")),   fruit.w[[2]][[3]])
+
+pred.fruit <- bind_rows(pred.fruit_OPCR, pred.fruit_RFI, pred.fruit_RLGA) %>% pred(., "fruit")
+
+rm( pred.fruit_OPCR , pred.fruit_RFI, pred.fruit_RLGA)
+```
+
+### Hard Invert
+
+```{r}
+hard_invert.w <- weights %>% filter(diet == "hard_invert")
+hard_invert.w
+```
+
+```{r}
+pred.hard_invert_ALL <- expred(readRDS(here("Code/Models/mod_outputs", "hard_invert_md_ALL.Rds")),  hard_invert.w[[2]][[1]])
+pred.hard_invert_DNE <- expred(readRDS(here("Code/Models/mod_outputs", "hard_invert_mn_DNE.Rds")),  hard_invert.w[[2]][[2]])
+pred.hard_invert_RLGA<- expred(readRDS(here("Code/Models/mod_outputs", "hard_invert_md_RLGA.Rds")), hard_invert.w[[2]][[3]])
+
+pred.hard_invert <- bind_rows(pred.hard_invert_ALL, pred.hard_invert_DNE, pred.hard_invert_RLGA) %>% pred(., "hard_invert")
+
+rm(pred.hard_invert_ALL, pred.hard_invert_DNE, pred.hard_invert_RLGA)
+```
+
+### Herptile
+
+```{r}
+herptile.w <- weights %>% filter(diet == "herptile")
+herptile.w
+```
+
+```{r}
+pred.herptile_DNE <- expred(readRDS(here("Code/Models/mod_outputs", "herptile_md_DNE.Rds")),   herptile.w[[2]][[1]])
+pred.herptile_OPCR <- expred(readRDS(here("Code/Models/mod_outputs", "herptile_md_OPCR.Rds")), herptile.w[[2]][[2]])
+
+pred.herptile <- bind_rows(pred.herptile_OPCR, pred.herptile_DNE) %>% pred(., "herptile")
+
+rm( pred.herptile_OPCR , pred.herptile_DNE)
+```
+
+### Large Mammal  
+```{r}
+large_mammal.w <- weights %>% filter(diet == "large_mammal")
+large_mammal.w
+```
+
+Large Mammal uses RLGA, and All
+```{r}
+pred.large_mammal_RLGA <- expred(readRDS(here("Code/Models/mod_outputs", "large_mammal_ms_RLGA.Rds")),   large_mammal.w[[2]][[1]])
+pred.large_mammal_ALL <- expred(readRDS(here("Code/Models/mod_outputs", "large_mammal_ms_ALL.Rds")), large_mammal.w[[2]][[2]])
+
+pred.large_mammal <- bind_rows(pred.large_mammal_ALL, pred.large_mammal_RLGA) %>% pred(., "large_mammal")
+
+rm( pred.large_mammal_ALL , pred.large_mammal_RLGA)
+```
+
+### Plant
+
+```{r}
+plant.w <- weights %>% filter(diet == "plant")
+plant.w
+```
+
+```{r}
+pred.plant_DNE <-   expred(readRDS(here("Code/Models/mod_outputs", "plant_md_DNE.Rds")),     plant.w[[2]][[1]])
+pred.plant_OPCR <-  expred(readRDS(here("Code/Models/mod_outputs", "plant_md_OPCR.Rds")),    plant.w[[2]][[2]])
+pred.plant_ALL<-    expred(readRDS(here("Code/Models/mod_outputs", "plant_md_ALL.Rds")),     plant.w[[2]][[3]])
+
+pred.plant <- bind_rows(pred.plant_ALL, pred.plant_DNE, pred.plant_OPCR) %>% pred(., "plant")
+
+rm(pred.plant_ALL, pred.plant_DNE, pred.plant_OPCR)
+```
+
+### Root
+
+```{r}
+root.w <- weights %>% filter(diet == "root")
+root.w
+```
+
+```{r}
+pred.root_RLGA <- 
+  epred_draws(readRDS(here("Code/Models/mod_outputs", "root_mn_RLGA.Rds")), newdata = dat, ndraws = 1000) %>% 
+    as.data.frame() %>% 
+    select(Species, .draw, .category, .epred) %>% 
+    arrange(Species, .draw, .category) %>% 
+    pivot_wider(names_from = .category, values_from = .epred) %>% 
+    mutate_at(3:5, ~ . * 1) %>% 
+    mutate(.draw = as.factor(.draw),
+           P4 = 0) %>% 
+    rename(P1 = "1",
+           P2 = "2",
+           P3 = "3")
+
+pred.root <- bind_rows(pred.root_RLGA) %>% pred(., "root")
+
+rm(pred.root_RLGA)
+```
+
+### Seed
+
+```{r}
+seed.w <- weights %>% filter(diet == "seed")
+seed.w
+```
+
+```{r}
+pred.seed_DNE <- expred(readRDS(here("Code/Models/mod_outputs", "seed_mn_DNE.Rds")),   seed.w[[2]][[1]])
+pred.seed_RLGA <- expred(readRDS(here("Code/Models/mod_outputs", "seed_mn_RLGA.Rds")), seed.w[[2]][[2]])
+
+pred.seed <- bind_rows(pred.seed_DNE, pred.seed_RLGA) %>% pred(., "seed")
+
+rm( pred.seed_DNE , pred.seed_RLGA)
+```
+
+### Small Mammal
+
+```{r}
+small_mammal.w <- weights %>% filter(diet == "small_mammal")
+small_mammal.w
+```
+
+```{r}
+pred.small_mammal_RLGA <- expred(readRDS(here("Code/Models/mod_outputs", "small_mammal_md_RLGA.Rds")), small_mammal.w[[2]][[1]])
+pred.small_mammal_DNE <- expred(readRDS(here("Code/Models/mod_outputs", "small_mammal_md_DNE.Rds")),   small_mammal.w[[2]][[2]])
+
+pred.small_mammal <- bind_rows(pred.small_mammal_DNE, pred.small_mammal_RLGA) %>% pred(., "small_mammal")
+
+rm( pred.small_mammal_DNE , pred.small_mammal_RLGA)
+```
+
+### Soft Invert
+
+```{r}
+soft_invert.w <- weights %>% filter(diet == "soft_invert")
+soft_invert.w
+```
+
+```{r}
+pred.soft_invert_DNE <- expred(readRDS(here("Code/Models/mod_outputs", "soft_invert_mn_DNE.Rds")), soft_invert.w[[2]][[1]])
+pred.soft_invert_OPCR <- expred(readRDS(here("Code/Models/mod_outputs", "soft_invert_md_OPCR.Rds")),   soft_invert.w[[2]][[2]])
+
+pred.soft_invert <- bind_rows(pred.soft_invert_DNE, pred.soft_invert_OPCR) %>% pred(., "soft_invert")
+
+rm( pred.soft_invert_DNE , pred.soft_invert_OPCR)
+```
+
+
+## Full Prediction Distribution & Summaries
+
+`Model_Averaged_Post_Sims.csv` table: 1,157,000 rows 
+`.draw` = posterior draw
+`P1:P4` = probabilities of each rank
+`wa_rank` = weighted importance score
+`item` =  food item
+
+`Extant_Predictions_Summary.csv` table: 1157 rows
+`wa_rank` = the mean weighted importance score/food item/species
+`rounded_pred_rank` =  the rounded `wa_rank`
+`real_rank` = the empirical rank
+
+```{r}
+e_pred <- bind_rows(pred.bird, pred.carrion, pred.egg, pred.fish, pred.fruit, pred.hard_invert, pred.herptile,  pred.large_mammal, pred.plant, pred.root, pred.seed, pred.small_mammal, pred.soft_invert)  %>% 
+  write_csv(here("Data", "Model_Averaged_Post_Sims.csv"))
+
+
+
+e_pred1 <- e_pred %>% select(!c(".draw", "P1", "P2", "P3", "P4")) %>% 
+  group_by(item, Species) %>% 
+  summarise(wa_rank = mean(wa_rank)) %>% 
+  mutate(rounded_pred_rank = round(wa_rank, digits = 0)) 
+
+e_pred2 <- dat %>% remove_rownames() %>%
+  mutate_at(12:24, ~ as.numeric(as.character(.)))  %>%  
+  select(Species, 12:24) %>% 
+  pivot_longer(!Species, names_to = "item", values_to = "real_rank") %>% 
+  left_join(e_pred1, by = c("Species","item")) %>% 
+  relocate(real_rank, .after = rounded_pred_rank) %>% 
+  write_csv(here("Data", "Extant_Predictions_Summary.csv")) 
+
+rm(pred.bird, pred.carrion, pred.egg, pred.fish, pred.fruit, pred.hard_invert, pred.herptile,  pred.large_mammal, pred.plant, pred.root, pred.seed, pred.small_mammal, pred.soft_invert, e_pred, e_pred1, e_pred2)
+```
+
+
+# Fossil & Cryptic Predictions 
+
+Repeat the process for the Data Deficient Extant and Fossil Taxa
+
+#### Functions
+```{r}
+cpred <- function(mod, weight){
+  epred_draws({{mod}}, newdata = cfdat, allow_new_levels = TRUE, ndraws = 1000, probs = c(0.055, 0.945)) %>% 
+    as.data.frame() %>% 
+    select(Species, .draw, .category, .epred) %>% 
+    arrange(Species, .draw, .category) %>% 
+    pivot_wider(names_from = .category, values_from = .epred) %>% 
+    mutate_at(3:6, ~ . * {{weight}}) %>% 
+    mutate(.draw = as.factor(.draw)) %>% 
+    rename(P1 = "1",
+           P2 = "2",
+           P3 = "3",
+           P4 = "4")
+}
+
+
+pred <- function(dat, item){ 
+  dat %>% group_by(Species, .draw) %>% 
+  summarise_at(c("P1", "P2", "P3", "P4"), sum) %>% 
+  mutate(wa_rank = P1 + (2 * P2) + (3 * P3) + (4 * P4),
+          item = {{item}})
+}
+```
+
+### Bird
+```{r}
+bird.w <- weights %>% filter(diet == "bird")
+bird.w
+```
+
+Bird uses RFI, RLGA, and All
+```{r}
+pred.bird_RLGA <- cpred(readRDS(here("Code/Models/mod_outputs", "bird_md_RLGA.Rds")),  bird.w[[2]][[1]])
+pred.bird_all <-  cpred(readRDS(here("Code/Models/mod_outputs", "bird_md_ALL.Rds")),   bird.w[[2]][[2]])
+pred.bird_RFI <-  cpred(readRDS(here("Code/Models/mod_outputs", "bird_mn_RFI.rds")),   bird.w[[2]][[3]])
+
+pred.bird <- bind_rows(pred.bird_all, pred.bird_RFI, pred.bird_RLGA) %>% pred(., "bird")
+
+rm( pred.bird_RFI , pred.bird_RLGA, pred.bird_all )
+```
+
+
+### Carrion
+```{r}
+carrion.w <- weights %>% filter(diet == "carrion")
+carrion.w
+```
+
+```{r}
+pred.carrion_RLGA <- cpred(readRDS(here("Code/Models/mod_outputs", "carrion_md_RLGA.Rds")), carrion.w[[2]][[1]])
+pred.carrion_OPCR <- cpred(readRDS(here("Code/Models/mod_outputs", "carrion_md_OPCR.Rds")), carrion.w[[2]][[2]])
+
+pred.carrion <- bind_rows(pred.carrion_OPCR, pred.carrion_RLGA) %>% pred(., "carrion")
+
+rm( pred.carrion_OPCR , pred.carrion_RLGA)
+```
+
+### Egg
+```{r}
+egg.w <- weights %>% filter(diet == "egg")
+egg.w
+```
+
+```{r}
+pred.egg_RFI <- cpred(readRDS(here("Code/Models/mod_outputs", "egg_md_RFI.Rds")),   egg.w[[2]][[1]])
+pred.egg_DNE <- cpred(readRDS(here("Code/Models/mod_outputs", "egg_mn_DNE.Rds")),   egg.w[[2]][[2]])
+pred.egg_RLGA <- cpred(readRDS(here("Code/Models/mod_outputs", "egg_mn_RLGA.Rds")), egg.w[[2]][[3]])
+
+pred.egg <- bind_rows(pred.egg_DNE, pred.egg_RFI, pred.egg_RLGA) %>% pred(., "egg")
+
+rm( pred.egg_DNE , pred.egg_RFI, pred.egg_RLGA)
+```
+
+### Fish
+
+```{r}
+fish.w <- weights %>% filter(diet == "fish")
+fish.w
+```
+
+```{r}
+pred.fish_RLGA <- cpred(readRDS(here("Code/Models/mod_outputs", "fish_ms_RLGA.Rds")), fish.w[[2]][[1]])
+pred.fish_OPCR <- cpred(readRDS(here("Code/Models/mod_outputs", "fish_ms_OPCR.Rds")), fish.w[[2]][[2]])
+
+pred.fish <- bind_rows(pred.fish_OPCR, pred.fish_RLGA) %>% pred(., "fish")
+
+rm( pred.fish_OPCR , pred.fish_RLGA)
+```
+### Fruit
+
+```{r}
+fruit.w <- weights %>% filter(diet == "fruit")
+fruit.w
+```
+
+```{r}
+pred.fruit_OPCR <- cpred(readRDS(here("Code/Models/mod_outputs", "fruit_ms_OPCR.Rds")), fruit.w[[2]][[1]])
+pred.fruit_RLGA <- cpred(readRDS(here("Code/Models/mod_outputs", "fruit_ms_RLGA.Rds")), fruit.w[[2]][[2]])
+pred.fruit_RFI <- cpred(readRDS(here("Code/Models/mod_outputs", "fruit_mn_RFI.Rds")),   fruit.w[[2]][[3]])
+
+pred.fruit <- bind_rows(pred.fruit_OPCR, pred.fruit_RFI, pred.fruit_RLGA) %>% pred(., "fruit")
+
+rm( pred.fruit_OPCR , pred.fruit_RFI, pred.fruit_RLGA)
+```
+
+### Hard Invert
+
+```{r}
+hard_invert.w <- weights %>% filter(diet == "hard_invert")
+hard_invert.w
+```
+
+```{r}
+pred.hard_invert_ALL <- cpred(readRDS(here("Code/Models/mod_outputs", "hard_invert_md_ALL.Rds")),  hard_invert.w[[2]][[1]])
+pred.hard_invert_DNE <- cpred(readRDS(here("Code/Models/mod_outputs", "hard_invert_mn_DNE.Rds")),  hard_invert.w[[2]][[2]])
+pred.hard_invert_RLGA<- cpred(readRDS(here("Code/Models/mod_outputs", "hard_invert_md_RLGA.Rds")), hard_invert.w[[2]][[3]])
+
+pred.hard_invert <- bind_rows(pred.hard_invert_ALL, pred.hard_invert_DNE, pred.hard_invert_RLGA) %>% pred(., "hard_invert")
+
+rm(pred.hard_invert_ALL, pred.hard_invert_DNE, pred.hard_invert_RLGA)
+```
+
+### Herptile
+
+```{r}
+herptile.w <- weights %>% filter(diet == "herptile")
+herptile.w
+```
+
+```{r}
+pred.herptile_DNE <- cpred(readRDS(here("Code/Models/mod_outputs", "herptile_md_DNE.Rds")),   herptile.w[[2]][[1]])
+pred.herptile_OPCR <- cpred(readRDS(here("Code/Models/mod_outputs", "herptile_md_OPCR.Rds")), herptile.w[[2]][[2]])
+
+pred.herptile <- bind_rows(pred.herptile_OPCR, pred.herptile_DNE) %>% pred(., "herptile")
+
+rm( pred.herptile_OPCR , pred.herptile_DNE)
+```
+
+### Large Mammal  
+```{r}
+large_mammal.w <- weights %>% filter(diet == "large_mammal")
+large_mammal.w
+```
+
+Large Mammal uses RLGA, and All
+```{r}
+pred.large_mammal_RLGA <- cpred(readRDS(here("Code/Models/mod_outputs", "large_mammal_ms_RLGA.Rds")),   large_mammal.w[[2]][[1]])
+pred.large_mammal_ALL <- cpred(readRDS(here("Code/Models/mod_outputs", "large_mammal_ms_ALL.Rds")), large_mammal.w[[2]][[2]])
+
+pred.large_mammal <- bind_rows(pred.large_mammal_ALL, pred.large_mammal_RLGA) %>% pred(., "large_mammal")
+
+rm( pred.large_mammal_ALL , pred.large_mammal_RLGA)
+```
+
+### Plant
+
+```{r}
+plant.w <- weights %>% filter(diet == "plant")
+plant.w
+```
+
+```{r}
+pred.plant_DNE <-   cpred(readRDS(here("Code/Models/mod_outputs", "plant_md_DNE.Rds")),     plant.w[[2]][[1]])
+pred.plant_OPCR <-  cpred(readRDS(here("Code/Models/mod_outputs", "plant_md_OPCR.Rds")),    plant.w[[2]][[2]])
+pred.plant_ALL<-    cpred(readRDS(here("Code/Models/mod_outputs", "plant_md_ALL.Rds")),     plant.w[[2]][[3]])
+
+pred.plant <- bind_rows(pred.plant_ALL, pred.plant_DNE, pred.plant_OPCR) %>% pred(., "plant")
+
+rm(pred.plant_ALL, pred.plant_DNE, pred.plant_OPCR)
+```
+
+### Root
+
+```{r}
+root.w <- weights %>% filter(diet == "root")
+root.w
+```
+
+```{r}
+pred.root_RLGA <- 
+  epred_draws(readRDS(here("Code/Models/mod_outputs", "root_mn_RLGA.Rds")), newdata = cfdat, allow_new_levels = T, ndraws = 1000) %>% 
+    as.data.frame() %>% 
+    select(Species, .draw, .category, .epred) %>% 
+    arrange(Species, .draw, .category) %>% 
+    pivot_wider(names_from = .category, values_from = .epred) %>% 
+    mutate_at(3:5, ~ . * 1) %>% 
+    mutate(.draw = as.factor(.draw),
+           P4 = 0) %>% 
+    rename(P1 = "1",
+           P2 = "2",
+           P3 = "3")
+
+pred.root <- bind_rows(pred.root_RLGA) %>% pred(., "root")
+
+rm(pred.root_RLGA)
+```
+
+### Seed
+
+```{r}
+seed.w <- weights %>% filter(diet == "seed")
+seed.w
+```
+
+```{r}
+pred.seed_DNE <- cpred(readRDS(here("Code/Models/mod_outputs", "seed_mn_DNE.Rds")),   seed.w[[2]][[1]])
+pred.seed_RLGA <- cpred(readRDS(here("Code/Models/mod_outputs", "seed_mn_RLGA.Rds")), seed.w[[2]][[2]])
+
+pred.seed <- bind_rows(pred.seed_DNE, pred.seed_RLGA) %>% pred(., "seed")
+
+rm( pred.seed_DNE , pred.seed_RLGA)
+```
+
+### Small Mammal
+
+```{r}
+small_mammal.w <- weights %>% filter(diet == "small_mammal")
+small_mammal.w
+```
+
+```{r}
+pred.small_mammal_RLGA <- cpred(readRDS(here("Code/Models/mod_outputs", "small_mammal_md_RLGA.Rds")), small_mammal.w[[2]][[1]])
+pred.small_mammal_DNE <- cpred(readRDS(here("Code/Models/mod_outputs", "small_mammal_md_DNE.Rds")),   small_mammal.w[[2]][[2]])
+
+pred.small_mammal <- bind_rows(pred.small_mammal_DNE, pred.small_mammal_RLGA) %>% pred(., "small_mammal")
+
+rm( pred.small_mammal_DNE , pred.small_mammal_RLGA)
+```
+
+### Soft Invert
+
+```{r}
+soft_invert.w <- weights %>% filter(diet == "soft_invert")
+soft_invert.w
+```
+
+```{r}
+pred.soft_invert_DNE <- cpred(readRDS(here("Code/Models/mod_outputs", "soft_invert_mn_DNE.Rds")), soft_invert.w[[2]][[1]])
+pred.soft_invert_OPCR <- cpred(readRDS(here("Code/Models/mod_outputs", "soft_invert_md_OPCR.Rds")),   soft_invert.w[[2]][[2]])
+
+pred.soft_invert <- bind_rows(pred.soft_invert_DNE, pred.soft_invert_OPCR) %>% pred(., "soft_invert")
+
+rm( pred.soft_invert_DNE , pred.soft_invert_OPCR)
+```
+
+
+
+## Full Prediction Distribution & Summaries
+
+`Model_Averaged_Post_Sims_Crypt_Fos.csv` table: 1,157,000 rows 
+`.draw` = posterior draw
+`P1:P4` = probabilities of each rank
+`wa_rank` = weighted importance score
+`item` =  food item
+
+`Crypt_Fos_Predictions_Summary.csv` table: 1157 rows
+`wa_rank` = the mean weighted importance score/food item/species
+`rounded_pred_rank` =  the rounded `wa_rank`
+`real_rank` = the empirical rank (NA for these)
+
+```{r}
+cf_pred <- bind_rows(pred.bird, pred.carrion, pred.egg, pred.fish, pred.fruit, pred.hard_invert, pred.herptile,  pred.large_mammal, pred.plant, pred.root, pred.seed, pred.small_mammal, pred.soft_invert)  %>% 
+  write_csv(here("Data", "Model_Averaged_Post_Sims_Crypt_Fos.csv")) 
+
+cf_pred1 <- cf_pred %>% select(!c(".draw", "P1", "P2", "P3", "P4")) %>% 
+  group_by(item, Species) %>% 
+  summarise(wa_rank = mean(wa_rank)) %>% 
+  mutate(rounded_pred_rank = round(wa_rank, digits = 0)) 
+
+
+cf_pred2 <- cfdat %>% remove_rownames() %>% 
+  mutate_at(12:24, ~ as.numeric(as.character(.)))  %>%  select(Species, 12:24) %>% 
+  pivot_longer(!Species, names_to = "item", values_to = "real_rank") %>% 
+  left_join(cf_pred1, by = c("Species","item")) %>% 
+  relocate(real_rank, .after = rounded_pred_rank) %>% 
+  write_csv(here("Data", "Crypt_Fos_Predictions_Summary.csv")) 
+
+
+rm(pred.bird, pred.carrion, pred.egg, pred.fish, pred.fruit, pred.hard_invert, pred.herptile,  pred.large_mammal, pred.plant, pred.root, pred.seed, pred.small_mammal, pred.soft_invert, cf_pred1, cf_pred2)
+```

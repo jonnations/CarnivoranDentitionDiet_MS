@@ -1,0 +1,150 @@
+---
+title: "Prediction Figures"
+---
+
+# Prediction Figures 4 & 5
+
+## Load Data and Packages  
+```{r}
+pacman::p_load(tidyverse, here, scico)
+
+cryp_sp <- c("Arctogalidia_trivirgata", "Bassaricyon_alleni", "Catopuma_badia", "Chrotogale_owstoni", "Cynogale_bennettii", "Galidia_elegans", "Galidictis_fasciata", "Hemigalus_derbyanus", "Herpestes_brachyurus", "Mydaus_javanensis", "Paradoxurus_musanga", "Pardofelis_marmorata", "Prionodon_linsang")
+#Load Fossil Taxa
+fd <- read_csv(here("Data", "Crypt_Fos_Predictions_Summary.csv")) %>% 
+  janitor::clean_names() %>% #select(species, item, wa_rank, ) %>% 
+filter(!(species %in% cryp_sp)) %>% 
+  mutate(species = str_replace_all(species, "_", " "),
+         item = str_replace_all(item, "_", " "),
+         item = recode(item, 
+                       bird = "Bird",
+                       carrion = "Carrion",
+                       egg = "Egg",
+                       fish = "Fish",
+                       fruit = "Fruit",
+                       'hard invert' = "Hard Invert.",
+                       herptile = "Herptile",
+                       'large mammal' = "Large Mammal",
+                       plant = "Plant",
+                       root = "Root",
+                       seed = "Seed",
+                       'soft invert' = "Soft Invert.",
+                       'small mammal' = "Small Mammal"
+                       ))   
+
+# Load Cryptic Taxa
+cd  <- read_csv(here("Data", "Crypt_Fos_Predictions_Summary.csv")) %>% 
+  janitor::clean_names() %>% 
+filter(species %in% cryp_sp) %>% 
+  mutate(species = str_replace_all(species, "_", " "),
+         item = str_replace_all(item, "_", " "),
+         item = recode(item, 
+                       bird = "Bird",
+                       carrion = "Carrion",
+                       egg = "Egg",
+                       fish = "Fish",
+                       fruit = "Fruit",
+                       'hard invert' = "Hard Invert.",
+                       herptile = "Herptile",
+                       'large mammal' = "Large Mammal",
+                       plant = "Plant",
+                       root = "Root",
+                       seed = "Seed",
+                       'soft invert' = "Soft Invert.",
+                       'small mammal' = "Small Mammal"
+                       )) 
+
+```
+
+
+## Heat-Map style  
+
+Doing a heat-map style using geom_tile. I like this display personally
+
+#### Fossil
+
+Currently egg, root, and seed are deleted (all 1's, so they water down the figure)
+THis makes a continuous grid with a discrete legend thanks to setting the width and height of the fill, turning off the color white (which makes the grids), adding the 'geude_legend' to the color paklette, and setting the legend.spacing.y. 
+
+
+```{r}
+fd %>% 
+ ggplot(aes(x = item, y = species)) + 
+  geom_tile(aes(fill = wa_rank, width = 0.92, height = 0.92),
+            color = NA,
+            lwd = 1,
+            linetype = 1) +
+  scico::scale_fill_scico(palette = "lajolla", begin  = 0.15, end = 1,
+                          limits=c(1,4),
+                          breaks = seq(1,4, by = 0.25),
+                          labels = c( "1", "", "", "", "2", "", "", "", "3", "", "","", "4"),
+                          guide = guide_legend(byrow = TRUE, reverse=T, size = 2)
+                          ) +
+  labs(fill='Dietary\nImportance\nRanking\n') +
+  theme_minimal() +
+  coord_fixed(ratio=1) +
+  scale_y_discrete(limits=rev) +
+  theme(axis.title.x=element_blank(),
+        axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1.1,  
+                                   size=10),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y = element_text(face = "italic", 
+                                   size=12),
+        axis.ticks.y=element_blank(),
+        panel.grid.major=element_blank(),
+        panel.grid.minor=element_blank(),
+        strip.background = element_blank(),
+        panel.border = element_blank(),
+        plot.background = element_blank(),
+        legend.spacing.y = unit(-1, 'mm'),
+        legend.key.height = unit(1, 'mm')) -> pred1
+
+pred1
+ggsave(here("Plots", "Fig_5_Fossil_Preds_Continuous.pdf"), width = 10, height = 8) 
+ggsave(here("Plots", "Fig_5_Fossil_Preds_Continuous.png"), width = 7.5, height = 6)
+```
+
+
+#### Cryptic
+
+```{r}
+cd %>% 
+ ggplot(aes(x = item, y = species)) + 
+  geom_tile(aes(fill = wa_rank, width = 0.92, height = 0.92),
+            color = NA,
+            lwd = 1,
+            linetype = 1) +
+  scico::scale_fill_scico(palette = "lajolla", begin  = 0.15, end = 1,
+                          limits=c(1,4),
+                          breaks = seq(1,4, by = 0.25),
+                          labels = c( "1", "", "", "", "2", "", "", "", "3", "", "","", "4"),
+                          guide = guide_legend(byrow = TRUE, reverse=T, size = 2)
+                          ) +
+  labs(fill='Dietary\nImportance\nRanking\n') +
+  theme_minimal() +
+  coord_fixed(ratio=1) +
+  scale_y_discrete(limits=rev) +
+  theme(axis.title.x=element_blank(),
+        axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1.1,  
+                                   size=10),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y = element_text(face = "italic", 
+                                   size=12),
+        axis.ticks.y=element_blank(),
+        panel.grid.major=element_blank(),
+        panel.grid.minor=element_blank(),
+        strip.background = element_blank(),
+        panel.border = element_blank(),
+        plot.background = element_blank(),
+        legend.spacing.y = unit(-1, 'mm'),
+        legend.key.height = unit(1, 'mm')) -> pred2
+
+pred2
+ggsave(here("Plots", "Fig_4_Cryptic_Preds_Continuous.pdf"), width = 10, height = 8) 
+ggsave(here("Plots", "Fig_4_Cryptic_Preds_Continuous.png"), width = 7.5, height = 6)
+```
