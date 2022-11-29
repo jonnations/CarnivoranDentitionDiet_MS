@@ -56,7 +56,11 @@ weights = read_csv(here("Data", "Test_weights_all.csv"))
 #### Functions  
 ```{r}
 expred <- function(mod, weight){
-  epred_draws({{mod}}, newdata = dat, ndraws = 1000, probs = c(0.055, 0.945)) %>% 
+  epred_draws({{mod}}, 
+              newdata = dat, 
+              ndraws = NULL, 
+              probs = c(0.055, 0.945), 
+              seed = 456) %>% 
     as.data.frame() %>% 
     select(Species, .draw, .category, .epred) %>% 
     arrange(Species, .draw, .category) %>% 
@@ -243,7 +247,7 @@ root.w
 
 ```{r}
 pred.root_RLGA <- 
-  epred_draws(readRDS(here("Code/Models/mod_outputs", "root_mn_RLGA.Rds")), newdata = dat, ndraws = 1000) %>% 
+  epred_draws(readRDS(here("Code/Models/mod_outputs", "root_mn_RLGA.Rds")), newdata = dat, ndraws = NULL) %>% 
     as.data.frame() %>% 
     select(Species, .draw, .category, .epred) %>% 
     arrange(Species, .draw, .category) %>% 
@@ -352,7 +356,12 @@ Repeat the process for the Data Deficient Extant and Fossil Taxa
 #### Functions
 ```{r}
 cpred <- function(mod, weight){
-  epred_draws({{mod}}, newdata = cfdat, allow_new_levels = TRUE, ndraws = 1000, probs = c(0.055, 0.945)) %>% 
+  epred_draws({{mod}}, 
+              newdata = cfdat, 
+              allow_new_levels = TRUE, 
+              ndraws = NULL, 
+              probs = c(0.055, 0.945), 
+              seed = 456) %>% 
     as.data.frame() %>% 
     select(Species, .draw, .category, .epred) %>% 
     arrange(Species, .draw, .category) %>% 
@@ -530,7 +539,7 @@ root.w
 
 ```{r}
 pred.root_RLGA <- 
-  epred_draws(readRDS(here("Code/Models/mod_outputs", "root_mn_RLGA.Rds")), newdata = cfdat, allow_new_levels = T, ndraws = 1000) %>% 
+  epred_draws(readRDS(here("Code/Models/mod_outputs", "root_mn_RLGA.Rds")), newdata = cfdat, allow_new_levels = T, ndraws = NULL) %>% 
     as.data.frame() %>% 
     select(Species, .draw, .category, .epred) %>% 
     arrange(Species, .draw, .category) %>% 
