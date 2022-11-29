@@ -8,7 +8,7 @@ This script estimates a nearest neighbor for each of the 4000 draws from the pos
 
 ***NOTE*** If you are running this through GitHub --- The files `Model_Averaged_Post_Sims.csv` and `Model_Averaged_Post_Sims_Crypt_Fos.csv` are too large to store in GitHub (>1m rows). If you wish to run this script, please run through the `Code/Weighted_Predictions.Rmd` script first (you probably should anyways to know what's going on!). This will generate a local version of these two files that you can call in this script. Once done, this will run without any issues.  
 
-
+There are lots of custom functions here. Look at `README` for a description of what's happening. There are notes included that also explain what is going on.
 ```{r}
 pacman::p_load(tidyverse, tidyselect, EFA.dimensions, here)
 
@@ -21,12 +21,13 @@ cd <- read_csv(here("Data", "Model_Averaged_Post_Sims_Crypt_Fos.csv")) %>% renam
 
 ```
 
-# Regular PCA
+#  PCA
 
-Split this on .draw
-Then for each df in the array, do the nn estimates. 
+Perform a PCA on the weighted importance scores of each species. These are the weighted averages of the model-averaged predicitons. 
 
+The data contain 4000 posterior draws. This splits the dataframe into 4000 dataframes, performs a PCA on each individually. 
 
+Split on .draw
 ```{r}
 # split the big tables into lists of draws
 ed2 <- split(ed, ed$.draw)
@@ -35,7 +36,7 @@ cd2 <- split(cd, cd$.draw)
 rm(ed, cd)
 ```
 
-## Functions
+#### Functions
 ```{r}
 # Breaks each array df into a cor matrix
 ex_prep <- function(x){
@@ -44,19 +45,21 @@ ex_prep <- function(x){
   column_to_rownames(var = 'Species')
 }
 
-# Preps the cryptic data
+# Preps the cryptic data - wrangles into appropriate format
 crypt_prep <- function(x){
   x %>% select(Species, item, ma) %>% 
   pivot_wider(names_from = item, values_from = ma) %>% 
   column_to_rownames(var = 'Species') %>% 
   select(sort(peek_vars()))
 }
-# get the means of each column (for "means") then rep it 89 times for the nrow() of extant data
+
+#gets the means of each column (for "means" used in NN estimates to center the fossil preds) then rep it 89 times for the nrow() of extant data
 mean_prep <- function(x){
   x %>% 
     summarise(across(1:13, mean)) %>% 
     slice(rep(1:n(), each = 89)) %>% as.matrix()
 }
+
 #do the same for the cryptic data
 mean_prep2 <- function(x){
   x %>% 
@@ -74,7 +77,7 @@ pc_scores <- function(x, y, z){
   (as.matrix(x) - (y)) %*% z
 }
 
-# Get Nearest Neighbors
+# Gets Nearest Neighbors
 get_neighbors <- function(taxon, taxa) {
   distances <- numeric()
   for(i in 1:nrow(taxa)) distances[i] <- dist(rbind(taxon, taxa[i,]), method = "euclidean")
@@ -97,11 +100,11 @@ es_list <- ed2_cor %>% map(eigen) %>% map(rem_vecs)
 # Get the means from each column in wide dataframe
 means_list <-  ed2_wide %>% map(mean_prep)
 
-# Make a matrix of 1's ?
+# Make a matrix of 1's 
 S_new2 <- pmap(list(ed2_wide, means_list, es_list), pc_scores)
 ```
 
-#Loadings
+#### Loadings
 ```{r}
 loads <- function(ed2_wide, S_new2){
   (t(ed2_wide) %*% S_new2) / (nrow(ed2_wide)-1)
@@ -110,7 +113,8 @@ Loadings <- map2(ed2_wide, S_new2, loads)
 ```
 
 
-Now do the same for the cryptics
+#### Now for data deficient...
+
 ```{r}
 # Prepping Cryptic Data into wide format
 cd2_wide<- cd2  %>% map(crypt_prep)
@@ -122,30 +126,30 @@ S_cryptic2 <- pmap(list(cd2_wide, means_list2, es_list), pc_scores)
 
 ```
 
-Now get the NNs
+#### Calculate NNs
 ```{r}
 nns <- function(S_cryptic2, S_new2){
   cryptic_res <- matrix(data=NA, nrow=nrow(S_cryptic2), ncol=5)
   for(i in 1:nrow(S_cryptic2)) cryptic_res[i,] <- names(get_neighbors(S_cryptic2[i,1:5], S_new2[,1:5]))[c(1:5)]
   colnames(cryptic_res) <- paste("nearest", 1:5, sep="_")
   cryptic_res <- as_tibble(cryptic_res) %>% mutate( Species = rownames(S_cryptic2))
-  #rownames(cryptic_res) <- rownames(S_cryptic2)
-  #colnames(cryptic_res) <- paste("nearest", 1:5, sep="_")
   return(cryptic_res)
 }
 
-#make the array (or a list of tibbles)
+# make results into an array (or a list of tibbles)
 nntest <- pmap(list(S_cryptic2, S_new2), nns)
 
+#Flatten array into a dataframe, then calculate the percentages of the closest nearest neighbors. 
 nn <- bind_rows(nntest) %>% 
   group_by(Species) %>% 
   select(Species, nearest_1) %>% 
   count(nearest_1) %>% 
   mutate(percent = n/4000) %>% 
   arrange(Species, desc(percent)) %>% 
-  filter(percent > 0.05) %>% 
-  write_csv(here("Data", "NN_probabilities.csv"))
+  filter(percent > 0.05) # %>% 
+  #write_csv(here("Data", "NN_probabilities.csv"))
 
+#See what was produced
 nn
 ```
 

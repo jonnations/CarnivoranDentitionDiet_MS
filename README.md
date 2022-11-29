@@ -54,7 +54,9 @@ GitHub repo for the manuscript. All scripts necessary to perform the analyses an
 
 #### Nearest Neighbor Calculations
 
-- A neat feature of our multivariate diet method is that species can be projected into $n$-dimensional diet-space. This allows for estimates of disparity, density, and, as we do here, nearest neighbor estimations, which allow us to identify the extant data-rich species that are most similar to the fossil and data deficient taxa in our dataset. The script to do this is `Code/Ordination_NN_Probabilities.Rmd`.  After digging into the results a bit more, we found that the multivariate diet space is fairly dense in some regions (this can be seen in Figure 2), and only providing a single nearest neighbor is misleading. Our Bayesian methodology generates distributions rather than point estimates, so we estimated a data-rich nearest neighbor for the data-deficient taxa from each of 4000 posterior draws. This results in 4000 nearest neighbors for each data-deficient species. We report the most common ones in Table 5 in the text. The process goes as follows:  
+- A neat feature of our multivariate diet method is that species can be projected into $n$-dimensional diet-space. This allows for estimates of disparity, density, and, as we do here, nearest neighbor estimations, which allow us to identify the extant data-rich species that are most similar to the fossil and data deficient taxa in our dataset. The script to do this is `Code/Ordination_NN_Probabilities.Rmd`.  After digging into the results a bit more, we found that the multivariate diet space is fairly dense in some regions (this can be seen in Figure 2), and only providing a single nearest neighbor is misleading. Our Bayesian methodology generates distributions rather than point estimates, so we estimated a data-rich nearest neighbor for the data-deficient taxa from each of 4000 posterior draws. This results in 4000 nearest neighbors for each data-deficient species. We report the most common ones in Table 5 in the text. The process goes as follows:  Blah Blah
+##############
+FINISH THIS 
 
 ############
 
@@ -71,16 +73,9 @@ OLD Past THis
 
 - The remainder of the scripts are for plotting (plot name/number included in the title), or tables generates in [kableExtra](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html) as `.tex` and `.png` files. The plots are stored in the `Plots` directory.
 
-## **`mod_outputs`** 
-
-- This directory stores the model outputs generated in the 13 model scripts called in the `Code/D_All_Models.Rds` file. brms stores the model objects as `.rds` files. These can be loaded via `brms:brm()` or with the `readRds()` command, which we use a lot in other scripts here. 
-
-- This directory will be empty in the Dryad repo to save space (all 67 model outputs = 367Mb in size), but running the `Code/D_All_Models.Rds` script will populate it. 
-
-
 
 ## **`Plots`** 
 
-- All of the output plots are stored here. There are both `.pdf`s and `.png`s of most of the plot files. Additionally, several table outputs are stored here as they are rendered in the package [kableExtra](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html) into figures and `.tex` files. 
+- All of the output plots are stored here. There are both `.pdf`s and `.png`s of most of the plot files. Additionally, several table outputs are stored here as they are rendered in the package [kableExtra](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html) into figures and `.tex` files used in the manuscript production. 
 
 
