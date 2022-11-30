@@ -94,6 +94,9 @@ Here is a list of the data files:
 
 ## **`Code`** 
 
+#### Polychoric PCA and Cluster Analyses  
+- We are interested if the multivariate diet matches traditional diet categories from several commonly used classification schemes. To do this, we want to project the importance rankings of the 13 food items into a multivariate diet space, then run a cluster analysis to identify natural groupings in dietspace. This is outlined in the `Code/Ord_Clust_Plot.Rmd/` script. As the dietary importance rankings are ordinal rankings, and not continuous, we use a method called polychoric PCA, which is designed for ordinal variables. We estimate a polychoric correlation matrix, the project the species into diet space. The process is pretty well annotated in the script. Then we use the package [`mclust`](https://cran.r-project.org/web/packages/mclust/vignettes/mclust.html), which performs cluster analyses with finite normal mixture modeling, to determine the natural clusters. Since there is no really strong preference for a number of clusters, we calculate $k$ = 3, 4, 5, and 6. Then we use the adjusted Rand index to compare these to 4 classification schemes. More details in the text. This generates the Figure 2 plots, which go to the 'Plots/
+
 #### Prior Predictive Checks and Model Estimation
 - All of the models, prior and posterior checking, predictions, data wrangling, etc. are found in this directory.
 
@@ -127,14 +130,6 @@ Here is a list of the data files:
 #### Nearest Neighbor Calculations
 
 - A neat feature of our multivariate diet method is that species can be projected into $n$-dimensional diet-space. This allows for estimates of disparity, density, and, as we do here, nearest neighbor estimations, which allow us to identify the extant data-rich species that are most similar to the fossil and data deficient taxa in our dataset. The script to do this is `Code/Ordination_NN_Probabilities.Rmd`.  After digging into the results a bit more, we found that the multivariate diet space is fairly dense in some regions (this can be seen in Figure 2), and only providing a single nearest neighbor is misleading. Our Bayesian methodology generates distributions rather than point estimates, so we estimated a data-rich nearest neighbor for the data-deficient taxa from each of 4000 posterior draws. The process goes as follows: For each draw in our 4000 posterior estimates, we manually performed a principal components analysis on the correlation matrix of WIS values for data-rich extant species. Then we take the estimates WIS values of the data deficient taxa and project these into the principal components space of the data-rich taxa. Then, for each of the 4000 PC spaces, we find the data-rich species that are closest in euclidean distance to the data-deficient species, and summarize these results as percentages. For example, in 1520 of the 4000 PC spaces, or 38%, *Ursus speleaus* is closest in euclidean distance to *Ursus maritimus*. We report the most common 3 in Table 5 in the text.
-
-##############
-FINISH THIS 
-
-############
-
-Weighted Predictions New is the next thing
-Also the model figures! Those should be above validation? Or a separate file below (maybe this)
 
 
 ####

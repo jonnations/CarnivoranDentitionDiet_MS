@@ -1,0 +1,303 @@
+---
+title: "Diet Ordination, Clustering, and Plotting"
+#output: html_notebook
+---
+
+# Ordinating Diet Shape file.  
+
+Ordination of ordinal importance rankings, then using cluster analysis to determine clusters in the data. Then use 4 different discrete category schemes, and compare the clusters in multivariate diet space to the categories using the adjusted Rank Index. 
+
+
+Load Packages and Data
+```{r}
+pacman::p_load(tidyverse, phytools, geiger, mclust, polycor, NbClust, ggstar, patchwork, here)
+
+here::i_am("Code/Ord_Clust_Plot.Rmd")
+
+#Functions
+scale2 <- function(x, na.rm = TRUE) (x - mean(x, na.rm = na.rm)) / sd(x, na.rm)
+add1 <- function(x, na.rm = TRUE) (x + 1)
+# Read Tree
+phylo <- ape::read.nexus(here("Data", "Carnivora_MCC_2.tre"))
+
+# Read fossil data and calculate body size estimate ^1/3
+fos_dat_1 <- read_csv(here("Data", "fossil_carnivoran_data.csv")) %>% 
+  mutate(log_cuberoot_mass = log(mass_kg^(1/3)))
+# Read extant data
+dat <- read.delim(here("Data", "Master_Data.txt")) %>% 
+  mutate(mass_kg = exp(log_cuberoot_mass)^3,
+         phylo = Species) %>% 
+  # drop taxa with missing m2 data
+  drop_na(m2_dne) %>% 
+  #combine extant and fossil dat for tip dropping and standardizing
+  bind_rows(fos_dat_1) %>% 
+  # Standardize all data together
+  mutate_at(vars(4:11), scale2) %>% 
+  mutate_at(vars(12:24), add1) %>% 
+  mutate_at(vars(12:24), as.ordered) 
+row.names(dat)<-dat$Species
+# Remove extra tips (but keep fossil tips!)
+carn_treedata<-treedata(phylo, dat, warnings = FALSE)
+phylo<-carn_treedata$phy
+dat1 <- dat %>% drop_na(bird)
+```
+
+#### Polychoric PC  
+
+Now we need to generate the polychoric correlation matrix. We will use the polychor function in the polycor package to compute pairwise correlations between dietary item codings
+```{r}
+pcdat <- dat1 %>% select(12:24) %>% mutate_all(., as.numeric)
+
+poly_mat <- matrix(data=NA, nrow=13, ncol=13)
+rownames(poly_mat) <- colnames(poly_mat) <- colnames(pcdat)
+for(i in 1:13) {
+  for(j in 1:13) {
+    if(i==j){
+      tmp =1
+    } else{
+      tmp = polychor(x=pcdat[,i], y= pcdat[,j], ML=TRUE)
+    }
+     poly_mat[i,j] <- tmp
+  } 
+}
+```
+and then we can rotate the diet importance data by performing an eigendecomposition on the matrix 
+```{r pca}
+es = eigen(poly_mat);
+means <-apply(pcdat, 2, mean)
+ones <- as.matrix(rep(1, nrow(pcdat)))
+S<- (as.matrix(pcdat)-(ones%*%means)) %*%es$vectors
+
+#S is our matrix of PC scores. We can look at the percent variance explained by each pc by looking at the relative eigen values, the significant pcs by finding those with eigenvalues > 1, and the loadings by getting the correlations of the original variables with the pc axes.
+
+# % variance explained
+round(es$values/sum(es$values) *100, 2)
+# significant pcs
+which(es$values>1) 
+# loadings
+Loadings<-(t(pcdat) %*% S) / (nrow(pcdat)-1)
+Loadings[,1:5]
+```
+Now add these values to the dat1 data frame 
+
+```{r}
+S2 <- as.data.frame(S) %>% 
+  as_tibble(rownames = NA) %>% 
+  rownames_to_column() %>% 
+  rename(Species = rowname) %>% 
+  left_join(dat1, by = 'Species')
+```
+
+## Mclust Clustering
+
+Clustering Analyses with Mclust
+The pineda scheme has 4 diet categories
+THe van-Valkenburgh has 3 categories
+Pantheria has 3 categories
+ADW has 6
+
+SO we need clustering analyses with 3, 4, and 6 clusters
+
+```{r}
+# This is the model selection process. G sets the number of possible clusters, default is 1:9
+BIC <- mclustBIC(S2[,2:14], G = 1:20)
+summary(BIC)
+mod1 <- Mclust(S2[,2:14], x = BIC)
+summary(mod1)
+```
+
+Model prefers 5, but not by much over 4 and 3. Call mod1  mod5
+
+Best BIC values:
+             VEI,5        VEI,4        VEI,3
+BIC      -2856.415 -2857.808424 -2858.146864
+BIC diff     0.000    -1.393356    -1.731795
+
+
+
+Now make mod3, mod4, and mod6
+```{r}
+BIC3 <- mclustBIC(S2[,2:14], G = 3)
+mod3 <- Mclust(S2[,2:14], x = BIC3)
+cls3 <- as.data.frame(mod3$classification) %>% rename(class3 = "mod3$classification")
+
+BIC4 <- mclustBIC(S2[,2:14], G = 4)
+mod4 <- Mclust(S2[,2:14], x = BIC4)
+cls4 <- as.data.frame(mod4$classification) %>% rename(class4 = "mod4$classification")
+
+BIC5 <- mclustBIC(S2[,2:14], G = 5)
+mod5 <- Mclust(S2[,2:14], x = BIC5)
+cls5 <- as.data.frame(mod5$classification) %>% rename(class5 = "mod5$classification")
+
+BIC6 <- mclustBIC(S2[,2:14], G = 6)
+mod6 <- Mclust(S2[,2:14], x = BIC6)
+cls6 <- as.data.frame(mod6$classification) %>% rename(class6 = "mod6$classification")
+```
+put it all together
+```{r}
+S3 <- S2 %>% bind_cols(cls3, cls4, cls5, cls6) %>% 
+  mutate(class3 = as.factor(class3),
+         class4 = as.factor(class4),
+         class5 = as.factor(class5),
+         class6 = as.factor(class6),
+         Discrete = as.factor(Discrete))
+```
+
+```{r}
+S3 %>% write_csv(here("Data", "mclust_diet_results.csv"))
+```
+
+
+# Matching Numbers of Clusters  
+```{r}
+S3 <- read_csv(here("Data", "mclust_diet_results.csv")) %>% mutate_at(c("class3", "class4", "class5", "class6"), as.factor)
+```
+
+### Van-Valk Results
+```{r}
+S3.1 <- S3 %>% drop_na(hopkins_van_valk)
+Tvvk <- table(S3.1$hopkins_van_valk, S3.1$class3)
+Tvvk
+Rvvk <- adjustedRandIndex(S3.1$hopkins_van_valk, S3.1$class3)
+Rvvk
+```
+
+### Pantheria Results
+```{r}
+S3.1 <- S3 %>% drop_na(pantheria)
+Tpanth <- table(S3.1$pantheria, S3.1$class3)
+Tpanth
+Rpanth <- adjustedRandIndex(S3.1$pantheria, S3.1$class3)
+Rpanth
+```
+
+### Piñeda Results
+```{r}
+S3.1 <- S3 %>% drop_na(hopkins_pineda)
+Tpineda <- table(S3.1$hopkins_pineda, S3.1$class4)
+Tpineda
+Rpineda <- adjustedRandIndex(S3.1$hopkins_pineda, S3.1$class4)
+Rpineda
+```
+
+### ADW Results
+```{r}
+S3.1 <- S3 %>% drop_na(Discrete)
+Tadw <- table(S3.1$Discrete, S3.1$class6)
+Tadw
+Radw <- adjustedRandIndex(S3.1$Discrete, S3.1$class6)
+Radw
+```
+
+
+### Plot
+
+```{r}
+ratpal <- c("1" = '#f48a1a', "3" = '#e6ab02', "2" = '#66a61e', "5" = 'tan4', "6" = '#0D7E9A', "4" ='#7570b3')
+# Make Convex Hulls
+hull <- S3 %>% 
+  group_by(class6) %>% 
+  slice(chull(V1, V2))
+# Plot
+S3  %>% ggplot(aes(x = V1, y = V2)) + 
+  geom_star(aes(starshape = Discrete, fill = class6), size = 6, starstroke = 1) + 
+  scale_starshape_manual(c(15, 13, 28, 23, 5, 14)) +
+  geom_polygon(aes(color = class6, fill = class6), data = hull, alpha = 0.05) +
+  scale_color_manual(values = ratpal) +
+  scale_fill_manual(values = ratpal) +
+  labs(x = "PC 1 (28%)", y = "PC 2 (18%)", title = "Animal Diversity Web\nAdj. Rand Index = 0.185") +
+  guides(color = "none", fill = "none") +
+  theme_classic() +
+  theme(legend.title = element_blank(), 
+        plot.title = element_text(size=18),
+        legend.position = c(0.85, 0.95),
+        panel.background = element_blank(),
+        legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+        legend.key = element_rect(fill = "transparent", colour = NA), 
+        legend.text=element_text(size=12),
+        axis.text.y = element_text(angle = 90),
+        panel.border = element_blank(),
+        legend.key.size = unit(1.6, 'lines')) +
+  coord_fixed() -> P1
+
+ratpal <- c( "2" = '#e6ab02', "1" = '#66a61e',  "3" ='#7570b3')
+hull <- S3 %>% drop_na(hopkins_van_valk) %>% 
+  group_by(class3) %>% 
+  slice(chull(V1, V2))
+# Plot
+S3  %>% drop_na(hopkins_van_valk) %>% ggplot(aes(x = V1, y = V2)) + 
+  geom_star(aes(starshape = hopkins_van_valk, fill = class3), size = 6, starstroke = 1) + 
+  scale_starshape_manual(c(15, 13, 28, 23, 5, 14)) +
+  geom_polygon(aes(color = class3, fill = class3), data = hull, alpha = 0.05) +
+  scale_color_manual(values = ratpal) +
+  scale_fill_manual(values = ratpal) +
+  labs(x = "PC 1 (28%)", y = "PC 2 (18%)", title = "Van Valkenburgh, 1988\nAdj. Rand Index = 0.145") +
+  guides(color = "none", fill = "none") +
+  theme_classic() +
+  theme(legend.title = element_blank(),  
+        plot.title = element_text(size=18),
+        legend.position = c(0.81, 0.96),
+        panel.background = element_blank(),
+        legend.text=element_text(size=12),
+        axis.text.y = element_text(angle = 90),
+        panel.border = element_blank(),
+        legend.key.size = unit(1.6, 'lines')) +
+  coord_fixed() -> P2
+
+hull <- S3 %>% drop_na(pantheria) %>%
+  group_by(class3) %>% 
+  slice(chull(V1, V2))
+# Plot
+S3  %>% drop_na(pantheria) %>% ggplot(aes(x = V1, y = V2)) + 
+  geom_star(aes(starshape = pantheria, fill = class3), size = 6, starstroke = 1) + 
+  scale_starshape_manual(c(15, 13, 28, 23, 5, 14)) +
+  geom_polygon(aes(color = class3, fill = class3), data = hull, alpha = 0.05) +
+  scale_color_manual(values = ratpal) +
+  scale_fill_manual(values = ratpal) +
+  labs(x = "PC 1 (28%)", y = "PC 2 (18%)", title = "PanTHERIA\nAdj. Rand Index = 0.021") +
+  guides(color = "none", fill = "none") +
+  theme_classic() +
+  theme(legend.title = element_blank(),   
+        plot.title = element_text(size=18),
+        legend.position = c(0.81, 0.96),
+        panel.background = element_blank(),
+        legend.text=element_text(size=12),
+        axis.text.y = element_text(angle = 90),
+        panel.border = element_blank(),
+        legend.key.size = unit(1.6, 'lines')) +
+  coord_fixed()  -> P3
+
+
+ratpal <- c( "3" = '#e6ab02', "2" = '#66a61e',  "4" ='#7570b3', "1" = '#f48a1a')
+hull <- S3 %>% drop_na(hopkins_pineda) %>%
+  group_by(class4) %>% 
+  slice(chull(V1, V2))
+# Plot
+S3  %>% drop_na(hopkins_pineda) %>% ggplot(aes(x = V1, y = V2)) + 
+  geom_star(aes(starshape = hopkins_pineda, fill = class4), size = 6, starstroke = 1) + 
+     geom_polygon(aes(color = class4, fill = class4), data = hull, alpha = 0.05) +
+  scale_starshape_manual(c(15, 13, 28, 23, 5, 14)) +
+  scale_color_manual(values = ratpal) +
+  scale_fill_manual(values = ratpal) +
+  labs(x = "PC 1 (28%)", y = "PC 2 (18%)", title = "Piñeda-Munoz et al., 2017\nAdj. Rand Index = 0.158") +
+  guides(color = "none", fill = "none") +
+  theme_classic() +
+  theme(legend.title = element_blank(),   
+        plot.title = element_text(size=18),
+        legend.position = c(0.78, 0.999),
+        panel.background = element_blank(),
+        legend.text=element_text(size=12),
+        axis.text.y = element_text(angle = 90),
+        legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+        legend.key = element_rect(fill = "transparent", colour = NA), 
+        legend.key.size = unit(1.6, 'lines'),
+        #legend spacing
+        #legend.spacing.y = unit(2.0, 'cm'),
+        panel.border = element_blank()) +
+  coord_fixed()  -> P4
+
+(P3 + P2) / (P4 + P1) + plot_annotation(tag_levels = 'A') &  theme(plot.tag = element_text(size = 18))
+ggsave(here("Plots", "Figure_2_Diet_Clusters.png"), height = 11.9, width = 12.8)
+ggsave(here("Plots", "Figure_2_Diet_Clusters.pdf"), height = 11.9, width = 12.8)
+```
+
