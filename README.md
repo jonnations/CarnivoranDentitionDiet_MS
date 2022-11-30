@@ -33,7 +33,8 @@ Here is a list of the data files:
     * `hopkins_van_valk` -- the $k$=4 discrete scheme of Van Valkenburgh 1988
     * `pantheria` -- the $k$=3 discrete scheme from the panTHERIA database<br>
 <br>
--  `fossil_carnivoran_data.csv` -- the fossil taxa data
+
+- `fossil_carnivoran_data.csv` -- the fossil taxa data
     * `Species` & `Phylo` -- Taxon. Phylo is called in the models
     * `m1_opcr` : `RLGA` --  the raw values of the dental metrics used in the study
     * `m1_tooth_length` -- length of m1
