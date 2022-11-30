@@ -132,18 +132,8 @@ Here is a list of the data files:
 - A neat feature of our multivariate diet method is that species can be projected into $n$-dimensional diet-space. This allows for estimates of disparity, density, and, as we do here, nearest neighbor estimations, which allow us to identify the extant data-rich species that are most similar to the fossil and data deficient taxa in our dataset. The script to do this is `Code/Ordination_NN_Probabilities.Rmd`.  After digging into the results a bit more, we found that the multivariate diet space is fairly dense in some regions (this can be seen in Figure 2), and only providing a single nearest neighbor is misleading. Our Bayesian methodology generates distributions rather than point estimates, so we estimated a data-rich nearest neighbor for the data-deficient taxa from each of 4000 posterior draws. The process goes as follows: For each draw in our 4000 posterior estimates, we manually performed a principal components analysis on the correlation matrix of WIS values for data-rich extant species. Then we take the estimates WIS values of the data deficient taxa and project these into the principal components space of the data-rich taxa. Then, for each of the 4000 PC spaces, we find the data-rich species that are closest in euclidean distance to the data-deficient species, and summarize these results as percentages. For example, in 1520 of the 4000 PC spaces, or 38%, *Ursus speleaus* is closest in euclidean distance to *Ursus maritimus*. We report the most common 3 in Table 5 in the text.
 
 
-####
-OLD Past THis
-####
-- The `Weighted_Predictions_Fig3_Fig4.Rmd` script generates weighted posterior predictions and weighted averages for the extant-with-data, cryptic and fossil taxa, and produces Figures 3 & 4. 
-
-- The `Diet_Space_Ordination_and_Clustering.Rmd` script contains the polychoric PCA analysis that generates a multivariate diet space, the clustering analysis that generates Figure 1B, and the diet space projection of cryptic and fossil taxa used to make Table 4.
-
-- The remainder of the scripts are for plotting (plot name/number included in the title), or tables generates in [kableExtra](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html) as `.tex` and `.png` files. The plots are stored in the `Plots` directory.
-
-
 ## **`Plots`** 
 
-- All of the output plots are stored here. There are both `.pdf`s and `.png`s of most of the plot files. Additionally, several table outputs are stored here as they are rendered in the package [kableExtra](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html) into figures and `.tex` files used in the manuscript production. 
+- All of the output plots are stored here. There are both `.pdf`s and `.png`s of most of the plot files. They all have the figure number in the file name. Additionally, several table outputs are stored here as they are rendered in the package [kableExtra](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html) into figures and `.tex` files used in the manuscript production. 
 
 
