@@ -388,8 +388,7 @@ packages are installed).</li>
 </div>
 <div id="data" class="section level2">
 <h2><strong><code>Data</code></strong></h2>
-<ul>
-<li>The data directory contains all of the raw data used in the initial
+<p>The data directory contains all of the raw data used in the initial
 models, and the data generated from the model outputs. The
 <code>Master_Data.txt</code> is the primary source for dental metrics,
 body mass, dietary rankings for all extant species including those that
@@ -398,7 +397,101 @@ and the discrete categories from the four diet categorization schemes we
 use for comparative purposes (see Figure 2 in the text). We also store
 outputs in this directory because <strong>every output .csv file is
 later called as an input</strong>, either for additional analyses,
-predictions, or as input data for a plot.</li>
+predictions, or as input data for a plot. Here is a list of the data
+files:</p>
+<p><strong><em>Original Data Files</em></strong></p>
+<ul>
+<li><code>Master_data.txt</code> – the main data file, includes the
+data-deficient extant taxa
+<ul>
+<li><code>Species</code> &amp; <code>Family</code> – Species and
+Families of the samples<br />
+</li>
+<li><code>Discrete</code> – the Animal Diversity Web diet
+categories<br />
+</li>
+<li><code>m1_opcr</code> : <code>RLGA</code> – the raw values of the
+dental metrics used in the study<br />
+</li>
+<li><code>log_cuberoot_mass</code> – average for each species</li>
+<li><code>large_mammal</code> : <code>plant</code> – the ranking (0-3)
+of the importance of each of the 13 food items for each species. Note:
+these are changed to 1-4 in the text and in the analyses</li>
+<li><code>hopkins_pineda</code> – the <span class="math inline">\(k\)</span>=4 discrete scheme of Piñeda-Munoz
+2017</li>
+<li><code>hopkins_van_valk</code> – the <span class="math inline">\(k\)</span>=4 discrete scheme of Van Valkenburgh
+1988</li>
+<li><code>pantheria</code> – the <span class="math inline">\(k\)</span>=3 discrete scheme from the panTHERIA
+database<br> <br></li>
+</ul></li>
+<li><code>fossil_carnivoran_data.csv</code> – the fossil taxa data
+<ul>
+<li><code>Species</code> &amp; <code>Phylo</code> – Taxon. Phylo is
+called in the models</li>
+<li><code>m1_opcr</code> : <code>RLGA</code> – the raw values of the
+dental metrics used in the study</li>
+<li><code>m1_tooth_length</code> – length of m1</li>
+<li><code>mass_kg</code> – mass kg</li>
+</ul></li>
+</ul>
+<p><strong><em>Data File Outputs</em></strong> (and subsequent
+inputs)</p>
+<ul>
+<li><p><code>Test_weights_all.csv</code> – model weights of each model
+run (5 per food item)</p>
+<ul>
+<li><code>metric</code> – dental metric, the <code>md</code>,
+<code>mn</code>, or <code>ms</code> means Dirichlet, Normal, or
+Student-<span class="math inline">\(T\)</span>, describing the
+distribution applied to the response variable.</li>
+<li><code>value</code> – LOO model weight</li>
+<li><code>diet</code> – food item<br> <br></li>
+</ul></li>
+<li><p><code>prediction_table.csv</code> – output of the
+<code>Accuracy_Calculations.Rmd</code> script</p>
+<ul>
+<li><code>Species</code> – species</li>
+<li><code>item</code> – food item</li>
+<li><code>actual</code> – empirical importance ranking</li>
+<li><code>pred</code> – predicted importance, model averaged</li>
+<li><code>pareto_k</code> – model averaged Pareto-<span class="math inline">\(K\)</span> score for each species. See text for
+details</li>
+<li><code>pred_round</code> – rounded <code>pred</code></li>
+<li><code>pred_dif</code> – difference between predicted and empirical
+rankings<br> <br></li>
+</ul></li>
+<li><p><code>Accuracy_Table_Cont.csv</code> – Accuracy values, reported
+as Table 2 in the text.<br> <br></p></li>
+<li><p><code>Model_Averaged_Post_Sims.csv</code> – Output of
+<code>Weighted_Predictions.Rmd</code>. These are the predictions drawn
+from the entire posterior distribution (4000 draws). <strong>Do Not Try
+To Open This In Excel</strong> - it’s around 4m rows.</p>
+<ul>
+<li><code>Species</code> – species</li>
+<li><code>.draw</code> – the draw number from the posterior</li>
+<li><code>P1</code> : <code>P4</code> – the probability of each of the 4
+rankings</li>
+<li><code>item</code> – food item</li>
+<li><code>ma</code> – <em>Weighted Importance Score</em> from text.<br>
+<br></li>
+</ul></li>
+<li><p><code>Model_Averaged_Post_Sims_Crypt_Fos.csv</code> – Same cols
+as <code>Model_Averaged_Post_Sims.csv</code><br> <br></p></li>
+<li><p><code>Extant_Predictions_Summary.csv</code> – Summaries of the
+posterior predictions. Output of
+<code>Weighted_Predictions.Rmd</code>.</p>
+<ul>
+<li><code>Species</code> &amp; <code>item</code> – should be clear by
+now</li>
+<li><code>wa_rank</code> – <span class="math inline">\(\overline{WIS}\)</span> from text, the mean
+weighted importance score</li>
+<li><code>rounded_pred_rank</code> – rounded <code>wa_rank</code></li>
+<li><code>real_rank</code> – empirical value<br> <br></li>
+</ul></li>
+<li><p><code>Crypt_Fos_Predictions_Summary.csv</code> – same as
+<code>Extant_Predictions_Summary.csv</code> but for the extant
+data-deficient and fossil taxa. <code>real_rank</code> is
+<code>NA</code> of course.</p></li>
 </ul>
 </div>
 <div id="code" class="section level2">
@@ -553,25 +646,18 @@ fairly dense in some regions (this can be seen in Figure 2), and only
 providing a single nearest neighbor is misleading. Our Bayesian
 methodology generates distributions rather than point estimates, so we
 estimated a data-rich nearest neighbor for the data-deficient taxa from
-each of 4000 posterior draws. This results in 4000 nearest neighbors for
-each data-deficient species. We report the most common ones in Table 5
-in the text. The process goes as follows: For each draw in our 4000
-posterior estimates, we manually performed a principal components
-analysis on the correlation matrix of WIS values for data-rich extant
-species. Then we take the estimates WIS values of the data deficient
-taxa and project these into the principal components space of the
-data-rich taxa. Then, for each of the 4000 PC spaces, we find the
-data-rich species that are closest in euclidean distance to the
+each of 4000 posterior draws. The process goes as follows: For each draw
+in our 4000 posterior estimates, we manually performed a principal
+components analysis on the correlation matrix of WIS values for
+data-rich extant species. Then we take the estimates WIS values of the
+data deficient taxa and project these into the principal components
+space of the data-rich taxa. Then, for each of the 4000 PC spaces, we
+find the data-rich species that are closest in euclidean distance to the
 data-deficient species, and summarize these results as percentages. For
 example, in 1520 of the 4000 PC spaces, or 38%, <em>Ursus speleaus</em>
-is closest in euclidean distance to <em>Ursus maritimus</em>.</li>
+is closest in euclidean distance to <em>Ursus maritimus</em>. We report
+the most common 3 in Table 5 in the text.</li>
 </ul>
-<p>We then projected data-deficient extant and extinct species into the
-principal component space</p>
-<p>how?</p>
-<p>and identified the nearest data-rich neighbor of each, which we
-interpret to be the closest analogues to these taxa.</p>
-<p>pc of extant = (values - means) %*% cor_matrix</p>
 <div id="section" class="section level14">
 <p class="heading"></p>
 <p>FINISH THIS</p>

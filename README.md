@@ -18,7 +18,78 @@ GitHub repo for the manuscript. All scripts necessary to perform the analyses an
 
 ## **`Data`** 
 
-- The data directory contains all of the raw data used in the initial models, and the data generated from the model outputs. The `Master_Data.txt` is the primary source for dental metrics, body mass, dietary rankings for all extant species including those that lack diet rankings (the "cryptic" species we use for prediction later), and the discrete categories from the four diet categorization schemes we use for comparative purposes (see Figure 2 in the text). We also store outputs in this directory because **every output .csv file is later called as an input**, either for additional analyses, predictions, or as input data for a plot. 
+The data directory contains all of the raw data used in the initial models, and the data generated from the model outputs. The `Master_Data.txt` is the primary source for dental metrics, body mass, dietary rankings for all extant species including those that lack diet rankings (the "cryptic" species we use for prediction later), and the discrete categories from the four diet categorization schemes we use for comparative purposes (see Figure 2 in the text). We also store outputs in this directory because **every output .csv file is later called as an input**, either for additional analyses, predictions, or as input data for a plot. 
+Here is a list of the data files:  
+
+***Original Data Files*** 
+
+- `Master_data.txt` -- the main data file, includes the data-deficient extant taxa
+    *  `Species` & `Family` -- Species and Families of the samples  
+    *   `Discrete` -- the Animal Diversity Web diet categories  
+    * `m1_opcr` : `RLGA` --  the raw values of the dental metrics used in the study  
+    * `log_cuberoot_mass` -- average for each species
+    * `large_mammal` : `plant` -- the ranking (0-3) of the importance of each of the 13 food items for each species. Note: these are changed to 1-4 in the text and in the analyses
+    * `hopkins_pineda` -- the $k$=4 discrete scheme of Piñeda-Munoz 2017
+    * `hopkins_van_valk` -- the $k$=4 discrete scheme of Van Valkenburgh 1988
+    * `pantheria` -- the $k$=3 discrete scheme from the panTHERIA database<br>
+<br>
+-  `fossil_carnivoran_data.csv` -- the fossil taxa data
+    * `Species` & `Phylo` -- Taxon. Phylo is called in the models
+    * `m1_opcr` : `RLGA` --  the raw values of the dental metrics used in the study
+    * `m1_tooth_length` -- length of m1
+    * `mass_kg` -- mass kg
+
+***Data File Outputs*** (and subsequent inputs)
+
+- `Test_weights_all.csv` -- model weights of each model run (5 per food item)
+    * `metric` -- dental metric, the `md`, `mn`, or `ms` means Dirichlet, Normal, or Student-$T$, describing the distribution applied to the response variable. 
+    * `value` -- LOO model weight
+    * `diet` -- food item<br>
+<br>
+
+- `prediction_table.csv` -- output of the `Accuracy_Calculations.Rmd` script
+    * `Species` -- species
+    * `item` -- food item
+    * `actual` -- empirical importance ranking
+    * `pred` -- predicted importance, model averaged
+    * `pareto_k` -- model averaged Pareto-$K$ score for each species. See text for details
+    * `pred_round` -- rounded `pred`
+    * `pred_dif` -- difference between predicted and empirical rankings<br>
+<br>
+
+- `Accuracy_Table_Cont.csv` -- Accuracy values, reported as Table 2 in the text.<br>
+<br>
+
+- `Model_Averaged_Post_Sims.csv` -- Output of `Weighted_Predictions.Rmd`. These are the predictions drawn from the entire posterior distribution (4000 draws). **Do Not Try To Open This In Excel** - it's around 4m rows. 
+    * `Species` -- species
+    * `.draw` -- the draw number from the posterior
+    * `P1` : `P4` -- the probability of each of the 4 rankings
+    * `item` -- food item
+    * `ma` -- *Weighted Importance Score* from text.<br>
+<br>
+
+- `Model_Averaged_Post_Sims_Crypt_Fos.csv` -- Same cols as `Model_Averaged_Post_Sims.csv`<br>
+<br>
+
+- `Extant_Predictions_Summary.csv` -- Summaries of the posterior predictions. Output of `Weighted_Predictions.Rmd`.
+    * `Species` & `item` -- should be clear by now
+    * `wa_rank` -- $\overline{WIS}$ from text, the mean weighted importance score
+    * `rounded_pred_rank` -- rounded `wa_rank`
+    * `real_rank` -- empirical value<br>
+<br>
+
+- `Crypt_Fos_Predictions_Summary.csv` -- same as `Extant_Predictions_Summary.csv` but for the extant data-deficient and fossil taxa. `real_rank` is `NA` of course.<br>
+<br>
+
+- `Supp_model_results_table.csv` -- results of all the models in one sheet. Presented as Table S2 in the text, details there. This is not called into any script. And Supp_model_results_table2.csv` is just a laTex friendly version<br>
+<br>
+
+- `NN_probabilities.csv` -- probabilities of nearest neighbors for each taxon. Output of the `Ordination_NN_Probabilities.Rmd` script. This is reduced down to neighbors that are closest at least 5% of the time. 
+    * `Species` -- species
+    * `nearest_1` -- neighbor
+    * `n` -- number of times this taxon `nearest_1` is the nearest neighbor to `Species` out of 4000 analyses
+    * `percent` -- `n` / 4000 <br>
+<br>
 
 ## **`Code`** 
 
@@ -45,7 +116,7 @@ GitHub repo for the manuscript. All scripts necessary to perform the analyses an
 
 #### Posterior Predicitons of Extant Data-Rich, Data-Deficient, and Fossil Taxa
 
-- We generate model_averaged predictions of the Fossil and Data-Deficient Taxa, as well as the Data-Rich Extant Taxa, in the script `Code/Weighted_Predictions.Rmd`. This generates four `Data` files:
+- We generate model_averaged predictions of the Fossil and Data-Deficient Taxa, as well as the Data-Rich Extant Taxa, in the script `Code/Weighted_Predictions.Rmd`. This generates four `Data` files:  
     1.  `Data/Model_Averaged_Post_Sims.csv` - 4000 posterior probability draws of the model averaged probabilities for each species/food item from the extant, data rich taxa. Columns are the probabilities of the 4 rankings, plus a weighted importance score for each row. *Warning, >4m rows.* 
     2.  `Data/Extant_Predictions_Summary.csv` - The means of each of the 4000 draws from the `Model_Averaged_Post_Sims.csv` data frame. 13 * 89 = 1157 rows.
     3. `Data/Model_Averaged_Post_Sims_Crypt_Fos.csv` - The same as above, but for the data deficient extant and fossil taxa. 

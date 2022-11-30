@@ -91,7 +91,10 @@ pred_means <- function(dfs){
   summarise(actual = mean(actual),
             pred = mean(pred),
             pareto_k = mean(w_pareto)) %>% 
-  mutate_at(c('pareto_k'),  round, digits = 3)
+  mutate_at(c('pareto_k'),  round, digits = 3) %>% 
+  mutate(dif = abs(actual - pred),
+         pred_round = round(pred, digits = 0),
+         dif_round = abs(actual - pred_round))
 
 }
 ```
@@ -133,7 +136,7 @@ pred_db %>%
              within_1 = (n2/89) * 100) %>% 
   mutate_if(is.numeric, round, digits = 1) %>% 
   select(!c(n2, n1)) %>% 
-  arrange(desc(perfect_match)) %>% write_csv(file = here("Data", "Accuracy_Table.csv")) #%>% 
+  arrange(desc(perfect_match)) #%>% write_csv(file = here("Data", "Accuracy_Table.csv")) #%>% 
 #laTex table for manuscript
  # arrange(item) %>% 
  # kbl(format = "latex") %>% 
