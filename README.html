@@ -386,6 +386,21 @@ is</em></strong> and run the code without dealing with paths (if all
 packages are installed).</li>
 </ul>
 </div>
+<div id="data" class="section level2">
+<h2><strong><code>Data</code></strong></h2>
+<ul>
+<li>The data directory contains all of the raw data used in the initial
+models, and the data generated from the model outputs. The
+<code>Master_Data.txt</code> is the primary source for dental metrics,
+body mass, dietary rankings for all extant species including those that
+lack diet rankings (the “cryptic” species we use for prediction later),
+and the discrete categories from the four diet categorization schemes we
+use for comparative purposes (see Figure 2 in the text). We also store
+outputs in this directory because <strong>every output .csv file is
+later called as an input</strong>, either for additional analyses,
+predictions, or as input data for a plot.</li>
+</ul>
+</div>
 <div id="code" class="section level2">
 <h2><strong><code>Code</code></strong></h2>
 <div id="prior-predictive-checks-and-model-estimation" class="section level4">
@@ -393,32 +408,6 @@ packages are installed).</li>
 <ul>
 <li><p>All of the models, prior and posterior checking, predictions,
 data wrangling, etc. are found in this directory.</p></li>
-<li><p>The bulk of our results are from the multilevel models generated
-in <a href="https://github.com/paul-buerkner/brms"><strong>brms</strong></a>.
-The scripts containing the models for each food item are in the
-<code>Code/Models/</code> directory and labeled
-<code>Mods_FOODITEM.Rmd</code>. Each script contains 15 models. To run
-all of these, visit the script <code>Code/D_All_Models.Rmd</code>, which
-wrangles the data and calls each food item script individually.
-<strong><em>This Must Be Run Before the Plotting or Prediction
-Scripts</em></strong> because the brms model objects are necessary for
-those. The outputs of the models will be stored in the
-<code>Code/Models/mod_outputs</code> directory (see below). These are
-imported later for predictive and plotting scripts (it’s better than
-running all the models again).</p></li>
-<li><p>All of our ordinal <strong>brms</strong> models use one of three
-priors on the response variable (the ranks): A Normal distribution, a
-Student-<span class="math inline">\(T\)</span> distribution, and a
-Dirichlet Prior on the threshold (aka cutpoint) values. The Dirichet
-prior script is found in <code>Dirichlet_Prior.R</code>. We used the
-Stan code described in <a href="https://discourse.mc-stan.org/t/dirichlet-prior-on-ordinal-regression-cutpoints-in-brms/20640/3">this
-Stan Discourse post</a>, written by <a href="https://github.com/StaffanBetner">Staffan Betnèr</a>, to create
-this prior. This code was generated from and informed by the case study
-by <a href="https://betanalpha.github.io/">Michael Betancourt</a> found
-<a href="https://betanalpha.github.io/assets/case_studies/ordinal_regression.html">here</a>.
-We set the mean intercept <span class="math inline">\(\phi\)</span> to 0
-rather than have the model estimate it, which performed better in our
-simulations. See comment #9 in the discourse post.</p></li>
 <li><p>To determine the parameters for each prior distribution on the
 response variables, we ran prior predictive checks. Similar to the model
 scripts, these are in the <code>Code/Prior_Pred_Checks/</code> directory
@@ -432,6 +421,47 @@ each tooth metric for each food item. Note that we used a <span class="math inli
 variables, as they are all scaled to a mean of 0 and an sd of 1, and
 this loosely regularizing prior keeps the models in check but still
 allows for large effect sizes.</p></li>
+<li><p>All of our ordinal <strong>brms</strong> models use one of three
+priors on the response variable (the ranks): A Normal distribution, a
+Student-<span class="math inline">\(T\)</span> distribution, and a
+Dirichlet Prior on the threshold (aka cutpoint) values. The Dirichet
+prior script is found in <code>Dirichlet_Prior.R</code>. We used the
+Stan code described in <a href="https://discourse.mc-stan.org/t/dirichlet-prior-on-ordinal-regression-cutpoints-in-brms/20640/3">this
+Stan Discourse post</a>, written by <a href="https://github.com/StaffanBetner">Staffan Betnèr</a>, to create
+this prior. This code was generated from and informed by the case study
+by <a href="https://betanalpha.github.io/">Michael Betancourt</a> found
+<a href="https://betanalpha.github.io/assets/case_studies/ordinal_regression.html">here</a>.
+We set the mean intercept <span class="math inline">\(\phi\)</span> to 0
+rather than have the model estimate it, which performed better in our
+simulations. See comment #9 in the discourse post.</p></li>
+<li><p>The bulk of our results are from the multilevel models generated
+in <a href="https://github.com/paul-buerkner/brms"><strong>brms</strong></a>.
+The scripts containing the models for each food item are in the
+<code>Code/Models/</code> directory and labeled
+<code>Mods_FOODITEM.Rmd</code>. Each script contains 15 models. To run
+all of these, visit the script <code>Code/D_All_Models.Rmd</code>, which
+wrangles the data and calls each food item script individually.
+<strong><em>This Must Be Run Before the Plotting or Prediction
+Scripts</em></strong> because the brms model objects are necessary for
+those. The outputs of the models will be stored in the
+<code>Code/Models/mod_outputs</code> directory (see below). These are
+imported later for predictive and plotting scripts (it’s better than
+running all the models again).</p></li>
+<li><p>After running the models, we estimated the LOO model weights of
+each model using stacking. We first calculated the weights for each
+model for each metric (3 per metric, each with a different prior on the
+response, see above). Then we took the models with the highest weight
+for each metric (n=5) and estimated the model weights for these. This is
+all in the <code>Mods_FOODITEM.Rmd</code> scripts. The model weights are
+collected iteratively as each food item file runs in
+<code>Code/D_All_Models.Rmd</code>, and the weights are stored in the
+file <code>Data/Test_weights_all.csv</code>.</p></li>
+<li><p>The parameter estimates of all the models with a model weight
+&gt;0 are found in <code>Data/Supp_model_results_table.csv</code>, and
+kept as a supporting file in the manuscript. The script for generating
+this table is called <code>Code/Model_Results_Supp_Table.Rmd</code>.
+There is a lot of data wrangling involved to get the table formatted
+like it is.</p></li>
 </ul>
 </div>
 <div id="model-posterior-validation-accuracy-checks" class="section level4">
@@ -448,8 +478,8 @@ mostly centered on empirical values with little uncertainty on most food
 items).</p></li>
 <li><p>We checked the accuracy of our model predictions by comparing
 them to the empirical ranks for each species. This script is in
-<code>Code/Accuracy_Predictions.Rmd</code>, and the results are reported
-in Table 4 of the text and are saved as
+<code>Code/Accuracy_Calculations.Rmd</code>, and the results are
+reported in Table 4 of the text and are saved as
 <code>Data/Accuracy_Table.csv</code>. We report these results as
 percentages of estimates that are the exact rank, and within 1 rank
 (which we consider a good estimate in this ranking scale). We estimate
@@ -488,13 +518,13 @@ Data-Deficient Taxa, as well as the Data-Rich Extant Taxa, in the script
 <code>Code/Weighted_Predictions.Rmd</code>. This generates four
 <code>Data</code> files:
 <ol style="list-style-type: decimal">
-<li><code>Data/Model_Averaged_Post_Sims.csv</code> - 1000 posterior
+<li><code>Data/Model_Averaged_Post_Sims.csv</code> - 4000 posterior
 probability draws of the model averaged probabilities for each
 species/food item from the extant, data rich taxa. Columns are the
 probabilities of the 4 rankings, plus a weighted importance score for
-each row. <em>Warning, &gt;1m rows.</em></li>
+each row. <em>Warning, &gt;4m rows.</em></li>
 <li><code>Data/Extant_Predictions_Summary.csv</code> - The means of each
-of the 1000 draws from the <code>Model_Averaged_Post_Sims.csv</code>
+of the 4000 draws from the <code>Model_Averaged_Post_Sims.csv</code>
 data frame. 13 * 89 = 1157 rows.</li>
 <li><code>Data/Model_Averaged_Post_Sims_Crypt_Fos.csv</code> - The same
 as above, but for the data deficient extant and fossil taxa.</li>
@@ -510,14 +540,50 @@ uses several custom functions to perform the tasks and makes use of <a href="htt
 </div>
 <div id="nearest-neighbor-calculations" class="section level4">
 <h4>Nearest Neighbor Calculations</h4>
-<div id="section" class="section level12">
+<ul>
+<li>A neat feature of our multivariate diet method is that species can
+be projected into <span class="math inline">\(n\)</span>-dimensional
+diet-space. This allows for estimates of disparity, density, and, as we
+do here, nearest neighbor estimations, which allow us to identify the
+extant data-rich species that are most similar to the fossil and data
+deficient taxa in our dataset. The script to do this is
+<code>Code/Ordination_NN_Probabilities.Rmd</code>. After digging into
+the results a bit more, we found that the multivariate diet space is
+fairly dense in some regions (this can be seen in Figure 2), and only
+providing a single nearest neighbor is misleading. Our Bayesian
+methodology generates distributions rather than point estimates, so we
+estimated a data-rich nearest neighbor for the data-deficient taxa from
+each of 4000 posterior draws. This results in 4000 nearest neighbors for
+each data-deficient species. We report the most common ones in Table 5
+in the text. The process goes as follows: For each draw in our 4000
+posterior estimates, we manually performed a principal components
+analysis on the correlation matrix of WIS values for data-rich extant
+species. Then we take the estimates WIS values of the data deficient
+taxa and project these into the principal components space of the
+data-rich taxa. Then, for each of the 4000 PC spaces, we find the
+data-rich species that are closest in euclidean distance to the
+data-deficient species, and summarize these results as percentages. For
+example, in 1520 of the 4000 PC spaces, or 38%, <em>Ursus speleaus</em>
+is closest in euclidean distance to <em>Ursus maritimus</em>.</li>
+</ul>
+<p>We then projected data-deficient extant and extinct species into the
+principal component space</p>
+<p>how?</p>
+<p>and identified the nearest data-rich neighbor of each, which we
+interpret to be the closest analogues to these taxa.</p>
+<p>pc of extant = (values - means) %*% cor_matrix</p>
+<div id="section" class="section level14">
+<p class="heading"></p>
+<p>FINISH THIS</p>
+</div>
+<div id="section-1" class="section level12">
 <p class="heading"></p>
 <p>Weighted Predictions New is the next thing Also the model figures!
 Those should be above validation? Or a separate file below (maybe
 this)</p>
 </div>
 </div>
-<div id="section-1" class="section level4">
+<div id="section-2" class="section level4">
 <h4></h4>
 <p>OLD Past THis #### - The
 <code>Weighted_Predictions_Fig3_Fig4.Rmd</code> script generates
@@ -537,32 +603,6 @@ in the <code>Plots</code> directory.</p></li>
 </ul>
 </div>
 </div>
-<div id="mod_outputs" class="section level2">
-<h2><strong><code>mod_outputs</code></strong></h2>
-<ul>
-<li><p>This directory stores the model outputs generated in the 13 model
-scripts called in the <code>Code/D_All_Models.Rds</code> file. brms
-stores the model objects as <code>.rds</code> files. These can be loaded
-via <code>brms:brm()</code> or with the <code>readRds()</code> command,
-which we use a lot in other scripts here.</p></li>
-<li><p>This directory will be empty in the Dryad repo to save space (all
-67 model outputs = 367Mb in size), but running the
-<code>Code/D_All_Models.Rds</code> script will populate it.</p></li>
-</ul>
-</div>
-<div id="data" class="section level2">
-<h2><strong><code>Data</code></strong></h2>
-<ul>
-<li>The data directory contains all of the raw data used in the initial
-models, and the data generated from the model outputs. The
-<code>Master_Data.txt</code> is the primary source for dental metrics,
-body mass, and dietary rankings for all extant species, including those
-that lack diet rankings (the “cryptic” species we use for prediction
-later). We also store results in this directory because <strong>every
-output is called later as an input</strong>, either for additional
-analyses, predictions, or as input data for a plot.</li>
-</ul>
-</div>
 <div id="plots" class="section level2">
 <h2><strong><code>Plots</code></strong></h2>
 <ul>
@@ -570,7 +610,8 @@ analyses, predictions, or as input data for a plot.</li>
 <code>.pdf</code>s and <code>.png</code>s of most of the plot files.
 Additionally, several table outputs are stored here as they are rendered
 in the package <a href="https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html">kableExtra</a>
-into figures and <code>.tex</code> files.</li>
+into figures and <code>.tex</code> files used in the manuscript
+production.</li>
 </ul>
 </div>
 </div>
