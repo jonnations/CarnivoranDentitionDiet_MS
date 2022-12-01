@@ -14,6 +14,9 @@ fd <- read_csv(here("Data", "Crypt_Fos_Predictions_Summary.csv")) %>%
   janitor::clean_names() %>% #select(species, item, wa_rank, ) %>% 
 filter(!(species %in% cryp_sp)) %>% 
   mutate(species = str_replace_all(species, "_", " "),
+         species = recode(species,
+                          Dinictis = "Dinictis felina",
+                          Miacis = "'Miacis' latidens"),
          item = str_replace_all(item, "_", " "),
          item = recode(item, 
                        bird = "Bird",
