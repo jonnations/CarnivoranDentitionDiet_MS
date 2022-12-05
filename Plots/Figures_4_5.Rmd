@@ -16,7 +16,7 @@ filter(!(species %in% cryp_sp)) %>%
   mutate(species = str_replace_all(species, "_", " "),
          species = recode(species,
                           Dinictis = "Dinictis felina",
-                          Miacis = "'Miacis' latidens"),
+                          Miacis = "''Miacis'' latidens"),
          item = str_replace_all(item, "_", " "),
          item = recode(item, 
                        bird = "Bird",
