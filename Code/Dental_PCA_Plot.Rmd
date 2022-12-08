@@ -1,0 +1,106 @@
+---
+title: "PCA Dental Measurements GGPLOT"
+#output: html_notebook
+---
+
+Making a PCA plot from dental measurements, colored by clade.
+
+A tidyverse-ggplot version of the `pca_dental_measurements.R` script. I am doing this so that bogh Figures 1A and 1B can be made in ggplot so they "match" better. Base R and GGPlot plots don't look right side by side.
+
+```{r}
+pacman::p_load(tidyverse, patchwork, png, ggstar, here, paletteer, ggstar)
+
+here::i_am("Code/Dental_PCA_Plot.Rmd")
+```
+
+## Read Data
+```{r}
+input_data_1<- read.delim(here("Data", "Master_Data.txt")) %>% 
+  drop_na('bird') %>% 
+  select(1:10) %>% 
+  drop_na() %>% 
+  mutate(Family = as.factor(Family)) %>% arrange(Family)
+
+colors.list9<-c("#1090e5", "#4624b5", "#fcc7c9", "#69efeb", "#e8ea72", "#a2ea6e", "#7f3faa", "#dd8871", "#f2da9b", "#d596f7", "#51bc27", "#ac0bc1", "#1488a8")
+pal1 <- paletteer_d("ggthemr::light") 
+pal2 <- paletteer_d("ggthemes::Tableau_10") 
+pal3 <- paletteer_d("ggsci::nrc_npg") 
+pal4 <- paletteer_d("ggsci::schwifty_rickandmorty") 
+pal5 <- paletteer_d("ggsci::springfield_simpsons") 
+pal5.2 <- pal5[c(1:3,8,5,15,7,4,9:12)]
+pal6 <- paletteer_d("ggsci::planetexpress_futurama") 
+pal7 <- paletteer_d("ggsci::springfield_simpsons")[c(1,2,4:5,7:9, 11:15)]
+```
+## PCA
+```{r}
+set.seed(2)
+pca1<-prcomp(input_data_1[4:10], scale.=TRUE, center=TRUE)
+
+pdat <- pca1$x %>% as_tibble() %>% bind_cols(input_data_1)
+pdat  %>% ggplot(aes(x = PC1, y = PC2)) +
+  geom_point(aes(color = Family,
+                 fill = Family))
+```
+
+
+## Plot
+```{r}
+hull <- pdat %>% 
+  group_by(Family) %>% 
+  slice(chull(PC1, PC2))
+# Plot
+pcplot <- pdat  %>% ggplot(aes(x = PC1, y = PC2)) +
+ #geom_point(aes(color = Family,
+ #               fill = Family), 
+ #           size = 0.1, 
+ #           shape=21) +
+  geom_star(aes(starshape = Family,
+                     color = Family,
+                     fill = Family),
+                 size = 1.5) +
+  scale_starshape_manual(c(25, 11, 15, 13, 28, 23, 5, 14, 29, 2, 27, 1)) +
+  geom_polygon(aes(fill = Family, 
+                   color = Family),
+               data = hull, 
+               alpha = 0.2, 
+               show.legend = F,
+               size = 0.2) +
+  #scale_fill_manual(values = colors.list9) +
+  #scale_color_manual(values = colors.list9) +
+  labs(x = "PC 1 (64%)", y = "PC 2 (18%)") +
+  theme_classic() +
+  theme(legend.title = element_blank(), 
+        #legend.position = c(0.155, 0.9),
+        legend.position = "bottom",
+        panel.background = element_rect(fill = "white", 
+                                        colour = NULL),
+        axis.text.y = element_text(angle = 90, size=rel(0.75)),
+        axis.text.x = element_text(size=rel(0.75)),
+        legend.text=element_text(size=rel(0.75)),
+        axis.title.y = element_text(size = rel(0.8)),
+        axis.title.x = element_text(size = rel(0.8)),
+        legend.background = element_rect(fill='transparent'),
+        legend.spacing.y = unit(0.001, 'lines'),
+        legend.key.size = unit(0.4, 'lines'),
+        legend.box.margin=margin(-12,-10,-10,-30)) +
+      guides(color =     guide_legend(byrow = TRUE, override.aes = list(size = 1.5),  ncol = 4),
+             fill =      guide_legend(byrow = TRUE, override.aes = list(size = 1.5),  ncol = 4),
+             starshape = guide_legend(byrow = TRUE, override.aes = list(size = 1.5),  ncol = 4)) + 
+  coord_fixed()  +  scale_fill_manual(values = pal5.2) +scale_color_manual(values = pal5.2)
+pcplot
+ggsave(here("Plots", "Figure_1.pdf"),width = 3.5, height = 3.5)
+```
+
+```{r}
+#logo <- png::readPNG("Fig1BImages/Ailuropoda_m1.png", native = TRUE)
+pcplot +  scale_fill_manual(values = colors.list9) +scale_color_manual(values = colors.list9) 
+#pcplot +  scale_fill_manual(values = pal1) +scale_color_manual(values = pal1) 
+#pcplot +  scale_fill_manual(values = pal2) +scale_color_manual(values = pal2) 
+#pcplot +  scale_fill_manual(values = pal3) +scale_color_manual(values = pal3) 
+pcplot +  scale_fill_manual(values = pal4) +scale_color_manual(values = pal4) 
+pcplot +  scale_fill_manual(values = pal5) +scale_color_manual(values = pal5)
+pcplot +  scale_fill_manual(values = pal5.2) +scale_color_manual(values = pal5.2)
+pcplot +  scale_fill_manual(values = pal6) +scale_color_manual(values = pal6) 
+pcplot +  scale_fill_manual(values = pal7) +scale_color_manual(values = pal7) 
+#
+```
