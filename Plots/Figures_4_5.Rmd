@@ -6,7 +6,7 @@ title: "Prediction Figures"
 
 ## Load Data and Packages  
 ```{r}
-pacman::p_load(tidyverse, here, scico)
+pacman::p_load(tidyverse, here, scico, patchwork)
 
 cryp_sp <- c("Arctogalidia_trivirgata", "Bassaricyon_alleni", "Catopuma_badia", "Chrotogale_owstoni", "Cynogale_bennettii", "Galidia_elegans", "Galidictis_fasciata", "Hemigalus_derbyanus", "Herpestes_brachyurus", "Mydaus_javanensis", "Paradoxurus_musanga", "Pardofelis_marmorata", "Prionodon_linsang")
 #Load Fossil Taxa
@@ -82,15 +82,17 @@ fd %>%
                           labels = c( "1", "", "", "", "2", "", "", "", "3", "", "","", "4"),
                           guide = guide_legend(byrow = TRUE, reverse=T, size = 2)
                           ) +
-  labs(fill='Dietary\nImportance\nRanking\n') +
+  labs(fill='Weighted\nDietary\nImportance\nScores\n') +
   theme_minimal() +
   coord_fixed(ratio=1) +
   scale_y_discrete(limits=rev) +
+  #NEW
   theme(axis.title.x=element_blank(),
         axis.text.x = element_text(angle = 45, 
-                                   hjust = 1, 
-                                   vjust = 1.1,  
-                                   size=10),
+                                       hjust = 1, 
+                                       vjust = 1.1,  
+                                       size=10),
+        
         axis.ticks.x=element_blank(),
         axis.title.y=element_blank(),
         axis.text.y = element_text(face = "italic", 
@@ -109,7 +111,6 @@ ggsave(here("Plots", "Fig_5_Fossil_Preds_Continuous.pdf"), width = 10, height = 
 ggsave(here("Plots", "Fig_5_Fossil_Preds_Continuous.png"), width = 7.5, height = 6)
 ```
 
-
 #### Cryptic
 
 ```{r}
@@ -125,15 +126,21 @@ cd %>%
                           labels = c( "1", "", "", "", "2", "", "", "", "3", "", "","", "4"),
                           guide = guide_legend(byrow = TRUE, reverse=T, size = 2)
                           ) +
-  labs(fill='Dietary\nImportance\nRanking\n') +
+  labs(fill='Weighted\nDietary\nImportance\nScores\n') +
   theme_minimal() +
   coord_fixed(ratio=1) +
   scale_y_discrete(limits=rev) +
+  scale_x_discrete(position = "top") +
   theme(axis.title.x=element_blank(),
-        axis.text.x = element_text(angle = 45, 
-                                   hjust = 1, 
-                                   vjust = 1.1,  
-                                   size=10),
+        #axis.text.x = element_text(angle = 45, 
+        #                           hjust = 1, 
+        #                           vjust = 1.1,  
+        #                           size=10),
+        #NEW
+        axis.text.x.top = element_text(angle = 45, 
+                                       hjust = 0, 
+                                       vjust = -0.1,  
+                                       size=10),
         axis.ticks.x=element_blank(),
         axis.title.y=element_blank(),
         axis.text.y = element_text(face = "italic", 
@@ -150,4 +157,11 @@ cd %>%
 pred2
 ggsave(here("Plots", "Fig_4_Cryptic_Preds_Continuous.pdf"), width = 10, height = 8) 
 ggsave(here("Plots", "Fig_4_Cryptic_Preds_Continuous.png"), width = 7.5, height = 6)
+```
+## Combined Plot
+
+```{r}
+pred2/pred1 +  plot_layout(guides = "collect") + plot_annotation(tag_levels = 'A') & theme(plot.tag = element_text(size = 15, face ="bold"))
+ggsave(here("Plots", "Fig_4_Combined_Preds_Continuous.pdf"), width = 7.5, height = 9)
+ggsave(here("Plots", "Fig_4_Combined_Preds_Continuous.png"), width = 7.5, height = 9)
 ```
