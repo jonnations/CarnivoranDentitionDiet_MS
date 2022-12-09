@@ -442,9 +442,9 @@ inputs)</p>
 run (5 per food item)</p>
 <ul>
 <li><code>metric</code> – dental metric, the <code>md</code>,
-<code>mn</code>, or <code>ms</code> means Dirichlet, Normal, or
-Student-<span class="math inline">\(T\)</span>, describing the
-distribution applied to the response variable.</li>
+<code>mn</code>, or <code>ms</code> means Dirichlet, Normal, or Student-
+<span class="math inline">\(T\)</span>, describing the distribution
+applied to the response variable.</li>
 <li><code>value</code> – LOO model weight</li>
 <li><code>diet</code> – food item<br> <br></li>
 </ul></li>
@@ -555,7 +555,7 @@ this loosely regularizing prior keeps the models in check but still
 allows for large effect sizes.</p></li>
 <li><p>All of our ordinal <strong>brms</strong> models use one of three
 priors on the response variable (the ranks): A Normal distribution, a
-Student-<span class="math inline">\(T\)</span> distribution, and a
+Student- <span class="math inline">\(T\)</span> distribution, and a
 Dirichlet Prior on the threshold (aka cutpoint) values. The Dirichet
 prior script is found in <code>Dirichlet_Prior.R</code>. We used the
 Stan code described in <a href="https://discourse.mc-stan.org/t/dirichlet-prior-on-ordinal-regression-cutpoints-in-brms/20640/3">this

@@ -43,7 +43,7 @@ Here is a list of the data files:
 ***Data File Outputs*** (and subsequent inputs)
 
 - `Test_weights_all.csv` -- model weights of each model run (5 per food item)
-    * `metric` -- dental metric, the `md`, `mn`, or `ms` means Dirichlet, Normal, or Student-$T$, describing the distribution applied to the response variable. 
+    * `metric` -- dental metric, the `md`, `mn`, or `ms` means Dirichlet, Normal, or Student- $T$, describing the distribution applied to the response variable. 
     * `value` -- LOO model weight
     * `diet` -- food item<br>
 <br>
