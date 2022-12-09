@@ -368,7 +368,8 @@ analyses and generate the plots from this manuscript are found here.</p>
 <code>phytools</code>, <code>geiger</code>, <code>mclust</code>,
 <code>polycor</code>, <code>NbClust</code>, <code>ggstar</code>,
 <code>janitor</code>, <code>caret</code>, <code>scico</code>,
-<code>furrr</code> (for parallel computing)</p></li>
+<code>paletteer</code>, &amp; <code>furrr</code> (for parallel
+computing)</p></li>
 <li><p>All of these packages should be available in CRAN. See the brms
 <a href="https://github.com/paul-buerkner/brms#faq">FAQ</a> for details
 on installing Stan, cmndstanr, and brms. <a href="http://trinker.github.io/pacman/vignettes/Introduction_to_pacman.html">pacman</a>
@@ -491,11 +492,49 @@ weighted importance score</li>
 <li><p><code>Crypt_Fos_Predictions_Summary.csv</code> – same as
 <code>Extant_Predictions_Summary.csv</code> but for the extant
 data-deficient and fossil taxa. <code>real_rank</code> is
-<code>NA</code> of course.</p></li>
+<code>NA</code> of course.<br> <br></p></li>
+<li><p><code>Supp_model_results_table.csv</code> – results of all the
+models in one sheet. Presented as Table S2 in the text, details there.
+This is not called into any script. And Supp_model_results_table2.csv`
+is just a laTex friendly version<br> <br></p></li>
+<li><p><code>NN_probabilities.csv</code> – probabilities of nearest
+neighbors for each taxon. Output of the
+<code>Ordination_NN_Probabilities.Rmd</code> script. This is reduced
+down to neighbors that are closest at least 5% of the time.</p>
+<ul>
+<li><code>Species</code> – species</li>
+<li><code>nearest_1</code> – neighbor</li>
+<li><code>n</code> – number of times this taxon <code>nearest_1</code>
+is the nearest neighbor to <code>Species</code> out of 4000
+analyses</li>
+<li><code>percent</code> – <code>n</code> / 4000 <br> <br></li>
+</ul></li>
 </ul>
 </div>
 <div id="code" class="section level2">
 <h2><strong><code>Code</code></strong></h2>
+<div id="polychoric-pca-and-cluster-analyses" class="section level4">
+<h4>Polychoric PCA and Cluster Analyses</h4>
+<ul>
+<li>We are interested if the multivariate diet matches traditional diet
+categories from several commonly used classification schemes. To do
+this, we want to project the importance rankings of the 13 food items
+into a multivariate diet space, then run a cluster analysis to identify
+natural groupings in dietspace. This is outlined in the
+<code>Code/Ord_Clust_Plot.Rmd/</code> script. As the dietary importance
+rankings are ordinal rankings, and not continuous, we use a method
+called polychoric PCA, which is designed for ordinal variables. We
+estimate a polychoric correlation matrix, the project the species into
+diet space. The process is pretty well annotated in the script. Then we
+use the package <a href="https://cran.r-project.org/web/packages/mclust/vignettes/mclust.html"><code>mclust</code></a>,
+which performs cluster analyses with finite normal mixture modeling, to
+determine the natural clusters. Since there is no really strong
+preference for a number of clusters, we calculate <span class="math inline">\(k\)</span> = 3, 4, 5, and 6. Then we use the
+adjusted Rand index to compare these to 4 classification schemes. More
+details in the text. This generates the Figure 2 plots, which are stored
+as <code>Plots/Figure_2_Diet_Clusters.pdf</code>.</li>
+</ul>
+</div>
 <div id="prior-predictive-checks-and-model-estimation" class="section level4">
 <h4>Prior Predictive Checks and Model Estimation</h4>
 <ul>
@@ -658,35 +697,6 @@ example, in 1520 of the 4000 PC spaces, or 38%, <em>Ursus speleaus</em>
 is closest in euclidean distance to <em>Ursus maritimus</em>. We report
 the most common 3 in Table 5 in the text.</li>
 </ul>
-<div id="section" class="section level14">
-<p class="heading"></p>
-<p>FINISH THIS</p>
-</div>
-<div id="section-1" class="section level12">
-<p class="heading"></p>
-<p>Weighted Predictions New is the next thing Also the model figures!
-Those should be above validation? Or a separate file below (maybe
-this)</p>
-</div>
-</div>
-<div id="section-2" class="section level4">
-<h4></h4>
-<p>OLD Past THis #### - The
-<code>Weighted_Predictions_Fig3_Fig4.Rmd</code> script generates
-weighted posterior predictions and weighted averages for the
-extant-with-data, cryptic and fossil taxa, and produces Figures 3 &amp;
-4.</p>
-<ul>
-<li><p>The <code>Diet_Space_Ordination_and_Clustering.Rmd</code> script
-contains the polychoric PCA analysis that generates a multivariate diet
-space, the clustering analysis that generates Figure 1B, and the diet
-space projection of cryptic and fossil taxa used to make Table
-4.</p></li>
-<li><p>The remainder of the scripts are for plotting (plot name/number
-included in the title), or tables generates in <a href="https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html">kableExtra</a>
-as <code>.tex</code> and <code>.png</code> files. The plots are stored
-in the <code>Plots</code> directory.</p></li>
-</ul>
 </div>
 </div>
 <div id="plots" class="section level2">
@@ -694,8 +704,8 @@ in the <code>Plots</code> directory.</p></li>
 <ul>
 <li>All of the output plots are stored here. There are both
 <code>.pdf</code>s and <code>.png</code>s of most of the plot files.
-Additionally, several table outputs are stored here as they are rendered
-in the package <a href="https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html">kableExtra</a>
+They all have the figure number in the file name. Additionally, several
+table outputs are stored here as they are rendered in the package <a href="https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html">kableExtra</a>
 into figures and <code>.tex</code> files used in the manuscript
 production.</li>
 </ul>

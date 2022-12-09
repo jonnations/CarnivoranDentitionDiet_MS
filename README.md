@@ -8,7 +8,7 @@ GitHub repo for the manuscript. All scripts necessary to perform the analyses an
 
 ## Required Packages:
 
-- `pacman`, `here`, `brms`, `cmdstanr`, `tidyverse`, `tidybayes`, `phytools`, `geiger`, `mclust`, `polycor`, `NbClust`, `ggstar`, `janitor`, `caret`, `scico`, `furrr` (for parallel computing)
+- `pacman`, `here`, `brms`, `cmdstanr`, `tidyverse`, `tidybayes`, `phytools`, `geiger`, `mclust`, `polycor`, `NbClust`, `ggstar`, `janitor`, `caret`, `scico`, `paletteer`, & `furrr` (for parallel computing)
 
 - All of these packages should be available in CRAN. See the brms [FAQ](https://github.com/paul-buerkner/brms#faq) for details on installing Stan, cmndstanr, and brms. [pacman](http://trinker.github.io/pacman/vignettes/Introduction_to_pacman.html) makes it easy to install and load multiple packages. 
 
