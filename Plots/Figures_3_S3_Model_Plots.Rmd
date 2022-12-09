@@ -43,18 +43,18 @@ ggplot(aes(x={{effect2}}, y = Probability, group = cats__)) +
   scico::scale_fill_scico_d(palette = "lajolla", 
                             begin  = 0.3, 
                             end = 0.95, 
-                            name = "Dietary\nImportance") +
+                            name = "Dietary\nImportance\nRank") +
   scico::scale_color_scico_d(palette = "lajolla", 
                             begin  = 0.3, 
                             end = 0.95, 
-                             name = "Dietary\nImportance") +
+                             name = "Dietary\nImportance\nRank") +
   theme_classic() +
   ylim(0, 1) +
   guides(colour = guide_legend(reverse=T,
-                               title.theme = element_text(size = 6),
+                               title.theme = element_text(size = 7.5),
                                override.aes = list(size = 1)),
          fill = guide_legend(reverse=T,
-                             title.theme = element_text(size = 6),
+                             title.theme = element_text(size = 7.5),
                              override.aes = list(size = 1))) + 
   theme( panel.grid.major = element_blank(), 
          panel.grid.minor = element_blank(),
@@ -74,19 +74,14 @@ ggplot(aes(x={{effect2}}, y = Probability, group = cats__)) +
          legend.key = element_rect(color = NA),
          legend.key.size =    unit(.95, "lines"),
          axis.title.y = element_text(size = 6, margin=margin(0,-2,0,-10)),
-         axis.title.x = element_text(size = 6, margin=margin(0,0,-5,0)),
-         plot.subtitle=element_text(size=8, margin=margin(-20,0,2,0)),
+         axis.title.x = element_text(size = 6, margin=margin(0,0,-3,0)),
+         plot.subtitle=element_text(size=8, margin=margin(-20,0,3.2,0)),
          legend.box.margin = unit(c(-0.5, 0, 0, 0), "lines"),
          plot.margin = unit(c(0.2, 0, 0.3, 0), "lines")
          )
 }
 ```
 
-```{r}
-ord_plotlj_s(readRDS(here("Code/Models/mod_outputs/bird_md_RLGA.Rds")), 
-         "RLGA", RLGA,
-         "Bird") -> p1
-```
 
 
 ## Figure 3
@@ -119,8 +114,8 @@ ord_plotlj_s(readRDS(here("Code/Models/mod_outputs/soft_invert_mn_DNE.Rds")),
 
 plot3col <- (p1 + p2 + p3 ) /  (p4 + p5 + p6)  + plot_layout(guides = "collect")  + plot_annotation(tag_levels = 'A') & theme(plot.tag = element_text(size = 10))
 plot3col
-ggsave(here("Plots", "Figure_3.pdf"), width = 7.5, height = 3.375)
-ggsave(here("Plots", "Figure_3.png"), width = 7.5, height = 3.375)
+ggsave(here("Plots", "Figure_3.pdf"), width = 7.5, height = 3.2)
+ggsave(here("Plots", "Figure_3.png"), width = 7.5, height = 3.2)
 ```
 
 
