@@ -15,6 +15,7 @@ here::i_am("Plots/Figures_3_S3_Model_Plots.Rmd")
 
 ### Plotting Fuctions
 
+#### Regular Plots
 ```{r}
 ord_plotlj <- function(mod, effect, title){
 conditions <- data.frame(log_cuberoot_mass = c(-1.5, 0, 1.5))
@@ -90,38 +91,215 @@ plot(p1, plot = FALSE)[[1]] +
 }
 ```
 
+
+#### Scaled Plots for fig3
+```{r}
+ord_plotlj <- function(mod, effect, title){
+conditions <- data.frame(log_cuberoot_mass = c(-1.5, 0, 1.5))
+mass.labs <- c("Low Mass", "Mean Mass", "High Mass")
+names(mass.labs) <- c(-1.5, 0, 1.5)
+p1 <- conditional_effects({{mod}}, 
+                          categorical  = TRUE, 
+                          prob = 0.75, 
+                          conditions = conditions, 
+                          effects= {{effect}})
+plot(p1, plot = FALSE)[[1]] + 
+  facet_wrap(~log_cuberoot_mass, 
+             ncol = 3,
+             labeller = labeller(log_cuberoot_mass = mass.labs)) + 
+  labs(subtitle = {{title}}) +
+  scico::scale_fill_scico_d(palette = "lajolla", 
+                            begin  = 0.3, 
+                            end = 0.95, 
+                            name = "Dietary\nImportance") +
+  scico::scale_color_scico_d(palette = "lajolla", 
+                            begin  = 0.3, 
+                            end = 0.95, 
+                             name = "Dietary\nImportance") +
+  theme_classic() +
+  ylim(0, 1) +
+  guides(colour = guide_legend(reverse=T,
+                               title.theme = element_text(size = 8),
+                               override.aes = list(size = 1.5)),
+         fill = guide_legend(reverse=T,
+                             title.theme = element_text(size = 8),
+                             override.aes = list(size = 1.5))) + 
+  theme( panel.grid.major = element_blank(), 
+         panel.grid.minor = element_blank(),
+         strip.background = element_blank(),
+         strip.text.x = element_text(size = 8),
+         panel.border = element_rect(colour = "black", 
+                                     fill = NA),
+         axis.text.y = element_text(size=rel(0.5)),
+         axis.text.x = element_text(size=rel(0.5)),
+         legend.text=element_text(size=rel(0.5)),
+         axis.title.y = element_text(size = rel(0.5)),
+         axis.title.x = element_text(size = rel(0.5)),
+         plot.subtitle=element_text(size=10)) +
+  scale_size_manual(values = c(1, 1.4, 2, 10))
+}
+```
+
+```{r}
+conditions <- data.frame(log_cuberoot_mass = c(-1.5, 0, 1.5))
+mass.labs <- c("Low Mass", "Mean Mass", "High Mass")
+conditional_effects(readRDS(here("Code/Models/mod_outputs/bird_md_RLGA.Rds")), 
+                          categorical  = TRUE, 
+                          prob = 0.75, 
+                          conditions = conditions, 
+                          effects= "RLGA")[[1]] %>% 
+  as_tibble() %>% 
+  mutate(log_cuberoot_mass = factor(log_cuberoot_mass, 
+                                    levels = c("-1.5", "0", "1.5"),
+                                    labels = c("Low Mass", "Mean Mass", "High Mass"))) %>% 
+  rename(Probability = estimate__)
+ggplot(aes(x = "RLGA", y = Probability, group = cats__)) +
+  geom_ribbon(aes(ymin = lower__, 
+                  ymax = upper__, 
+                  fill = cats__), 
+              alpha=0.2) +
+  geom_line(size=1, 
+            position=position_dodge(0.05), 
+            aes(color=cats__)) +
+  facet_wrap(~ log_cuberoot_mass, 
+             ncol = 3) +
+  labs(subtitle = "RLGA") +
+  scico::scale_fill_scico_d(palette = "lajolla", 
+                            begin  = 0.3, 
+                            end = 0.95, 
+                            name = "Dietary\nImportance") +
+  scico::scale_color_scico_d(palette = "lajolla", 
+                            begin  = 0.3, 
+                            end = 0.95, 
+                             name = "Dietary\nImportance") +
+  theme_classic() +
+  ylim(0, 1) +
+  guides(colour = guide_legend(reverse=T,
+                               title.theme = element_text(size = 8),
+                               override.aes = list(size = 1.5)),
+         fill = guide_legend(reverse=T,
+                             title.theme = element_text(size = 8),
+                             override.aes = list(size = 1.5))) + 
+  theme( panel.grid.major = element_blank(), 
+         panel.grid.minor = element_blank(),
+         strip.background = element_blank(),
+         strip.text.x = element_text(size = 8),
+         panel.border = element_rect(colour = "black", 
+                                     fill = NA),
+         axis.text.y = element_text(size=rel(0.5)),
+         axis.text.x = element_text(size=rel(0.5)),
+         legend.text=element_text(size=rel(0.5)),
+         axis.title.y = element_text(size = rel(0.5)),
+         axis.title.x = element_text(size = rel(0.5)),
+         plot.subtitle=element_text(size=10))
+```
+
+####Scaled Plot Function
+```{r}
+ord_plotlj_s <- function(mod, effect, effect2, title){
+conditions <- data.frame(log_cuberoot_mass = c(-1.5, 0, 1.5))
+conditional_effects({{mod}}, 
+                          categorical  = TRUE, 
+                          prob = 0.75, 
+                          conditions = conditions, 
+                          effects= {{effect}})[[1]] %>% 
+  as_tibble() %>% 
+  mutate(log_cuberoot_mass = factor(log_cuberoot_mass, 
+                                    levels = c("-1.5", "0", "1.5"),
+                                    labels = c("Low Mass", "Mean Mass", "High Mass"))) %>% 
+  rename(Probability = estimate__) %>% 
+ggplot(aes(x={{effect2}}, y = Probability, group = cats__)) +
+  geom_ribbon(aes(ymin = lower__, 
+                  ymax = upper__, 
+                  fill = cats__), 
+              alpha=0.2) +
+  geom_line(size=0.4, 
+            #position=position_dodge(0.05), 
+            aes(color=cats__)) +
+  facet_wrap(~ log_cuberoot_mass, 
+             ncol = 3) +
+  labs(subtitle = {{title}}) +
+  scico::scale_fill_scico_d(palette = "lajolla", 
+                            begin  = 0.3, 
+                            end = 0.95, 
+                            name = "Dietary\nImportance") +
+  scico::scale_color_scico_d(palette = "lajolla", 
+                            begin  = 0.3, 
+                            end = 0.95, 
+                             name = "Dietary\nImportance") +
+  theme_classic() +
+  ylim(0, 1) +
+  guides(colour = guide_legend(reverse=T,
+                               title.theme = element_text(size = 6),
+                               override.aes = list(size = 1)),
+         fill = guide_legend(reverse=T,
+                             title.theme = element_text(size = 6),
+                             override.aes = list(size = 1))) + 
+  theme( panel.grid.major = element_blank(), 
+         panel.grid.minor = element_blank(),
+         strip.background = element_blank(),
+         strip.text.x = element_text(size = 6, margin=margin(b=0.9)),
+        # strip.text.x = element_text(size = 8),
+         panel.border = element_rect(colour = "black", 
+                                     fill = NA,
+                                     size = rel(0.8)),
+         axis.line = element_line(colour = "NA"),
+         axis.text.y = element_text(size=rel(0.5)),
+         axis.text.x = element_text(size=rel(0.5)),
+         axis.ticks = element_line(size = rel(0.25)),
+         axis.ticks.length =  unit(0.5, "pt"),
+         legend.text=element_text(size=rel(0.7)),
+         #legend.spacing.y = unit(-0.001, 'lines'),
+         legend.key = element_rect(color = NA),
+         legend.key.size =    unit(.95, "lines"),
+         axis.title.y = element_text(size = 6, margin=margin(0,-2,0,-10)),
+         axis.title.x = element_text(size = 6, margin=margin(0,0,-5,0)),
+         plot.subtitle=element_text(size=8, margin=margin(-20,0,2,0)),
+         legend.box.margin =unit(c(-0.5, 0, 0, 0), "lines"),
+         plot.margin = unit(c(0.2, 0, 0.3, 0), "lines")
+         )
+}
+```
+
+```{r}
+ord_plotlj_s(readRDS(here("Code/Models/mod_outputs/bird_md_RLGA.Rds")), 
+         "RLGA", RLGA,
+         "Bird") -> p1
+```
+
+
 ## Figure 3
 
 
 ```{r}
-ord_plotlj(readRDS(here("Code/Models/mod_outputs/bird_md_RLGA.Rds")), 
-         "RLGA", 
+ord_plotlj_s(readRDS(here("Code/Models/mod_outputs/bird_md_RLGA.Rds")), 
+         "RLGA", RLGA,
          "Bird") -> p1
-ord_plotlj(readRDS(here("Code/Models/mod_outputs/fruit_ms_OPCR.Rds")), 
-         "m2_opcr", 
+ord_plotlj_s(readRDS(here("Code/Models/mod_outputs/fruit_ms_OPCR.Rds")), 
+         "m2_opcr", m2_opcr,
          "Fruit") + 
   labs(y = "", x = "m2 OPCr") -> p2
-ord_plotlj(readRDS(here("Code/Models/mod_outputs/herptile_md_DNE.Rds")), 
-         "m1_dne", 
+ord_plotlj_s(readRDS(here("Code/Models/mod_outputs/herptile_md_DNE.Rds")), 
+         "m1_dne", m1_dne,
          "Herptile") + 
   labs(y = "", x = "m1 aDNE") -> p3
-ord_plotlj(readRDS(here("Code/Models/mod_outputs/large_mammal_ms_RLGA.Rds")), 
-         "RLGA", 
+ord_plotlj_s(readRDS(here("Code/Models/mod_outputs/large_mammal_ms_RLGA.Rds")), 
+         "RLGA", RLGA,
          "Large Mammal")  -> p4
-ord_plotlj(readRDS(here("Code/Models/mod_outputs/small_mammal_md_RLGA.Rds")), 
-         "RLGA", 
+ord_plotlj_s(readRDS(here("Code/Models/mod_outputs/small_mammal_md_RLGA.Rds")), 
+         "RLGA", RLGA,
          "Small Mammal")  + 
   labs(y = "") -> p5
-ord_plotlj(readRDS(here("Code/Models/mod_outputs/soft_invert_mn_DNE.Rds")), 
-         "m1_dne", 
+ord_plotlj_s(readRDS(here("Code/Models/mod_outputs/soft_invert_mn_DNE.Rds")), 
+         "m1_dne", m1_dne,
          "Soft Invertebrate") + 
   labs(y = "", x = "m1 aDNE") -> p6
 
 
-plot3col <- (p1 + p2 + p3 ) /  (p4 + p5 + p6)  + plot_layout(guides = "collect")  + plot_annotation(tag_levels = 'A')
+plot3col <- (p1 + p2 + p3 ) /  (p4 + p5 + p6)  + plot_layout(guides = "collect")  + plot_annotation(tag_levels = 'A') & theme(plot.tag = element_text(size = 10))
 plot3col
-ggsave(here("Plots", "Figure_3.pdf"), width = 10, height = 5)
-ggsave(here("Plots", "Figure_3.png"), width = 10, height = 5)
+ggsave(here("Plots", "Figure_3.pdf"), width = 7.5, height = 3.375)
+ggsave(here("Plots", "Figure_3.png"), width = 7.5, height = 3.375)
 ```
 
 
