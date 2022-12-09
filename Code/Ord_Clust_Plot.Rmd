@@ -200,7 +200,7 @@ hull <- S3 %>%
   slice(chull(V1, V2))
 # Plot
 S3  %>% ggplot(aes(x = V1, y = V2)) + 
-  geom_star(aes(starshape = Discrete, fill = class6), size = 6, starstroke = 1) + 
+  geom_star(aes(starshape = Discrete, fill = class6), size = 3, starstroke = 0.5) + 
   scale_starshape_manual(c(15, 13, 28, 23, 5, 14)) +
   geom_polygon(aes(color = class6, fill = class6), data = hull, alpha = 0.05) +
   scale_color_manual(values = ratpal) +
@@ -209,16 +209,27 @@ S3  %>% ggplot(aes(x = V1, y = V2)) +
   guides(color = "none", fill = "none") +
   theme_classic() +
   theme(legend.title = element_blank(), 
-        plot.title = element_text(size=18),
         legend.position = c(0.85, 0.95),
         panel.background = element_blank(),
         legend.background = element_rect(fill = "transparent"), # get rid of legend bg
         legend.key = element_rect(fill = "transparent", colour = NA), 
-        legend.text=element_text(size=12),
-        axis.text.y = element_text(angle = 90),
+        legend.text=element_text(size=8),
+        axis.text.y = element_text(angle = 90, size = 7),
+        axis.text.x = element_text(size = 7),
         panel.border = element_blank(),
-        legend.key.size = unit(1.6, 'lines')) +
+        legend.key.size = unit(1, 'lines'),
+        axis.title.y = element_text(size = 9, margin=margin(r=1)),
+        axis.title.x = element_text(size = 9, margin=margin(0,0,-5,0)),
+        plot.title = element_text(size=11, margin=margin(-20,0,2,0)),
+        plot.margin = unit(c(0.2, 0, 0.3, 0), "lines")) +
   coord_fixed() -> P1
+
+         #axis.title.y = element_text(size = 9, margin=margin(0,-2,0,-10)),
+         #axis.title.x = element_text(size = 9, margin=margin(0,0,-5,0)),
+         #plot.subtitle=element_text(size=8, margin=margin(-20,0,2,0)),
+         #legend.box.margin =unit(c(-0.5, 0, 0, 0), "lines"),
+         #plot.margin = unit(c(0.2, 0, 0.3, 0), "lines")
+
 
 ratpal <- c( "2" = '#e6ab02', "1" = '#66a61e',  "3" ='#7570b3')
 hull <- S3 %>% drop_na(hopkins_van_valk) %>% 
@@ -226,7 +237,7 @@ hull <- S3 %>% drop_na(hopkins_van_valk) %>%
   slice(chull(V1, V2))
 # Plot
 S3  %>% drop_na(hopkins_van_valk) %>% ggplot(aes(x = V1, y = V2)) + 
-  geom_star(aes(starshape = hopkins_van_valk, fill = class3), size = 6, starstroke = 1) + 
+  geom_star(aes(starshape = hopkins_van_valk, fill = class3), size = 3, starstroke = 0.5) + 
   scale_starshape_manual(c(15, 13, 28, 23, 5, 14)) +
   geom_polygon(aes(color = class3, fill = class3), data = hull, alpha = 0.05) +
   scale_color_manual(values = ratpal) +
@@ -235,13 +246,17 @@ S3  %>% drop_na(hopkins_van_valk) %>% ggplot(aes(x = V1, y = V2)) +
   guides(color = "none", fill = "none") +
   theme_classic() +
   theme(legend.title = element_blank(),  
-        plot.title = element_text(size=18),
         legend.position = c(0.81, 0.96),
         panel.background = element_blank(),
-        legend.text=element_text(size=12),
-        axis.text.y = element_text(angle = 90),
+        legend.text=element_text(size=8),
+        axis.text.y = element_text(angle = 90, size = 7),
+        axis.text.x = element_text(size = 7),
         panel.border = element_blank(),
-        legend.key.size = unit(1.6, 'lines')) +
+        legend.key.size = unit(1, 'lines'),
+        axis.title.y = element_text(size = 9, margin=margin(r=1)),
+        axis.title.x = element_text(size = 9, margin=margin(0,0,-5,0)),
+        plot.title = element_text(size=11, margin=margin(-20,0,2,0)),
+        plot.margin = unit(c(0.2, 0, 0.3, 0), "lines")) +
   coord_fixed() -> P2
 
 hull <- S3 %>% drop_na(pantheria) %>%
@@ -249,7 +264,7 @@ hull <- S3 %>% drop_na(pantheria) %>%
   slice(chull(V1, V2))
 # Plot
 S3  %>% drop_na(pantheria) %>% ggplot(aes(x = V1, y = V2)) + 
-  geom_star(aes(starshape = pantheria, fill = class3), size = 6, starstroke = 1) + 
+  geom_star(aes(starshape = pantheria, fill = class3), size = 3, starstroke = 0.5) + 
   scale_starshape_manual(c(15, 13, 28, 23, 5, 14)) +
   geom_polygon(aes(color = class3, fill = class3), data = hull, alpha = 0.05) +
   scale_color_manual(values = ratpal) +
@@ -258,14 +273,18 @@ S3  %>% drop_na(pantheria) %>% ggplot(aes(x = V1, y = V2)) +
   guides(color = "none", fill = "none") +
   theme_classic() +
   theme(legend.title = element_blank(),   
-        plot.title = element_text(size=18),
         legend.position = c(0.81, 0.96),
         panel.background = element_blank(),
-        legend.text=element_text(size=12),
-        axis.text.y = element_text(angle = 90),
+        legend.text=element_text(size=8),
+        axis.text.y = element_text(angle = 90, size = 7),
+        axis.text.x = element_text(size = 7),
         panel.border = element_blank(),
-        legend.key.size = unit(1.6, 'lines')) +
-  coord_fixed()  -> P3
+       legend.key.size = unit(1, 'lines'),
+        axis.title.y = element_text(size = 9, margin=margin(r=1)),
+        axis.title.x = element_text(size = 9, margin=margin(0,0,-5,0)),
+        plot.title = element_text(size=11, margin=margin(-20,0,2,0)),
+        plot.margin = unit(c(0.2, 0, 0.3, 0), "lines")) +
+  coord_fixed()   -> P3
 
 
 ratpal <- c( "3" = '#e6ab02', "2" = '#66a61e',  "4" ='#7570b3', "1" = '#f48a1a')
@@ -274,30 +293,39 @@ hull <- S3 %>% drop_na(hopkins_pineda) %>%
   slice(chull(V1, V2))
 # Plot
 S3  %>% drop_na(hopkins_pineda) %>% ggplot(aes(x = V1, y = V2)) + 
-  geom_star(aes(starshape = hopkins_pineda, fill = class4), size = 6, starstroke = 1) + 
+  geom_star(aes(starshape = hopkins_pineda, fill = class4), size = 3, starstroke = 0.5) + 
      geom_polygon(aes(color = class4, fill = class4), data = hull, alpha = 0.05) +
-  scale_starshape_manual(c(15, 13, 28, 23, 5, 14)) +
+  scale_starshape_manual(c(15, 13, 28, 23, 5, 14), labels = c("Hypercarnivore", "Hypocarnivore -\nInvertivorous", "Hypocarnivore -\nOmnivorous", "Mesocarnivore")) +
   scale_color_manual(values = ratpal) +
   scale_fill_manual(values = ratpal) +
   labs(x = "PC 1 (28%)", y = "PC 2 (18%)", title = "Piñeda-Munoz et al., 2017\nAdj. Rand Index = 0.158") +
   guides(color = "none", fill = "none") +
   theme_classic() +
   theme(legend.title = element_blank(),   
-        plot.title = element_text(size=18),
-        legend.position = c(0.78, 0.999),
+        legend.position = c(0.81, 0.98),
         panel.background = element_blank(),
-        legend.text=element_text(size=12),
-        axis.text.y = element_text(angle = 90),
+        legend.text=element_text(size=8),
+        axis.text.y = element_text(angle = 90, size = 7),
+        axis.text.x = element_text(size = 7),
         legend.background = element_rect(fill = "transparent"), # get rid of legend bg
         legend.key = element_rect(fill = "transparent", colour = NA), 
-        legend.key.size = unit(1.6, 'lines'),
+        legend.key.size = unit(1.2, 'lines'),
+        axis.title.y = element_text(size = 9, margin=margin(r=1)),
+        axis.title.x = element_text(size = 9, margin=margin(0,0,-5,0)),
+        plot.title = element_text(size=11, margin=margin(-20,0,2,0)),
+        plot.margin = unit(c(0.2, 0, 0.3, 0), "lines"), 
         #legend spacing
         #legend.spacing.y = unit(2.0, 'cm'),
         panel.border = element_blank()) +
   coord_fixed()  -> P4
 
-(P3 + P2) / (P4 + P1) + plot_annotation(tag_levels = 'A') &  theme(plot.tag = element_text(size = 18))
-ggsave(here("Plots", "Figure_2_Diet_Clusters.png"), height = 11.9, width = 12.8)
-ggsave(here("Plots", "Figure_2_Diet_Clusters.pdf"), height = 11.9, width = 12.8)
+(P3 + P2) / (P4 + P1) + plot_annotation(tag_levels = 'A') &  theme(plot.tag = element_text(size = 14))
+ggsave(here("Plots", "Figure_2_Diet_Clusters.png"), height = 7, width = 7.5)
+ggsave(here("Plots", "Figure_2_Diet_Clusters.pdf"), height = 7, width = 7.5)
 ```
+
+
+
+
+
 
