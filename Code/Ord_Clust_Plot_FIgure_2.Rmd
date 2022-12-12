@@ -12,7 +12,7 @@ Load Packages and Data
 ```{r}
 pacman::p_load(tidyverse, phytools, geiger, mclust, polycor, NbClust, ggstar, patchwork, here)
 
-here::i_am("Code/Ord_Clust_Plot.Rmd")
+here::i_am("Code/Ord_Clust_Plot_Figure_2.Rmd")
 
 #Functions
 scale2 <- function(x, na.rm = TRUE) (x - mean(x, na.rm = na.rm)) / sd(x, na.rm)
