@@ -12,7 +12,7 @@ These are the plots of the ordinal model outputs. If you're looking at these plo
 pacman::p_load(tidyverse, patchwork, brms, here)
 scale2 <- function(x, na.rm = TRUE) (x - mean(x, na.rm = na.rm)) / sd(x, na.rm)
 
-here::i_am("Plots/Figures_3_S3_Model_Plots.Rmd")
+here::i_am("Code/Figures_3_S3_Model_Plots.Rmd")
 ```
 # Figure 3  
 
