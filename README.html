@@ -359,6 +359,12 @@ display: none;
 insights into the diets of cryptic and extinct taxa</h2>
 <p>GitHub repo for the manuscript. All scripts necessary to perform the
 analyses and generate the plots from this manuscript are found here.</p>
+<p>This repo is also in Dryad #######, and can be downloaded directly
+from there. However, the Dryad repo does not contain the model output
+files as it is not meant to be a storage location. If downloaded from
+Dryad, then all of the code must be run <strong>in the order provided
+below</strong> as many outputs are called as inputs in subsequent
+scripts.</p>
 </div>
 <div id="required-packages" class="section level2">
 <h2>Required Packages:</h2>
@@ -434,8 +440,13 @@ dental metrics used in the study</li>
 <li><code>m1_tooth_length</code> – length of m1</li>
 <li><code>mass_kg</code> – mass kg</li>
 </ul></li>
+<li><code>Carnivora_MCC_2.tre</code>
+<ul>
+<li>This is the tree file, in nexus format, used in the phylogenetic
+regression analyses.</li>
+</ul></li>
 </ul>
-<p><strong><em>Data File Outputs</em></strong> (and subsequent
+<p><strong><em>Data File Outputs</em></strong> (most are later used as
 inputs)</p>
 <ul>
 <li><p><code>Test_weights_all.csv</code> – model weights of each model
@@ -493,10 +504,11 @@ weighted importance score</li>
 <code>Extant_Predictions_Summary.csv</code> but for the extant
 data-deficient and fossil taxa. <code>real_rank</code> is
 <code>NA</code> of course.<br> <br></p></li>
-<li><p><code>Supp_model_results_table.csv</code> – results of all the
+<li><p><code>Table_S2_Model_Results.csv</code> – results of all the
 models in one sheet. Presented as Table S2 in the text, details there.
-This is not called into any script. And Supp_model_results_table2.csv`
-is just a laTex friendly version<br> <br></p></li>
+This is not called into any script. And
+<code>Table_S2_Model_Results2.csv</code> is just a laTex / html friendly
+version of the exact same thing<br> <br></p></li>
 <li><p><code>NN_probabilities.csv</code> – probabilities of nearest
 neighbors for each taxon. Output of the
 <code>Ordination_NN_Probabilities.Rmd</code> script. This is reduced
@@ -508,6 +520,30 @@ down to neighbors that are closest at least 5% of the time.</p>
 is the nearest neighbor to <code>Species</code> out of 4000
 analyses</li>
 <li><code>percent</code> – <code>n</code> / 4000 <br> <br></li>
+</ul></li>
+<li><p><code>mclust_diet_results.csv</code> – Results of the
+<code>mclust</code> analysis. Provides the clusters for each of the
+different mclust runs (k=3 to k=6).</p>
+<ul>
+<li><code>Species</code> – species</li>
+<li><code>V1</code> to <code>V13</code> – Polychoric PCA scores for the
+13 dietary axes</li>
+<li><code>Family</code> – family</li>
+<li><code>Discrete</code> – Animal Diversity Web discrete scores</li>
+<li><code>m1_opcr</code> to <code>log_cuberoot_mass</code> - Dental
+metrics &amp; mass as in master_data</li>
+<li><code>large_mammal</code> to <code>plant</code> – food item
+rankings</li>
+<li><code>hopkins_pineda</code> to <code>pantheria</code> – discrete
+classifications from different classification schemes</li>
+<li><code>mass_kg</code> – mass kg</li>
+<li><code>phylo</code> – phylo (same as species, used for model
+input)</li>
+<li><code>m1_tooth_length</code> – m1_tooth_length for fossil taxa, not
+used here</li>
+<li><code>class_3</code> to <code>class_6</code> – clasifications from
+the <code>mclust</code> analyses using k=3, k=4, k=5, and k=6. <br>
+<br></li>
 </ul></li>
 </ul>
 </div>
@@ -521,13 +557,13 @@ categories from several commonly used classification schemes. To do
 this, we want to project the importance rankings of the 13 food items
 into a multivariate diet space, then run a cluster analysis to identify
 natural groupings in dietspace. This is outlined in the
-<code>Code/Ord_Clust_Plot.Rmd/</code> script. As the dietary importance
-rankings are ordinal rankings, and not continuous, we use a method
-called polychoric PCA, which is designed for ordinal variables. We
-estimate a polychoric correlation matrix, the project the species into
-diet space. The process is pretty well annotated in the script. Then we
-use the package <a href="https://cran.r-project.org/web/packages/mclust/vignettes/mclust.html"><code>mclust</code></a>,
-which performs cluster analyses with finite normal mixture modeling, to
+<code>Code/Ord_Clust_Plot_FIgure_2.Rmd/</code> script. As the dietary
+importance rankings are ordinal rankings, and not continuous, we use a
+method called polychoric PCA, which is designed for ordinal variables.
+We estimate a polychoric correlation matrix, the project the species
+into diet space. The process is pretty well annotated in the script.
+Then we use the package <a href="https://cran.r-project.org/web/packages/mclust/vignettes/mclust.html"><code>mclust</code></a>,
+which performs cluster analyses using finite normal mixture modeling, to
 determine the natural clusters. Since there is no really strong
 preference for a number of clusters, we calculate <span class="math inline">\(k\)</span> = 3, 4, 5, and 6. Then we use the
 adjusted Rand index to compare these to 4 classification schemes. More
@@ -572,7 +608,7 @@ in <a href="https://github.com/paul-buerkner/brms"><strong>brms</strong></a>.
 The scripts containing the models for each food item are in the
 <code>Code/Models/</code> directory and labeled
 <code>Mods_FOODITEM.Rmd</code>. Each script contains 15 models. To run
-all of these, visit the script <code>Code/D_All_Models.Rmd</code>, which
+all of these, visit the script <code>Code/Mod_All.Rmd</code>, which
 wrangles the data and calls each food item script individually.
 <strong><em>This Must Be Run Before the Plotting or Prediction
 Scripts</em></strong> because the brms model objects are necessary for
@@ -590,11 +626,11 @@ collected iteratively as each food item file runs in
 <code>Code/D_All_Models.Rmd</code>, and the weights are stored in the
 file <code>Data/Test_weights_all.csv</code>.</p></li>
 <li><p>The parameter estimates of all the models with a model weight
-&gt;0 are found in <code>Data/Supp_model_results_table.csv</code>, and
+&gt;0 are found in <code>Data/Table_S2_Model_Results.csv</code>, and
 kept as a supporting file in the manuscript. The script for generating
-this table is called <code>Code/Model_Results_Supp_Table.Rmd</code>.
-There is a lot of data wrangling involved to get the table formatted
-like it is.</p></li>
+this table is called <code>Code/Table_S2_Model_Results.Rmd</code>. There
+is a lot of data wrangling involved to get the table formatted like it
+is.</p></li>
 </ul>
 </div>
 <div id="model-posterior-validation-accuracy-checks" class="section level4">
@@ -621,7 +657,7 @@ them using the LOO weights, then estimate the accuracy of the
 predictions. <code>Data/Prediction_Table.csv</code> gives the mean
 predictions from the 1000 samples, and
 <code>Data/Accuracy_Table_Cont.csv</code> provides the values in table
-4. The <code>Code/Accuracy_Predictions.Rmd</code> script contains a few
+4. The <code>Code/Accuracy_Calculations.Rmd</code> script contains a few
 custom functions, some parallel computing, and is time intensive. Reach
 out with questions :)</p></li>
 <li><p>Our third method of validating the predictive power of our models
@@ -642,7 +678,8 @@ they are reported along side the additional predictions in the
 <code>Data/Prediction_Table.csv</code> file. The Pareto-<span class="math inline">\(K\)</span> values are reported in the Supporting
 information Table S1. The <code>Pareto_Table.tex</code> file for this
 table is generated in <code>Code/Accuracy_Calculations.Rmd</code> as
-well.</p></li>
+well, and is used to generate the Table S1 in the latex
+submission.</p></li>
 </ul>
 </div>
 <div id="posterior-predicitons-of-extant-data-rich-data-deficient-and-fossil-taxa" class="section level4">
@@ -668,10 +705,11 @@ as above, but for the data deficient extant and fossil taxa.</li>
 for the data deficient extant and fossil taxa.<br />
 </li>
 </ol></li>
-<li>The summary files are used to generate figures 4 &amp; 5, and some
-of the values are reported in the text. The larger <code>Sims</code>
-files are used in the nearest neighbor predictions below. This script
-uses several custom functions to perform the tasks and makes use of <a href="http://mjskay.github.io/tidybayes/articles/tidybayes.html"><code>tidybayes</code></a>.</li>
+<li>The summary files are used to generate Figure 4, in
+<code>Code/Figures_4.Rmd</code>, and some of the values are reported in
+the text. The larger <code>Sims</code> files are used in the nearest
+neighbor predictions below. This script uses several custom functions to
+perform the tasks and makes use of <a href="http://mjskay.github.io/tidybayes/articles/tidybayes.html"><code>tidybayes</code></a>.</li>
 </ul>
 </div>
 <div id="nearest-neighbor-calculations" class="section level4">
@@ -699,7 +737,10 @@ find the data-rich species that are closest in euclidean distance to the
 data-deficient species, and summarize these results as percentages. For
 example, in 1520 of the 4000 PC spaces, or 38%, <em>Ursus speleaus</em>
 is closest in euclidean distance to <em>Ursus maritimus</em>. We report
-the most common 3 in Table 5 in the text.</li>
+the most common 3 in Table 5 in the text. The file
+<code>Data/NN_probabilities.csv</code> reports all of the Nearest
+Neighbors with a percentage above 5% in case you want to dig deeper into
+these results.</li>
 </ul>
 </div>
 </div>
@@ -711,7 +752,11 @@ the most common 3 in Table 5 in the text.</li>
 They all have the figure number in the file name. Additionally, several
 table outputs are stored here as they are rendered in the package <a href="https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html">kableExtra</a>
 into figures and <code>.tex</code> files used in the manuscript
-production.</li>
+production. The only plot stored here that is not directly generated in
+<code>Code</code> files is <code>Figure_1_v2.pdf</code> &amp;
+<code>....png</code>. This is the figure 1 that appears in the
+manuscript, and has 3D tooth images and phylopic images manually added
+in affinity design.</li>
 </ul>
 </div>
 </div>
