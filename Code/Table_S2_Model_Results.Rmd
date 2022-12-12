@@ -1,0 +1,320 @@
+---
+title: "Model Output Table"
+---
+
+# Model Output table
+
+Making a big table of model outputs for supporting information
+
+This presents the output of all models with a non-zero model weight from LOO analyses.
+
+## Load Packages and Models
+```{r}
+pacman::p_load(tidyverse, brms, tidybayes, kableExtra, here)
+
+here::i_am("Code/Table_S2_Model_Results.Rmd")
+```
+
+What I need to do is make a separate dataframe for mean, low CI, and upper CI, then paste them, including the parentheses, then bind_cols with a dataframe with just the parameter names. Then print the table. 
+
+Bottom answer [here](https://stackoverflow.com/questions/34781769/rmarkdown-table-with-cells-that-have-two-values) is the inspiration.
+
+Pulling some scripts from the model script in the Sulawesi Community project
+
+## Functions
+
+Long, but they work!
+```{r}
+mypaste <- function(x, y, z) {
+              paste0(x, " (", y,", ", z, ") ")
+}
+
+cleanupRLGA <- function(brmsfit, food){
+  v = get_variables(brmsfit)[1:7]
+  df = posterior_summary({{brmsfit}}, probs = c(0.055, 0.945), 
+        variable = v) %>% 
+  as_tibble(rownames = "par")  %>% 
+    select(-Est.Error) %>%
+    mutate(par = recode(par, 
+                        "b_Intercept[1]" = "Intercept_1",
+                        "b_Intercept[2]" = "Intercept_2",
+                        "b_Intercept[3]" = "Intercept_3",
+                        "b_RLGA" = "RLGA",
+                        "b_log_cuberoot_mass" = "Mass",
+                        "b_RLGA:log_cuberoot_mass" = "RLGA:Mass",
+                        "sd_phylo__Intercept" = "Phylo_sd")) %>% 
+    mutate_if(is.numeric, round, 2) 
+  nam <- df$par
+  x = df$Estimate
+  y = df$Q5.5
+  z = df$Q94.5
+  df2 <- as.data.frame(mypaste(x, y, z))
+  bind_cols(nam, df2) %>% 
+    rename(parameter = "...1",
+           "Estimate (l_89, u_89)" = "mypaste(x, y, z)") %>% 
+    gather(est, value, "Estimate (l_89, u_89)") %>% 
+    spread(parameter, value) %>% 
+    select(!est) %>% 
+    add_column(Food = {{food}},
+               Metric = "RLGA") %>% 
+    relocate(Food)
+}
+
+cleanupRLGA2 <- function(brmsfit, food){
+  v = get_variables(brmsfit)[1:6]
+  df = posterior_summary({{brmsfit}}, probs = c(0.055, 0.945), 
+        variable = v) %>% 
+  as_tibble(rownames = "par")  %>% 
+    select(-Est.Error) %>%
+    mutate(par = recode(par, 
+                        "b_Intercept[1]" = "Intercept_1",
+                        "b_Intercept[2]" = "Intercept_2",
+                        "b_RLGA" = "RLGA",
+                        "b_log_cuberoot_mass" = "Mass",
+                        "b_RLGA:log_cuberoot_mass" = "RLGA:Mass",
+                        "sd_phylo__Intercept" = "Phylo_sd")) %>% 
+    mutate_if(is.numeric, round, 2) 
+  nam <- df$par
+  x = df$Estimate
+  y = df$Q5.5
+  z = df$Q94.5
+  df2 <- as.data.frame(mypaste(x, y, z))
+  bind_cols(nam, df2) %>% 
+    rename(parameter = "...1",
+           "Estimate (l_89, u_89)" = "mypaste(x, y, z)") %>% 
+    gather(est, value, "Estimate (l_89, u_89)") %>% 
+    spread(parameter, value) %>% 
+    select(!est) %>% 
+    add_column(Food = {{food}},
+               Metric = "RLGA") %>% 
+    relocate(Food)
+}
+
+
+cleanupOPCr <- function(brmsfit, food){
+  v = get_variables(brmsfit)[1:9]
+  df = posterior_summary({{brmsfit}}, probs = c(0.055, 0.945), 
+        variable = v) %>% 
+  as_tibble(rownames = "par")  %>% 
+    select(-Est.Error) %>%
+    mutate(par = recode(par, 
+                        "b_Intercept[1]" = "Intercept_1",
+                        "b_Intercept[2]" = "Intercept_2",
+                        "b_Intercept[3]" = "Intercept_3",
+                        "b_m1_opcr" = "m1_OPCr",
+                        "b_m2_opcr" = "m2_OPCr",
+                        "b_log_cuberoot_mass" = "Mass",
+                        "b_m1_opcr:log_cuberoot_mass" = "m1_OPCr:Mass",
+                        "b_log_cuberoot_mass:m2_opcr" = "m2_OPCr:Mass",
+                        "sd_phylo__Intercept" = "Phylo_sd")) %>% 
+    mutate_if(is.numeric, round, 2) 
+  nam <- df$par
+  x = df$Estimate
+  y = df$Q5.5
+  z = df$Q94.5
+  df2 <- as.data.frame(mypaste(x, y, z))
+  bind_cols(nam, df2) %>% 
+    rename(parameter = "...1",
+           "Estimate (l_89, u_89)" = "mypaste(x, y, z)") %>% 
+    gather(est, value, "Estimate (l_89, u_89)") %>% 
+    spread(parameter, value) %>% 
+    select(!est) %>% 
+    add_column(Food = {{food}},
+               Metric = "OPCr") %>% 
+    relocate(Food)
+}
+
+cleanupaDNE <- function(brmsfit, food){
+  v = get_variables(brmsfit)[1:9]
+  df = posterior_summary({{brmsfit}}, probs = c(0.055, 0.945), 
+        variable = v) %>% 
+  as_tibble(rownames = "par")  %>% 
+    select(-Est.Error) %>%
+    mutate(par = recode(par, 
+                        "b_Intercept[1]" = "Intercept_1",
+                        "b_Intercept[2]" = "Intercept_2",
+                        "b_Intercept[3]" = "Intercept_3",
+                        "b_m1_dne" = "m1_aDNE",
+                        "b_m2_dne" = "m2_aDNE",
+                        "b_log_cuberoot_mass" = "Mass",
+                        "b_m1_dne:log_cuberoot_mass" = "m1_aDNE:Mass",
+                        "b_log_cuberoot_mass:m2_dne" = "m2_aDNE:Mass",
+                        "sd_phylo__Intercept" = "Phylo_sd")) %>% 
+    mutate_if(is.numeric, round, 2) 
+  nam <- df$par
+  x = df$Estimate
+  y = df$Q5.5
+  z = df$Q94.5
+  df2 <- as.data.frame(mypaste(x, y, z))
+  bind_cols(nam, df2) %>% 
+    rename(parameter = "...1",
+           "Estimate (l_89, u_89)" = "mypaste(x, y, z)") %>% 
+    gather(est, value, "Estimate (l_89, u_89)") %>% 
+    spread(parameter, value) %>% 
+    select(!est) %>% 
+    add_column(Food = {{food}},
+               Metric = "DNE") %>% 
+    relocate(Food)
+}
+
+cleanupRFI <- function(brmsfit, food){
+  v = get_variables(brmsfit)[1:9]
+  df = posterior_summary({{brmsfit}}, probs = c(0.055, 0.945), 
+        variable = v) %>% 
+  as_tibble(rownames = "par")  %>% 
+    select(-Est.Error) %>%
+    mutate(par = recode(par, 
+                        "b_Intercept[1]" = "Intercept_1",
+                        "b_Intercept[2]" = "Intercept_2",
+                        "b_Intercept[3]" = "Intercept_3",
+                        "b_RFI_m1" = "m1_RFI",
+                        "b_RFI_m2" = "m2_RFI",
+                        "b_log_cuberoot_mass" = "Mass",
+                        "b_RFI_m1:log_cuberoot_mass" = "m1_RFI:Mass",
+                        "b_log_cuberoot_mass:RFI_m2" = "m2_RFI:Mass",
+                        "sd_phylo__Intercept" = "Phylo_sd")) %>% 
+    mutate_if(is.numeric, round, 2) 
+  nam <- df$par
+  x = df$Estimate
+  y = df$Q5.5
+  z = df$Q94.5
+  df2 <- as.data.frame(mypaste(x, y, z))
+  bind_cols(nam, df2) %>% 
+    rename(parameter = "...1",
+           "Estimate (l_89, u_89)" = "mypaste(x, y, z)") %>% 
+    gather(est, value, "Estimate (l_89, u_89)") %>% 
+    spread(parameter, value) %>% 
+    select(!est) %>% 
+    add_column(Food = {{food}},
+               Metric = "RFI") %>% 
+    relocate(Food)
+}
+
+cleanupALL <- function(brmsfit, food){
+  v = get_variables(brmsfit)[1:19]
+  df = posterior_summary({{brmsfit}}, probs = c(0.055, 0.945), 
+        variable = v) %>% 
+  as_tibble(rownames = "par")  %>% 
+    select(-Est.Error) %>%
+    mutate(par = recode(par, 
+                        "b_Intercept[1]" = "Intercept_1",
+                        "b_Intercept[2]" = "Intercept_2",
+                        "b_Intercept[3]" = "Intercept_3",
+                        "b_RFI_m1" = "m1_RFI",
+                        "b_RFI_m2" = "m2_RFI",
+                        "b_m1_opcr" = "m1_OPCr",
+                        "b_m2_opcr" = "m2_OPCr",
+                        "b_m1_dne" = "m1_aDNE",
+                        "b_m2_dne" = "m2_aDNE",
+                        "b_RFI_m1" = "m1_RFI",
+                        "b_RFI_m2" = "m2_RFI",
+                        "b_RLGA" = "RLGA",
+                        "b_log_cuberoot_mass" = "Mass",
+                        "b_log_cuberoot_mass:m1_opcr" = "m1_OPCr:Mass",
+                        "b_log_cuberoot_mass:m2_opcr" = "m2_OPCr:Mass",
+                        "b_log_cuberoot_mass:m1_dne" = "m1_aDNE:Mass",
+                        "b_log_cuberoot_mass:m2_dne" = "m2_aDNE:Mass",
+                        "b_log_cuberoot_mass:RFI_m1" = "m1_RFI:Mass",
+                        "b_log_cuberoot_mass:RFI_m2" = "m2_RFI:Mass",
+                        "b_log_cuberoot_mass:RLGA" = "RLGA:Mass",
+                        "sd_phylo__Intercept" = "Phylo_sd")) %>% 
+    mutate_if(is.numeric, round, 2) 
+  nam <- df$par
+  x = df$Estimate
+  y = df$Q5.5
+  z = df$Q94.5
+  df2 <- as.data.frame(mypaste(x, y, z))
+  bind_cols(nam, df2) %>% 
+    rename(parameter = "...1",
+           "Estimate (l_89, u_89)" = "mypaste(x, y, z)") %>% 
+    gather(est, value, "Estimate (l_89, u_89)") %>% 
+    spread(parameter, value) %>% 
+    select(!est) %>% 
+    add_column(Food = {{food}},
+               Metric = "ALL") %>% 
+    relocate(Food)
+}
+
+#beautiful transpose function from https://stackoverflow.com/questions/28917076/transposing-data-frames
+df_transpose <- function(df) {
+  
+  df %>% 
+    tidyr::pivot_longer(-1) %>%
+    tidyr::pivot_wider(names_from = 1, values_from = value)
+
+}
+```
+
+## Make Table
+
+```{r}
+r1 <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "bird_md_RLGA.Rds")), "Bird")
+r2 <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "carrion_md_RLGA.Rds")), "Carrion")
+r3 <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "egg_mn_RLGA.Rds")), "Egg")
+r4 <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "fish_ms_RLGA.Rds")), "Fish")
+r5 <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "fruit_ms_RLGA.Rds")), "Fruit")
+r6 <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "hard_invert_md_RLGA.Rds")), "Hard Invert")
+r7 <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "large_mammal_ms_RLGA.Rds")), "Seed")
+r8 <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "seed_mn_RLGA.Rds")), "Large Mammal")
+r9  <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "small_mammal_md_RLGA.Rds")), "Small Mammal")
+
+r10 <- cleanupRFI(read_rds(here("Code/Models/mod_outputs", "bird_mn_RFI.Rds")), "Bird")
+r11 <- cleanupRFI(read_rds(here("Code/Models/mod_outputs", "egg_md_RFI.Rds")), "Egg")
+r12 <- cleanupRFI(read_rds(here("Code/Models/mod_outputs", "fruit_mn_RFI.Rds")), "Fruit")
+
+r13 <- cleanupOPCr(read_rds(here("Code/Models/mod_outputs", "carrion_md_OPCR.Rds")), "Carrion")
+r14 <- cleanupOPCr(read_rds(here("Code/Models/mod_outputs", "fish_ms_OPCR.Rds")), "Fish")
+r15 <- cleanupOPCr(read_rds(here("Code/Models/mod_outputs", "fruit_ms_OPCR.Rds")), "Fruit")
+r16 <- cleanupOPCr(read_rds(here("Code/Models/mod_outputs", "herptile_md_OPCR.Rds")), "Herptile")
+r17 <- cleanupOPCr(read_rds(here("Code/Models/mod_outputs", "plant_md_OPCR.Rds")), "Plant")
+r18 <- cleanupOPCr(read_rds(here("Code/Models/mod_outputs", "soft_invert_md_OPCR.Rds")),"Soft Invert")
+
+r19 <- cleanupaDNE(read_rds(here("Code/Models/mod_outputs", "carrion_ms_DNE.Rds")), "Carrion")
+r20 <- cleanupaDNE(read_rds(here("Code/Models/mod_outputs", "egg_mn_DNE.Rds")), "Egg")
+r21 <- cleanupaDNE(read_rds(here("Code/Models/mod_outputs", "hard_invert_mn_DNE.Rds")), "Hard Invert")
+r22 <- cleanupaDNE(read_rds(here("Code/Models/mod_outputs", "herptile_md_DNE.Rds")), "Herptile")
+r23 <- cleanupaDNE(read_rds(here("Code/Models/mod_outputs", "plant_md_DNE.Rds")), "Plant")
+r24 <- cleanupaDNE(read_rds(here("Code/Models/mod_outputs", "seed_mn_DNE.Rds")), "Seed")
+r25 <- cleanupaDNE(read_rds(here("Code/Models/mod_outputs", "small_mammal_md_DNE.Rds")), "Small Mammal")
+r26 <- cleanupaDNE(read_rds(here("Code/Models/mod_outputs", "soft_invert_mn_DNE.Rds")), "Soft Invert")
+
+r27 <- cleanupRLGA2(read_rds(here("Code/Models/mod_outputs", "root_mn_RLGA.Rds")), "Root")
+
+r28 <- cleanupALL(read_rds(here("Code/Models/mod_outputs", "bird_md_ALL.Rds")), "Bird")
+r29 <- cleanupALL(read_rds(here("Code/Models/mod_outputs", "hard_invert_md_ALL.Rds")), "Hard Invert")
+r30 <- cleanupALL(read_rds(here("Code/Models/mod_outputs", "large_mammal_ms_ALL.Rds")), "Large Mammal")
+r31 <- cleanupALL(read_rds(here("Code/Models/mod_outputs", "plant_md_ALL.Rds")), "Plant")
+
+t <- bind_rows(r1, r2, r3, r4, r5, r6, r7, r8 , r9 , r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r26, r27, r28, r29, r30, r31)   %>% 
+  as_tibble() %>%
+  relocate(Metric, .after = Food) %>% 
+  arrange(Metric, Food) %>% 
+  write_csv(here("Data", "Table_S2_Model_Results.csv"))
+```
+
+## Make Kable Table
+
+Here I ***manually*** edited the csv file. Instead of "xxx (xxx - xxx)" structure for the cells, I changed it to "xxx<br/>(xxx - xxx)" so that it prints a newline in the pdf kable. This table is called `Data/Table_S2_Model_Results2.csv` 
+
+I saved the LaTex table using the original, unedited (no `<br\>`) dataframe
+
+```{r}
+#read_csv(here("Data", "Table_S2_Model_Results.csv")) %>% select(1:7) %>% kbl(escape = F, align = 'c', format = 'latex') %>% kable_classic(full_width = F, html_font = "Cambria", font_size = 10) %>% writeLines(here("Plots", "Table_S2_Model_Results_top.tex"))
+
+#read_csv(here("Data", "Table_S2_Model_Results.csv")) %>% select(1, 8:13) %>% kbl(escape = F, align = 'c', format = 'latex') %>% kable_classic(full_width = F, html_font = "Cambria", font_size = 10) %>% writeLines(here("Plots", "Table_S2_Model_Results_bot.tex"))
+
+# PDF and PNG Plots of table
+read_csv(here("Data", "Table_S2_Model_Results2.csv")) %>% kbl(longtable = T, escape = F, align = 'c') %>% kable_classic(full_width = F, html_font = "Cambria", font_size = 15) %>%
+  save_kable(file = here("Plots", "Table_S2_Model_Results.pdf"), zoom = 2, density = 300, keep_tex = T)
+
+read_csv(here("Data", "Table_S2_Model_Results2.csv")) %>% kbl(longtable = T, escape = F, align = 'c') %>% kable_classic(full_width = F, html_font = "Cambria", font_size = 15) %>%
+  save_kable(file = here("Plots", "Table_S2_Model_Results.png"),zoom = 2, density = 300, keep_tex = T)
+
+# tex of table for the submission Supporting Information file. 
+read_csv(here("Data", "Table_S2_Model_Results.csv")) %>% pivot_longer(!c(Metric,Food), names_to = "Parameter", values_to = "Test") %>% pivot_wider(names_from = Food, values_from = Test)%>%
+  filter_at(vars(Bird, `Hard Invert`, `Large Mammal`, Plant, Carrion, Egg, Herptile, Seed,  `Small Mammal`, `Soft Invert`, Fish, Fruit, Root), any_vars(!is.na(.))) %>% 
+  kbl(longtable = T, escape = F, align = 'c', format = 'latex') %>% 
+  kable_classic(full_width = F, html_font = "Cambria", font_size = 5) %>% writeLines(here("Plots", "Table_S2_Model_Results.tex"))
+
+```
+

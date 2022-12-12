@@ -12,7 +12,7 @@ Figure 1 in the text has the tooth and phylopic figures added to it in affinity 
 ```{r}
 pacman::p_load(tidyverse, patchwork, ggstar, here, paletteer, ggstar)
 
-here::i_am("Code/Dental_PCA_Plot.Rmd")
+here::i_am("Code/Dental_PCA_Figure_1_Plot.Rmd")
 ```
 
 #### Read Data
