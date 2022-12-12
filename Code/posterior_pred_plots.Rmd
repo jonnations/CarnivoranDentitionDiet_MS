@@ -51,12 +51,11 @@ p31 <- read_rds(here("Code/Models/mod_outputs", "soft_invert_mn_DNE.Rds"))    %>
 plot <- wrap_plots(p1, p2,  p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19,
  p20, p21, p22, p23, p24, p25, p26, p27, p28, p29, p30, p31, ncol=3, guides = "collect") + plot_annotation(
   title = "Posterior Predictive Checks",
-  caption = 
-"Figure S3: Results from posterior predictive checks of the models with model weights >0 for each food item. The box plots represent the empirical count of each ranking\n
-for each food item (n=89 total). The point intervals represent the 89% probability intervals of the prior distributions. The mean values of the point intervals (dark blue) match\n 
-the empirical count of ranks (light blue box plot) for each food item, with limited uncertainty, indicating a good model fit to the data.",
+#  caption = "Figure S3: Results from posterior predictive checks of the models with model weights >0 #for each food item. The box plots represent the empirical count of each ranking\n
+#for each food item (n=89 total). The point intervals represent the 89% probability intervals of the #prior distributions. The mean values of the point intervals (dark blue) match\n 
+#the empirical count of ranks (light blue box plot) for each food item, with limited uncertainty, #indicating a good model fit to the data.",
 theme = theme(plot.caption = element_text(hjust = 0)))
 
-ggsave(here("Plots", "Figure_S3_Posterior_Pred_Checks.pdf"), width = 10, height = 39, limitsize = FALSE)
+ggsave(here("Plots", "Figure_S2_Posterior_Pred_Checks.pdf"), width = 10, height = 39, limitsize = FALSE)
 ```
 
