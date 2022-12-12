@@ -247,9 +247,9 @@ plot_spacer() -> p28
 
 ```{r}
 
-plot <- (p1 | p2 | p3 | p4) / (p5 | p6 | p7 | p8) / (p9 | p10 | p11 | p12)  / (p13 | p14 | p15 | p16) / (p17 | p18 | p19 | p20) / (p21 | p22 | p23 | p24) / (p25 | p26 | p27 | p28) + plot_layout(guides = "collect")  + plot_annotation(caption = 'Tryptic Plots of the model for each food item with the highest model weight. Full Model outputs are in table form in the Supporting Information')
+plot <- (p1 | p2 | p3 | p4) / (p5 | p6 | p7 | p8) / (p9 | p10 | p11 | p12)  / (p13 | p14 | p15 | p16) / (p17 | p18 | p19 | p20) / (p21 | p22 | p23 | p24) / (p25 | p26 | p27 | p28) + plot_layout(guides = "collect")  #+ plot_annotation(caption = 'Tryptic Plots of the model for each food item with the highest model weight. Full Model outputs are in table form in the Supporting Information')
 plot
-ggsave(here("Plots", "Figure_S_Models.pdf"), width = 17, height = 21)
-ggsave(here("Plots", "Figure_S_Models.png"), width = 17, height = 21)
+ggsave(here("Plots", "Figure_S3_Models.pdf"), width = 17, height = 21)
+ggsave(here("Plots", "Figure_S3_Models.png"), width = 17, height = 21)
 ```
 

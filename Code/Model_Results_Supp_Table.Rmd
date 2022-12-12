@@ -308,8 +308,12 @@ read_csv(here("Data", "Supp_model_results_table2.csv")) %>% kbl(longtable = T, e
 read_csv(here("Data", "Supp_model_results_table2.csv")) %>% kbl(longtable = T, escape = F, align = 'c') %>% kable_classic(full_width = F, html_font = "Cambria", font_size = 15) %>%
   save_kable(file = here("Plots", "Supp_model_results_table.png"),zoom = 2, density = 300, keep_tex = T)
 
+vars <- read_csv(here("Data", "Supp_model_results_table.csv")) %>% distinct(Food) %>% as.list()
 
-read_csv(here("Data", "Supp_model_results_table.csv"))  %>% pivot_longer(!c(Metric,Food), names_to = "Parameter", values_to = "Test") %>% pivot_wider(names_from = Food, values_from = Test) %>% kbl(longtable = T, escape = F, align = 'c', format = 'latex') %>% kable_classic(full_width = F, html_font = "Cambria", font_size = 5) %>% writeLines(here("Plots", "Supp_model_results_table.tex"))
+read_csv(here("Data", "Supp_model_results_table.csv")) %>% pivot_longer(!c(Metric,Food), names_to = "Parameter", values_to = "Test") %>% pivot_wider(names_from = Food, values_from = Test)%>%
+  filter_at(vars(Bird, `Hard Invert`, `Large Mammal`, Plant, Carrion, Egg, Herptile, Seed,  `Small Mammal`, `Soft Invert`, Fish, Fruit, Root), any_vars(!is.na(.))) %>% 
+  kbl(longtable = T, escape = F, align = 'c', format = 'latex') %>% 
+  kable_classic(full_width = F, html_font = "Cambria", font_size = 5) %>% writeLines(here("Plots", "Supp_model_results_table.tex"))
 
 ```
 
