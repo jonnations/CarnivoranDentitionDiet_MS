@@ -58,14 +58,15 @@ p39 <- read_rds(here("Code/Prior_Pred_Checks/prior_pred_outputs", "soft_invert_S
 # Plot  
 ```{r}
 plot <- wrap_plots(p1, p2,  p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19,
- p20, p21, p22, p23, p24, p25, p26, p27, p28, p29, p30, p31, p32, p33, p34, p35, p36, p37, p38, p39, ncol=3, guides = "collect") + plot_annotation(
+ p20, p21, p22, p23, p24, p25, p26, p27, p28, p29, p30, p31, p32, p33, p34, p35, p36, p37, p38, p39, ncol=6, guides = "collect") + plot_annotation(
   title = "Prior Predictive Checks",
 #  caption = 
 #"Figure S2: Results from prior predictive checks of Normal, Student-T, and Dirichlet distributions #for each food item. The box plots represent the empirical count of each ranking\n
 #for each food item (n=89 total). The point intervals represent the 89% probability intervals of the #prior distributions. The Normal and Student-T distributions that best match\n
 #the empirical counts of each food item ranks are shown, and are used for each tooth metric for each #food item, then compared using Leave One Out Cross Validation.",
 theme = theme(plot.caption = element_text(hjust = 0)))
+plot
+ggsave(here("Plots", "Figure_S1_Prior_Pred_Checks.pdf"), width = 20, height = 17, limitsize = FALSE)
 
-ggsave(here("Plots", "Figure_S1_Prior_Pred_Checks.pdf"), width = 10, height = 50, limitsize = FALSE)
 ```
 

@@ -1,12 +1,11 @@
-
 Carnivoran Dentition & Ordinal Diet Rankings 
 =========
 
-## Predicting multivariate ecology using phenotypic data yields novel insights into the diets of cryptic and extinct taxa
+## Bayesian prediction of multivariate ecology from phenotypic data yields novel insights into the diets of extant and extinct taxa
 
 GitHub repo for the manuscript. All scripts necessary to perform the analyses and generate the plots from this manuscript are found here. 
 
-This repo is also in Dryad #######, and can be downloaded directly from there. However, the Dryad repo does not contain the model output files as it is not meant to be a storage location. If downloaded from Dryad, then all of the code must be run **in the order provided below** as many outputs are called as inputs in subsequent scripts.  
+This repo is also in Dryad at https://doi.org/10.5061/dryad.pc866t1rg, and can be downloaded directly from there. The Dryad repo contains a link to a zip file of this GitHub repo, which is officially stored in Zenodo at https://doi.org/10.5281/zenodo.7429701.
 
 ## Required Packages:
 
