@@ -148,7 +148,7 @@ pred_db %>%
   mutate_if(is.numeric, round, digits = 1) %>% 
   select(!c(n2, n1)) %>% 
   arrange(desc(perfect_match)) #%>% write_csv(file = here("Data", "Accuracy_Table.csv")) #%>% 
-#laTex table for manuscript
+#laTex table for manuscript submission
  # arrange(item) %>% 
  # kbl(format = "latex") %>% 
  # kable_classic(full_width = F) #-> tt
