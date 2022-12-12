@@ -9,6 +9,9 @@ title: "R Notebook"
 
 ```{r}
 pacman::p_load(tidyverse, brms, patchwork, here)
+
+here::i_am("Code/Posterior_Preds_Figure_S2.Rmd")
+
 ```
 
 
