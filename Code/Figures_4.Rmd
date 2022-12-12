@@ -8,7 +8,7 @@ title: "Prediction Figures"
 ```{r}
 pacman::p_load(tidyverse, here, scico, patchwork)
 
-here::i_am("Code/Figures_4_5.Rmd")
+here::i_am("Code/Figures_4.Rmd")
 
 cryp_sp <- c("Arctogalidia_trivirgata", "Bassaricyon_alleni", "Catopuma_badia", "Chrotogale_owstoni", "Cynogale_bennettii", "Galidia_elegans", "Galidictis_fasciata", "Hemigalus_derbyanus", "Herpestes_brachyurus", "Mydaus_javanensis", "Paradoxurus_musanga", "Pardofelis_marmorata", "Prionodon_linsang")
 #Load Fossil Taxa
@@ -157,10 +157,11 @@ cd %>%
         legend.key.height = unit(1, 'mm')) -> pred2
 
 pred2
-ggsave(here("Plots", "Fig_4_Cryptic_Preds_Continuous.pdf"), width = 10, height = 8) 
-ggsave(here("Plots", "Fig_4_Cryptic_Preds_Continuous.png"), width = 7.5, height = 6)
+#ggsave(here("Plots", "Fig_4_Cryptic_Preds_Continuous.pdf"), width = 10, height = 8) 
+#ggsave(here("Plots", "Fig_4_Cryptic_Preds_Continuous.png"), width = 7.5, height = 6)
 ```
-## Combined Plot
+
+## Combined Plot For Figure 4
 
 ```{r}
 pred2/pred1 +  plot_layout(guides = "collect") + plot_annotation(tag_levels = 'A') & theme(plot.tag = element_text(size = 15, face ="bold"))
