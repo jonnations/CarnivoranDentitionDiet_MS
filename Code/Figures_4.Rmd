@@ -72,8 +72,9 @@ THis makes a continuous grid with a discrete legend thanks to setting the width 
 
 
 ```{r}
+ord <- c("Daphoenus", "Smilodon fatalis", "''Miacis'' latidens",  "Promartes lepidus", "Dinictis felina", "Hoplophoneus primaevus",  "Ursus spelaeus") 
 fd %>% 
- ggplot(aes(x = item, y = species)) + 
+ ggplot(aes(x = item, y = factor(species, levels = ord))) + 
   geom_tile(aes(fill = wa_rank, width = 0.92, height = 0.92),
             color = NA,
             lwd = 1,
@@ -116,8 +117,9 @@ pred1
 #### Extant Data Deficient
 
 ```{r}
+ord2 <- c("Catopuma badia", "Pardofelis marmorata" , "Herpestes brachyurus",   "Mydaus javanensis" ,  "Prionodon linsang" , "Bassaricyon alleni",  "Arctogalidia trivirgata", "Chrotogale owstoni" , "Cynogale bennettii", "Hemigalus derbyanus", "Paradoxurus musanga")
 cd %>% 
- ggplot(aes(x = item, y = species)) + 
+ ggplot(aes(x = item, y = factor(species, levels = ord2))) + 
   geom_tile(aes(fill = wa_rank, width = 0.92, height = 0.92),
             color = NA,
             lwd = 1,
@@ -165,6 +167,6 @@ pred2
 
 ```{r}
 pred2/pred1 +  plot_layout(guides = "collect") + plot_annotation(tag_levels = 'A') & theme(plot.tag = element_text(size = 15, face ="bold"))
-ggsave(here("Plots", "Fig_4_Combined_Preds_Continuous.pdf"), width = 7.5, height = 9)
-ggsave(here("Plots", "Fig_4_Combined_Preds_Continuous.png"), width = 7.5, height = 9)
+ggsave(here("Plots", "Figure_4_Combined_Preds_Continuous.pdf"), width = 7.5, height = 9)
+ggsave(here("Plots", "Figure_4_Combined_Preds_Continuous.png"), width = 7.5, height = 9)
 ```
