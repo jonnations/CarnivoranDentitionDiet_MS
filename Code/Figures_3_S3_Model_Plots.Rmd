@@ -92,18 +92,18 @@ ggplot(aes(x={{effect2}}, y = Probability, group = cats__)) +
 ord_plotlj_s(readRDS(here("Code/Models/mod_outputs/bird_md_RLGA.Rds")), 
          "RLGA", RLGA,
          "Bird") -> p1
-ord_plotlj_s(readRDS(here("Code/Models/mod_outputs/fruit_ms_OPCR.Rds")), 
+ord_plotlj_s(readRDS(here("Code/Models/mod_outputs/fruit_mn_OPCR.Rds")), 
          "m2_opcr", m2_opcr,
          "Fruit") + 
   labs(y = "", x = "m2 OPCr") -> p2
-ord_plotlj_s(readRDS(here("Code/Models/mod_outputs/herptile_md_DNE.Rds")), 
+ord_plotlj_s(readRDS(here("Code/Models/mod_outputs/herptile_ms_DNE.Rds")), 
          "m1_dne", m1_dne,
          "Herptile") + 
   labs(y = "", x = "m1 aDNE") -> p3
 ord_plotlj_s(readRDS(here("Code/Models/mod_outputs/large_mammal_ms_RLGA.Rds")), 
          "RLGA", RLGA,
          "Large Mammal")  -> p4
-ord_plotlj_s(readRDS(here("Code/Models/mod_outputs/small_mammal_md_RLGA.Rds")), 
+ord_plotlj_s(readRDS(here("Code/Models/mod_outputs/small_mammal_ms_RLGA.Rds")), 
          "RLGA", RLGA,
          "Small Mammal")  + 
   labs(y = "") -> p5
@@ -121,7 +121,7 @@ ggsave(here("Plots", "Figure_3.png"), width = 7.5, height = 3.2)
 
 # Figure S3  
 
-## Fig S3 Plotting FUnctions
+## Fig S3 Plotting Functions
 
 ```{r}
 ord_plotlj <- function(mod, effect, title){
@@ -208,54 +208,47 @@ plot(p1, plot = FALSE)[[1]] +
 ```{r}
 
 m.bird =     readRDS(here("Code/Models/mod_outputs/bird_md_RLGA.Rds"))
-m.carrion =  readRDS(here("Code/Models/mod_outputs/carrion_md_RLGA.Rds"))
-m.egg =      readRDS(here("Code/Models/mod_outputs/egg_md_RFI.Rds"))
+m.carrion =  readRDS(here("Code/Models/mod_outputs/carrion_mn_RLGA.Rds"))
+m.egg =      readRDS(here("Code/Models/mod_outputs/egg_mn_RFI.Rds"))
 m.fish =     readRDS(here("Code/Models/mod_outputs/fish_ms_RLGA.Rds"))
-m.fruit =    readRDS(here("Code/Models/mod_outputs/fruit_ms_OPCR.Rds"))
-m.hard =     readRDS(here("Code/Models/mod_outputs/hard_invert_md_ALL.Rds"))
-m.herp =     readRDS(here("Code/Models/mod_outputs/herptile_md_DNE.Rds"))
+m.fruit =    readRDS(here("Code/Models/mod_outputs/fruit_mn_RLGA.Rds"))
+m.hard =     readRDS(here("Code/Models/mod_outputs/hard_invert_mn_DNE.Rds"))
+m.herp =     readRDS(here("Code/Models/mod_outputs/herptile_ms_DNE.Rds"))
 m.large =    readRDS(here("Code/Models/mod_outputs/large_mammal_ms_RLGA.Rds"))
 m.plant =    readRDS(here("Code/Models/mod_outputs/plant_md_DNE.Rds"))
-m.root =     readRDS(here("Code/Models/mod_outputs/root_mn_RLGA.Rds"))
-m.seed =     readRDS(here("Code/Models/mod_outputs/seed_mn_DNE.Rds"))
-m.small =    readRDS(here("Code/Models/mod_outputs/small_mammal_md_RLGA.Rds"))
+m.root =     readRDS(here("Code/Models/mod_outputs/root_ms_RLGA.Rds"))
+m.seed =     readRDS(here("Code/Models/mod_outputs/seed_ms_RLGA.Rds"))
+m.small =    readRDS(here("Code/Models/mod_outputs/small_mammal_ms_RLGA.Rds"))
 m.soft =     readRDS(here("Code/Models/mod_outputs/soft_invert_mn_DNE.Rds"))
 
-ord_plotlj(m.bird, "RLGA", "Bird")                             -> p1
-ord_plotlj(m.carrion, "RLGA", "Carrion") + labs(y = "")        -> p2
-ord_plotlj(m.egg, "RFI_m1", "Egg") + labs(y = "")             -> p3
-ord_plotlj(m.egg, "RFI_m2", "Egg")  + labs(y = "")            -> p4
-ord_plotlj(m.fish, "RLGA", "Fish")                            -> p5
-ord_plotlj(m.fruit, "m1_opcr", "Fruit")  + labs(y = "")        -> p6
-ord_plotlj(m.fruit, "m2_opcr", "Fruit")  + labs(y = "")        -> p7
-ord_plotlj(m.hard, "m1_dne", "Hard Invert") + labs(y = "")      -> p8
-ord_plotlj(m.hard, "m2_dne", "Hard Invert")                     -> p9
-ord_plotlj(m.hard, "m1_opcr", "Hard Invert")  + labs(y = "")   -> p10
-ord_plotlj(m.hard, "m2_opcr", "Hard Invert") + labs(y = "")    -> p11
-ord_plotlj(m.hard, "RFI_m1", "Hard Invert") + labs(y = "")    -> p12
-ord_plotlj(m.hard, "RFI_m2", "Hard Invert")                      -> p13
-ord_plotlj(m.hard, "RLGA", "Hard Invert")  + labs(y = "")      -> p14
-ord_plotlj(m.herp, "m1_dne", "Herptile") + labs(y = "")        -> p15
-ord_plotlj(m.herp, "m2_dne", "Herptile")  + labs(y = "")        -> p16
-ord_plotlj(m.large, "RLGA", "Large Mammal")                     -> p17
-ord_plotlj(m.plant, "m1_dne", "Plant")  + labs(y = "")         -> p18
-ord_plotlj(m.plant, "m2_dne", "Plant") + labs(y = "")          -> p19
-ord_plot2lj(m.root, "RLGA", "Root")   + labs(y = "")         -> p20
-ord_plotlj(m.seed, "m1_dne", "Seed")                         -> p21
-ord_plotlj(m.seed, "m2_dne", "Seed") +  labs(y = "")           -> p22
-ord_plotlj(m.small, "RLGA", "Small Mammal")  + labs(y = "")    -> p23
-ord_plotlj(m.soft, "m1_dne", "Soft Invert")   + labs(y = "")   -> p24
-ord_plotlj(m.soft, "m2_dne", "Soft Invert")                  -> p25
-plot_spacer() -> p26
-plot_spacer() -> p27
-plot_spacer() -> p28
+ord_plotlj(m.bird, "RLGA", "Bird")                              -> p1
+ord_plotlj(m.carrion, "RLGA", "Carrion") + labs(y = "")         -> p2
+ord_plotlj(m.egg, "RFI_m1", "Egg") + labs(y = "")               -> p3
+ord_plotlj(m.egg, "RFI_m2", "Egg")  + labs(y = "")              -> p4
+ord_plotlj(m.fish, "RLGA", "Fish")                              -> p5
+ord_plotlj(m.fruit, "RLGA", "Fruit")  + labs(y = "")            -> p6
+ord_plotlj(m.hard, "m1_dne", "Hard Invert") + labs(y = "")      -> p7
+ord_plotlj(m.hard, "m2_dne", "Hard Invert") + labs(y = "")      -> p8
+ord_plotlj(m.herp, "m1_dne", "Herptile")                        -> p9
+ord_plotlj(m.herp, "m2_dne", "Herptile")  + labs(y = "")        -> p10
+ord_plotlj(m.large, "RLGA", "Large Mammal")+ labs(y = "")       -> p11
+ord_plotlj(m.plant, "m1_dne", "Plant")  + labs(y = "")          -> p12
+ord_plotlj(m.plant, "m2_dne", "Plant")                          -> p13
+ord_plot2lj(m.root, "RLGA", "Root")   + labs(y = "")            -> p14
+ord_plotlj(m.seed, "RLGA", "Seed")  + labs(y = "")            -> p15
+ord_plotlj(m.small, "RLGA", "Small Mammal")   + labs(y = "")     -> p16
+ord_plotlj(m.soft, "m1_dne", "Soft Invert")                      -> p17
+ord_plotlj(m.soft, "m2_dne", "Soft Invert")   + labs(y = "")     -> p18
+plot_spacer() -> p19
+plot_spacer() -> p20
+
 ```
 
 ```{r}
 
-plot <- (p1 | p2 | p3 | p4) / (p5 | p6 | p7 | p8) / (p9 | p10 | p11 | p12)  / (p13 | p14 | p15 | p16) / (p17 | p18 | p19 | p20) / (p21 | p22 | p23 | p24) / (p25 | p26 | p27 | p28) + plot_layout(guides = "collect")  #+ plot_annotation(caption = 'Tryptic Plots of the model for each food item with the highest model weight. Full Model outputs are in table form in the Supporting Information')
+plot <- (p1 | p2 | p3 | p4) / (p5 | p6 | p7 | p8) / (p9 | p10 | p11 | p12)  / (p13 | p14 | p15 | p16) / (p17 | p18 | p19 | p20)   +  plot_layout(guides = "collect")  #+ plot_annotation(caption = 'Tryptic Plots of the model for each food item with the highest model weight. Full Model outputs are in table form in the Supporting Information')
 plot
-ggsave(here("Plots", "Figure_S3_Models.pdf"), width = 17, height = 21)
-ggsave(here("Plots", "Figure_S3_Models.png"), width = 17, height = 21)
+ggsave(here("Plots", "Figure_S3_Models.pdf"), width = 17, height = 15)
+ggsave(here("Plots", "Figure_S3_Models.png"), width = 17, height = 15)
 ```
 

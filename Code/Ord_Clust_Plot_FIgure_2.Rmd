@@ -193,7 +193,7 @@ Radw
 ### Plot
 
 ```{r}
-ratpal <- c("1" = '#f48a1a', "3" = '#e6ab02', "2" = '#66a61e', "5" = 'tan4', "6" = '#0D7E9A', "4" ='#7570b3')
+ratpal <- c("4" = '#f48a1a', "6" = '#e6ab02', "3" = '#66a61e', "5" = 'tan4', "2" = '#0D7E9A', "1" ='#7570b3')
 # Make Convex Hulls
 hull <- S3 %>% 
   group_by(class6) %>% 
@@ -205,11 +205,11 @@ S3  %>% ggplot(aes(x = V1, y = V2)) +
   geom_polygon(aes(color = class6, fill = class6), data = hull, alpha = 0.05) +
   scale_color_manual(values = ratpal) +
   scale_fill_manual(values = ratpal) +
-  labs(x = "PC 1 (28%)", y = "PC 2 (18%)", title = "Animal Diversity Web\nAdj. Rand Index = 0.185") +
+  labs(x = "PC 1 (28%)", y = "PC 2 (18%)", title = "Animal Diversity Web\nAdj. Rand Index = 0.16") +
   guides(color = "none", fill = "none") +
   theme_classic() +
   theme(legend.title = element_blank(), 
-        legend.position = c(0.85, 0.95),
+        legend.position = c(0.89, 0.97),
         panel.background = element_blank(),
         legend.background = element_rect(fill = "transparent"), # get rid of legend bg
         legend.key = element_rect(fill = "transparent", colour = NA), 
@@ -220,7 +220,7 @@ S3  %>% ggplot(aes(x = V1, y = V2)) +
         legend.key.size = unit(1, 'lines'),
         axis.title.y = element_text(size = 9, margin=margin(r=1)),
         axis.title.x = element_text(size = 9, margin=margin(0,0,-5,0)),
-        plot.title = element_text(size=11, margin=margin(-20,0,2,0)),
+        plot.title = element_text(size=11, margin=margin(-10,0,2,0)),
         plot.margin = unit(c(0.2, 0, 0.3, 0), "lines")) +
   coord_fixed() -> P1
 
@@ -231,7 +231,7 @@ S3  %>% ggplot(aes(x = V1, y = V2)) +
          #plot.margin = unit(c(0.2, 0, 0.3, 0), "lines")
 
 
-ratpal <- c( "2" = '#e6ab02', "1" = '#66a61e',  "3" ='#7570b3')
+ratpal <- c( "3" = '#e6ab02', "2" = '#66a61e',  "1" ='#7570b3')
 hull <- S3 %>% drop_na(hopkins_van_valk) %>% 
   group_by(class3) %>% 
   slice(chull(V1, V2))
@@ -242,11 +242,12 @@ S3  %>% drop_na(hopkins_van_valk) %>% ggplot(aes(x = V1, y = V2)) +
   geom_polygon(aes(color = class3, fill = class3), data = hull, alpha = 0.05) +
   scale_color_manual(values = ratpal) +
   scale_fill_manual(values = ratpal) +
-  labs(x = "PC 1 (28%)", y = "PC 2 (18%)", title = "Van Valkenburgh, 1988\nAdj. Rand Index = 0.145") +
+  labs(x = "PC 1 (28%)", y = "PC 2 (18%)", title = "Van Valkenburgh, 1988\nAdj. Rand Index = 0.18") +
   guides(color = "none", fill = "none") +
   theme_classic() +
   theme(legend.title = element_blank(),  
         legend.position = c(0.81, 0.96),
+        legend.background = element_rect(fill = "transparent"),
         panel.background = element_blank(),
         legend.text=element_text(size=8),
         axis.text.y = element_text(angle = 90, size = 7),
@@ -255,7 +256,7 @@ S3  %>% drop_na(hopkins_van_valk) %>% ggplot(aes(x = V1, y = V2)) +
         legend.key.size = unit(1, 'lines'),
         axis.title.y = element_text(size = 9, margin=margin(r=1)),
         axis.title.x = element_text(size = 9, margin=margin(0,0,-5,0)),
-        plot.title = element_text(size=11, margin=margin(-20,0,2,0)),
+        plot.title = element_text(size=11, margin=margin(-10,0,2,0)),
         plot.margin = unit(c(0.2, 0, 0.3, 0), "lines")) +
   coord_fixed() -> P2
 
@@ -269,25 +270,26 @@ S3  %>% drop_na(pantheria) %>% ggplot(aes(x = V1, y = V2)) +
   geom_polygon(aes(color = class3, fill = class3), data = hull, alpha = 0.05) +
   scale_color_manual(values = ratpal) +
   scale_fill_manual(values = ratpal) +
-  labs(x = "PC 1 (28%)", y = "PC 2 (18%)", title = "PanTHERIA\nAdj. Rand Index = 0.021") +
+  labs(x = "PC 1 (28%)", y = "PC 2 (18%)", title = "PanTHERIA\nAdj. Rand Index = 0.04") +
   guides(color = "none", fill = "none") +
   theme_classic() +
   theme(legend.title = element_blank(),   
         legend.position = c(0.81, 0.96),
         panel.background = element_blank(),
         legend.text=element_text(size=8),
+        legend.background = element_rect(fill = "transparent"),
         axis.text.y = element_text(angle = 90, size = 7),
         axis.text.x = element_text(size = 7),
         panel.border = element_blank(),
        legend.key.size = unit(1, 'lines'),
         axis.title.y = element_text(size = 9, margin=margin(r=1)),
         axis.title.x = element_text(size = 9, margin=margin(0,0,-5,0)),
-        plot.title = element_text(size=11, margin=margin(-20,0,2,0)),
+        plot.title = element_text(size=11, margin=margin(-10,0,2,0)),
         plot.margin = unit(c(0.2, 0, 0.3, 0), "lines")) +
   coord_fixed()   -> P3
 
 
-ratpal <- c( "3" = '#e6ab02', "2" = '#66a61e',  "4" ='#7570b3', "1" = '#f48a1a')
+ratpal <- c( "4" = '#e6ab02', "2" = '#66a61e',  "1" ='#7570b3', "3" = '#f48a1a')
 hull <- S3 %>% drop_na(hopkins_pineda) %>%
   group_by(class4) %>% 
   slice(chull(V1, V2))
@@ -298,7 +300,7 @@ S3  %>% drop_na(hopkins_pineda) %>% ggplot(aes(x = V1, y = V2)) +
   scale_starshape_manual(c(15, 13, 28, 23, 5, 14), labels = c("Hypercarnivore", "Hypocarnivore -\nInvertivorous", "Hypocarnivore -\nOmnivorous", "Mesocarnivore")) +
   scale_color_manual(values = ratpal) +
   scale_fill_manual(values = ratpal) +
-  labs(x = "PC 1 (28%)", y = "PC 2 (18%)", title = "Piñeda-Munoz et al., 2017\nAdj. Rand Index = 0.158") +
+  labs(x = "PC 1 (28%)", y = "PC 2 (18%)", title = "Piñeda-Munoz et al., 2017\nAdj. Rand Index = 0.12") +
   guides(color = "none", fill = "none") +
   theme_classic() +
   theme(legend.title = element_blank(),   
@@ -312,7 +314,7 @@ S3  %>% drop_na(hopkins_pineda) %>% ggplot(aes(x = V1, y = V2)) +
         legend.key.size = unit(1.2, 'lines'),
         axis.title.y = element_text(size = 9, margin=margin(r=1)),
         axis.title.x = element_text(size = 9, margin=margin(0,0,-5,0)),
-        plot.title = element_text(size=11, margin=margin(-20,0,2,0)),
+        plot.title = element_text(size=11, margin=margin(-10,0,2,0)),
         plot.margin = unit(c(0.2, 0, 0.3, 0), "lines"), 
         #legend spacing
         #legend.spacing.y = unit(2.0, 'cm'),

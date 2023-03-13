@@ -56,7 +56,8 @@ ord_pred <- function(model){
   d2 <- as.data.frame(d) %>% 
     mutate(actual = as.factor({{model}}[[2]][[1]]), 
            pred   = colnames(d)[max.col(d,ties.method="first")], 
-           pred   = str_remove(pred,"P\\(Y = "), pred   = str_remove(pred,"\\)"), 
+           pred   = str_remove(pred,"P\\(Y = "), 
+           pred   = str_remove(pred,"\\)"), 
            actual = factor(actual, ordered = FALSE), 
            pred   = factor(pred), 
            Species = rownames({{model}}[[2]])) %>% 
@@ -103,24 +104,25 @@ pred_means <- function(dfs){
 # Calculate Model Averaged Prediction Scores
 For each taxon for each food item
 Do this 1000 times, generating a posterior prediction distribution of 1000 samples per species
-Warning, takes around 1 hour to run using 4 cores. The future options set the numbers of cores and workers. 
+Warning, takes around 1.5 hours to run using 4 cores. The future options set the numbers of cores and workers. 
 `tic()` and `toc()` just count the time. 
 ```{r}
 d <- list.files(path=here("Code/Models/mod_outputs"), pattern = ".Rds$", full.names = TRUE) 
 df_list <- setNames(lapply(d, readRDS), tools::file_path_sans_ext(d))
 
-
-furrr_options(seed = TRUE)
+plan(multisession, workers = 6)
+furrr_options(seed = NULL)
 options(future.rng.onMisuse="ignore")
-plan(multisession, workers = 4)
 
-#tictoc::tic()
+tictoc::tic()
 dt_n <- furrr::future_map(1:1000, ~ord_pred_2(df_list)) %>% bind_rows() 
-#tictoc::toc()
+tictoc::toc()
+
 
 pred_db <- dt_n %>% 
   bind_rows() %>% pred_means() %>% write_csv(file = here("Data", "prediction_table.csv"))
 ```
+
 #### Prediction Table For SI  
 
 ```{r}
@@ -147,11 +149,11 @@ pred_db %>%
              within_1 = (n2/89) * 100) %>% 
   mutate_if(is.numeric, round, digits = 1) %>% 
   select(!c(n2, n1)) %>% 
-  arrange(desc(perfect_match)) #%>% write_csv(file = here("Data", "Accuracy_Table.csv")) #%>% 
+  arrange(desc(perfect_match)) %>% write_csv(file = here("Data", "Accuracy_Table.csv")) %>% 
 #laTex table for manuscript submission
- # arrange(item) %>% 
- # kbl(format = "latex") %>% 
- # kable_classic(full_width = F) #-> tt
-#tt
-#writeLines(tt, "Accuracy_Table.tex")
+  arrange(item) %>% 
+   kbl(format = "latex") %>% 
+   kable_classic(full_width = F)  -> tt
+tt
+writeLines(tt,  here("Data", "Accuracy_Table.tex"))
 ```
