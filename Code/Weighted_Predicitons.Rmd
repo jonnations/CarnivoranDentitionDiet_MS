@@ -96,15 +96,13 @@ Bird uses RFI, RLGA, and All
 ```{r}
 #Pull probabilities, then multiply by weight
 pred.bird_RLGA <- expred(readRDS(here("Code/Models/mod_outputs/bird_md_RLGA.Rds")),  bird.w[[2]][[1]])
-pred.bird_all <-  expred(readRDS(here("Code/Models/mod_outputs", "bird_md_ALL.Rds")),   bird.w[[2]][[2]])
-pred.bird_RFI <-  expred(readRDS(here("Code/Models/mod_outputs", "bird_mn_RFI.rds")),   bird.w[[2]][[3]])
 
 #sum weights
-pred.bird <- bind_rows(pred.bird_all, pred.bird_RFI, pred.bird_RLGA) %>% 
+pred.bird <- bind_rows(pred.bird_RLGA ) %>% 
 #then calculate weighted average (weighted importance score)
   pred(., "bird")
 #remove excess dataframes
-rm( pred.bird_RFI , pred.bird_RLGA, pred.bird_all )
+rm( pred.bird_RLGA )
 ```
 
 
@@ -115,7 +113,7 @@ carrion.w
 ```
 
 ```{r}
-pred.carrion_RLGA <- expred(readRDS(here("Code/Models/mod_outputs", "carrion_md_RLGA.Rds")), carrion.w[[2]][[1]])
+pred.carrion_RLGA <- expred(readRDS(here("Code/Models/mod_outputs", "carrion_mn_RLGA.Rds")), carrion.w[[2]][[1]])
 pred.carrion_OPCR <- expred(readRDS(here("Code/Models/mod_outputs", "carrion_md_OPCR.Rds")), carrion.w[[2]][[2]])
 
 pred.carrion <- bind_rows(pred.carrion_OPCR, pred.carrion_RLGA) %>% pred(., "carrion")
@@ -130,13 +128,12 @@ egg.w
 ```
 
 ```{r}
-pred.egg_RFI <- expred(readRDS(here("Code/Models/mod_outputs", "egg_md_RFI.Rds")),   egg.w[[2]][[1]])
+pred.egg_RFI <- expred(readRDS(here("Code/Models/mod_outputs", "egg_mn_RFI.Rds")),   egg.w[[2]][[1]])
 pred.egg_DNE <- expred(readRDS(here("Code/Models/mod_outputs", "egg_mn_DNE.Rds")),   egg.w[[2]][[2]])
-pred.egg_RLGA <- expred(readRDS(here("Code/Models/mod_outputs", "egg_mn_RLGA.Rds")), egg.w[[2]][[3]])
 
-pred.egg <- bind_rows(pred.egg_DNE, pred.egg_RFI, pred.egg_RLGA) %>% pred(., "egg")
+pred.egg <- bind_rows(pred.egg_DNE, pred.egg_RFI) %>% pred(., "egg")
 
-rm( pred.egg_DNE , pred.egg_RFI, pred.egg_RLGA)
+rm( pred.egg_DNE , pred.egg_RFI)
 ```
 
 #### Fish 
@@ -148,11 +145,11 @@ fish.w
 
 ```{r}
 pred.fish_RLGA <- expred(readRDS(here("Code/Models/mod_outputs", "fish_ms_RLGA.Rds")), fish.w[[2]][[1]])
-pred.fish_OPCR <- expred(readRDS(here("Code/Models/mod_outputs", "fish_ms_OPCR.Rds")), fish.w[[2]][[2]])
 
-pred.fish <- bind_rows(pred.fish_OPCR, pred.fish_RLGA) %>% pred(., "fish")
 
-rm( pred.fish_OPCR , pred.fish_RLGA)
+pred.fish <- bind_rows( pred.fish_RLGA) %>% pred(., "fish")
+
+rm( pred.fish_RLGA)
 ```
 ### Fruit
 
@@ -162,13 +159,12 @@ fruit.w
 ```
 
 ```{r}
-pred.fruit_OPCR <- expred(readRDS(here("Code/Models/mod_outputs", "fruit_ms_OPCR.Rds")), fruit.w[[2]][[1]])
-pred.fruit_RLGA <- expred(readRDS(here("Code/Models/mod_outputs", "fruit_ms_RLGA.Rds")), fruit.w[[2]][[2]])
-pred.fruit_RFI <- expred(readRDS(here("Code/Models/mod_outputs", "fruit_mn_RFI.Rds")),   fruit.w[[2]][[3]])
+pred.fruit_OPCR <- expred(readRDS(here("Code/Models/mod_outputs", "fruit_mn_OPCR.Rds")), fruit.w[[2]][[1]])
+pred.fruit_RLGA <- expred(readRDS(here("Code/Models/mod_outputs", "fruit_mn_RLGA.Rds")), fruit.w[[2]][[2]])
 
-pred.fruit <- bind_rows(pred.fruit_OPCR, pred.fruit_RFI, pred.fruit_RLGA) %>% pred(., "fruit")
+pred.fruit <- bind_rows(pred.fruit_OPCR, pred.fruit_RLGA) %>% pred(., "fruit")
 
-rm( pred.fruit_OPCR , pred.fruit_RFI, pred.fruit_RLGA)
+rm( pred.fruit_OPCR , pred.fruit_RLGA)
 ```
 
 ### Hard Invert
@@ -179,13 +175,12 @@ hard_invert.w
 ```
 
 ```{r}
-pred.hard_invert_ALL <- expred(readRDS(here("Code/Models/mod_outputs", "hard_invert_md_ALL.Rds")),  hard_invert.w[[2]][[1]])
-pred.hard_invert_DNE <- expred(readRDS(here("Code/Models/mod_outputs", "hard_invert_mn_DNE.Rds")),  hard_invert.w[[2]][[2]])
-pred.hard_invert_RLGA<- expred(readRDS(here("Code/Models/mod_outputs", "hard_invert_md_RLGA.Rds")), hard_invert.w[[2]][[3]])
+pred.hard_invert_DNE <- expred(readRDS(here("Code/Models/mod_outputs", "hard_invert_mn_DNE.Rds")),  hard_invert.w[[2]][[1]])
+pred.hard_invert_RLGA<- expred(readRDS(here("Code/Models/mod_outputs", "hard_invert_ms_RLGA.Rds")), hard_invert.w[[2]][[2]])
 
-pred.hard_invert <- bind_rows(pred.hard_invert_ALL, pred.hard_invert_DNE, pred.hard_invert_RLGA) %>% pred(., "hard_invert")
+pred.hard_invert <- bind_rows( pred.hard_invert_DNE, pred.hard_invert_RLGA) %>% pred(., "hard_invert")
 
-rm(pred.hard_invert_ALL, pred.hard_invert_DNE, pred.hard_invert_RLGA)
+rm( pred.hard_invert_DNE, pred.hard_invert_RLGA)
 ```
 
 ### Herptile
@@ -196,12 +191,12 @@ herptile.w
 ```
 
 ```{r}
-pred.herptile_DNE <- expred(readRDS(here("Code/Models/mod_outputs", "herptile_md_DNE.Rds")),   herptile.w[[2]][[1]])
-pred.herptile_OPCR <- expred(readRDS(here("Code/Models/mod_outputs", "herptile_md_OPCR.Rds")), herptile.w[[2]][[2]])
+pred.herptile_DNE <- expred(readRDS(here("Code/Models/mod_outputs", "herptile_ms_DNE.Rds")),   herptile.w[[2]][[1]])
+pred.herptile_RLGA <- expred(readRDS(here("Code/Models/mod_outputs", "herptile_md_RLGA.Rds")), herptile.w[[2]][[2]])
 
-pred.herptile <- bind_rows(pred.herptile_OPCR, pred.herptile_DNE) %>% pred(., "herptile")
+pred.herptile <- bind_rows(pred.herptile_RLGA, pred.herptile_DNE) %>% pred(., "herptile")
 
-rm( pred.herptile_OPCR , pred.herptile_DNE)
+rm( pred.herptile_RLGA , pred.herptile_DNE)
 ```
 
 ### Large Mammal  
@@ -246,7 +241,7 @@ root.w
 
 ```{r}
 pred.root_RLGA <- 
-  epred_draws(readRDS(here("Code/Models/mod_outputs", "root_mn_RLGA.Rds")), newdata = dat, ndraws = NULL) %>% 
+  epred_draws(readRDS(here("Code/Models/mod_outputs", "root_ms_RLGA.Rds")), newdata = dat, ndraws = NULL) %>% 
     as.data.frame() %>% 
     select(Species, .draw, .category, .epred) %>% 
     arrange(Species, .draw, .category) %>% 
@@ -272,11 +267,12 @@ seed.w
 
 ```{r}
 pred.seed_DNE <- expred(readRDS(here("Code/Models/mod_outputs", "seed_mn_DNE.Rds")),   seed.w[[2]][[1]])
-pred.seed_RLGA <- expred(readRDS(here("Code/Models/mod_outputs", "seed_mn_RLGA.Rds")), seed.w[[2]][[2]])
+pred.seed_RLGA <- expred(readRDS(here("Code/Models/mod_outputs", "seed_ms_RLGA.Rds")), seed.w[[2]][[2]])
+pred.seed_RFI <- expred(readRDS(here("Code/Models/mod_outputs", "seed_ms_RFI.Rds")), seed.w[[2]][[3]])
 
-pred.seed <- bind_rows(pred.seed_DNE, pred.seed_RLGA) %>% pred(., "seed")
+pred.seed <- bind_rows(pred.seed_DNE, pred.seed_RLGA, pred.seed_RFI) %>% pred(., "seed")
 
-rm( pred.seed_DNE , pred.seed_RLGA)
+rm( pred.seed_DNE , pred.seed_RLGA, pred.seed_RFI)
 ```
 
 ### Small Mammal
@@ -287,7 +283,7 @@ small_mammal.w
 ```
 
 ```{r}
-pred.small_mammal_RLGA <- expred(readRDS(here("Code/Models/mod_outputs", "small_mammal_md_RLGA.Rds")), small_mammal.w[[2]][[1]])
+pred.small_mammal_RLGA <- expred(readRDS(here("Code/Models/mod_outputs", "small_mammal_ms_RLGA.Rds")), small_mammal.w[[2]][[1]])
 pred.small_mammal_DNE <- expred(readRDS(here("Code/Models/mod_outputs", "small_mammal_md_DNE.Rds")),   small_mammal.w[[2]][[2]])
 
 pred.small_mammal <- bind_rows(pred.small_mammal_DNE, pred.small_mammal_RLGA) %>% pred(., "small_mammal")
@@ -304,11 +300,11 @@ soft_invert.w
 
 ```{r}
 pred.soft_invert_DNE <- expred(readRDS(here("Code/Models/mod_outputs", "soft_invert_mn_DNE.Rds")), soft_invert.w[[2]][[1]])
-pred.soft_invert_OPCR <- expred(readRDS(here("Code/Models/mod_outputs", "soft_invert_md_OPCR.Rds")),   soft_invert.w[[2]][[2]])
+pred.soft_invert_RLGA <- expred(readRDS(here("Code/Models/mod_outputs", "soft_invert_md_RLGA.Rds")),   soft_invert.w[[2]][[2]])
 
-pred.soft_invert <- bind_rows(pred.soft_invert_DNE, pred.soft_invert_OPCR) %>% pred(., "soft_invert")
+pred.soft_invert <- bind_rows(pred.soft_invert_DNE, pred.soft_invert_RLGA) %>% pred(., "soft_invert")
 
-rm( pred.soft_invert_DNE , pred.soft_invert_OPCR)
+rm( pred.soft_invert_DNE , pred.soft_invert_RLGA)
 ```
 
 
@@ -391,12 +387,10 @@ bird.w
 Bird uses RFI, RLGA, and All
 ```{r}
 pred.bird_RLGA <- cpred(readRDS(here("Code/Models/mod_outputs", "bird_md_RLGA.Rds")),  bird.w[[2]][[1]])
-pred.bird_all <-  cpred(readRDS(here("Code/Models/mod_outputs", "bird_md_ALL.Rds")),   bird.w[[2]][[2]])
-pred.bird_RFI <-  cpred(readRDS(here("Code/Models/mod_outputs", "bird_mn_RFI.rds")),   bird.w[[2]][[3]])
 
-pred.bird <- bind_rows(pred.bird_all, pred.bird_RFI, pred.bird_RLGA) %>% pred(., "bird")
+pred.bird <- bind_rows( pred.bird_RLGA) %>% pred(., "bird")
 
-rm( pred.bird_RFI , pred.bird_RLGA, pred.bird_all )
+rm( pred.bird_RLGA )
 ```
 
 
@@ -407,7 +401,7 @@ carrion.w
 ```
 
 ```{r}
-pred.carrion_RLGA <- cpred(readRDS(here("Code/Models/mod_outputs", "carrion_md_RLGA.Rds")), carrion.w[[2]][[1]])
+pred.carrion_RLGA <- cpred(readRDS(here("Code/Models/mod_outputs", "carrion_mn_RLGA.Rds")), carrion.w[[2]][[1]])
 pred.carrion_OPCR <- cpred(readRDS(here("Code/Models/mod_outputs", "carrion_md_OPCR.Rds")), carrion.w[[2]][[2]])
 
 pred.carrion <- bind_rows(pred.carrion_OPCR, pred.carrion_RLGA) %>% pred(., "carrion")
@@ -422,13 +416,13 @@ egg.w
 ```
 
 ```{r}
-pred.egg_RFI <- cpred(readRDS(here("Code/Models/mod_outputs", "egg_md_RFI.Rds")),   egg.w[[2]][[1]])
+pred.egg_RFI <- cpred(readRDS(here("Code/Models/mod_outputs", "egg_mn_RFI.Rds")),   egg.w[[2]][[1]])
 pred.egg_DNE <- cpred(readRDS(here("Code/Models/mod_outputs", "egg_mn_DNE.Rds")),   egg.w[[2]][[2]])
-pred.egg_RLGA <- cpred(readRDS(here("Code/Models/mod_outputs", "egg_mn_RLGA.Rds")), egg.w[[2]][[3]])
 
-pred.egg <- bind_rows(pred.egg_DNE, pred.egg_RFI, pred.egg_RLGA) %>% pred(., "egg")
 
-rm( pred.egg_DNE , pred.egg_RFI, pred.egg_RLGA)
+pred.egg <- bind_rows(pred.egg_DNE, pred.egg_RFI) %>% pred(., "egg")
+
+rm( pred.egg_DNE , pred.egg_RFI)
 ```
 
 ### Fish
@@ -440,11 +434,10 @@ fish.w
 
 ```{r}
 pred.fish_RLGA <- cpred(readRDS(here("Code/Models/mod_outputs", "fish_ms_RLGA.Rds")), fish.w[[2]][[1]])
-pred.fish_OPCR <- cpred(readRDS(here("Code/Models/mod_outputs", "fish_ms_OPCR.Rds")), fish.w[[2]][[2]])
 
-pred.fish <- bind_rows(pred.fish_OPCR, pred.fish_RLGA) %>% pred(., "fish")
+pred.fish <- bind_rows( pred.fish_RLGA) %>% pred(., "fish")
 
-rm( pred.fish_OPCR , pred.fish_RLGA)
+rm( pred.fish_RLGA)
 ```
 ### Fruit
 
@@ -454,13 +447,12 @@ fruit.w
 ```
 
 ```{r}
-pred.fruit_OPCR <- cpred(readRDS(here("Code/Models/mod_outputs", "fruit_ms_OPCR.Rds")), fruit.w[[2]][[1]])
-pred.fruit_RLGA <- cpred(readRDS(here("Code/Models/mod_outputs", "fruit_ms_RLGA.Rds")), fruit.w[[2]][[2]])
-pred.fruit_RFI <- cpred(readRDS(here("Code/Models/mod_outputs", "fruit_mn_RFI.Rds")),   fruit.w[[2]][[3]])
+pred.fruit_OPCR <- cpred(readRDS(here("Code/Models/mod_outputs", "fruit_mn_OPCR.Rds")), fruit.w[[2]][[1]])
+pred.fruit_RLGA <- cpred(readRDS(here("Code/Models/mod_outputs", "fruit_mn_RLGA.Rds")), fruit.w[[2]][[2]])
 
-pred.fruit <- bind_rows(pred.fruit_OPCR, pred.fruit_RFI, pred.fruit_RLGA) %>% pred(., "fruit")
+pred.fruit <- bind_rows(pred.fruit_OPCR,  pred.fruit_RLGA) %>% pred(., "fruit")
 
-rm( pred.fruit_OPCR , pred.fruit_RFI, pred.fruit_RLGA)
+rm( pred.fruit_OPCR , pred.fruit_RLGA)
 ```
 
 ### Hard Invert
@@ -471,13 +463,12 @@ hard_invert.w
 ```
 
 ```{r}
-pred.hard_invert_ALL <- cpred(readRDS(here("Code/Models/mod_outputs", "hard_invert_md_ALL.Rds")),  hard_invert.w[[2]][[1]])
-pred.hard_invert_DNE <- cpred(readRDS(here("Code/Models/mod_outputs", "hard_invert_mn_DNE.Rds")),  hard_invert.w[[2]][[2]])
-pred.hard_invert_RLGA<- cpred(readRDS(here("Code/Models/mod_outputs", "hard_invert_md_RLGA.Rds")), hard_invert.w[[2]][[3]])
+pred.hard_invert_DNE <- cpred(readRDS(here("Code/Models/mod_outputs", "hard_invert_mn_DNE.Rds")),  hard_invert.w[[2]][[1]])
+pred.hard_invert_RLGA<- cpred(readRDS(here("Code/Models/mod_outputs", "hard_invert_ms_RLGA.Rds")), hard_invert.w[[2]][[2]])
 
-pred.hard_invert <- bind_rows(pred.hard_invert_ALL, pred.hard_invert_DNE, pred.hard_invert_RLGA) %>% pred(., "hard_invert")
+pred.hard_invert <- bind_rows( pred.hard_invert_DNE, pred.hard_invert_RLGA) %>% pred(., "hard_invert")
 
-rm(pred.hard_invert_ALL, pred.hard_invert_DNE, pred.hard_invert_RLGA)
+rm( pred.hard_invert_DNE, pred.hard_invert_RLGA)
 ```
 
 ### Herptile
@@ -488,12 +479,12 @@ herptile.w
 ```
 
 ```{r}
-pred.herptile_DNE <- cpred(readRDS(here("Code/Models/mod_outputs", "herptile_md_DNE.Rds")),   herptile.w[[2]][[1]])
-pred.herptile_OPCR <- cpred(readRDS(here("Code/Models/mod_outputs", "herptile_md_OPCR.Rds")), herptile.w[[2]][[2]])
+pred.herptile_DNE <- cpred(readRDS(here("Code/Models/mod_outputs", "herptile_ms_DNE.Rds")),   herptile.w[[2]][[1]])
+pred.herptile_RLGA <- cpred(readRDS(here("Code/Models/mod_outputs", "herptile_md_RLGA.Rds")), herptile.w[[2]][[2]])
 
-pred.herptile <- bind_rows(pred.herptile_OPCR, pred.herptile_DNE) %>% pred(., "herptile")
+pred.herptile <- bind_rows(pred.herptile_RLGA, pred.herptile_DNE) %>% pred(., "herptile")
 
-rm( pred.herptile_OPCR , pred.herptile_DNE)
+rm( pred.herptile_RLGA , pred.herptile_DNE)
 ```
 
 ### Large Mammal  
@@ -538,7 +529,7 @@ root.w
 
 ```{r}
 pred.root_RLGA <- 
-  epred_draws(readRDS(here("Code/Models/mod_outputs", "root_mn_RLGA.Rds")), newdata = cfdat, allow_new_levels = T, ndraws = NULL) %>% 
+  epred_draws(readRDS(here("Code/Models/mod_outputs", "root_ms_RLGA.Rds")), newdata = cfdat, allow_new_levels = T, ndraws = NULL) %>% 
     as.data.frame() %>% 
     select(Species, .draw, .category, .epred) %>% 
     arrange(Species, .draw, .category) %>% 
@@ -564,11 +555,12 @@ seed.w
 
 ```{r}
 pred.seed_DNE <- cpred(readRDS(here("Code/Models/mod_outputs", "seed_mn_DNE.Rds")),   seed.w[[2]][[1]])
-pred.seed_RLGA <- cpred(readRDS(here("Code/Models/mod_outputs", "seed_mn_RLGA.Rds")), seed.w[[2]][[2]])
+pred.seed_RLGA <- cpred(readRDS(here("Code/Models/mod_outputs", "seed_ms_RLGA.Rds")), seed.w[[2]][[2]])
+pred.seed_RFI <- cpred(readRDS(here("Code/Models/mod_outputs", "seed_ms_RFI.Rds")), seed.w[[2]][[3]])
 
-pred.seed <- bind_rows(pred.seed_DNE, pred.seed_RLGA) %>% pred(., "seed")
+pred.seed <- bind_rows(pred.seed_DNE, pred.seed_RLGA, pred.seed_RFI) %>% pred(., "seed")
 
-rm( pred.seed_DNE , pred.seed_RLGA)
+rm( pred.seed_DNE , pred.seed_RLGA, pred.seed_RFI)
 ```
 
 ### Small Mammal
@@ -579,7 +571,7 @@ small_mammal.w
 ```
 
 ```{r}
-pred.small_mammal_RLGA <- cpred(readRDS(here("Code/Models/mod_outputs", "small_mammal_md_RLGA.Rds")), small_mammal.w[[2]][[1]])
+pred.small_mammal_RLGA <- cpred(readRDS(here("Code/Models/mod_outputs", "small_mammal_ms_RLGA.Rds")), small_mammal.w[[2]][[1]])
 pred.small_mammal_DNE <- cpred(readRDS(here("Code/Models/mod_outputs", "small_mammal_md_DNE.Rds")),   small_mammal.w[[2]][[2]])
 
 pred.small_mammal <- bind_rows(pred.small_mammal_DNE, pred.small_mammal_RLGA) %>% pred(., "small_mammal")
@@ -596,11 +588,11 @@ soft_invert.w
 
 ```{r}
 pred.soft_invert_DNE <- cpred(readRDS(here("Code/Models/mod_outputs", "soft_invert_mn_DNE.Rds")), soft_invert.w[[2]][[1]])
-pred.soft_invert_OPCR <- cpred(readRDS(here("Code/Models/mod_outputs", "soft_invert_md_OPCR.Rds")),   soft_invert.w[[2]][[2]])
+pred.soft_invert_RLGA <- cpred(readRDS(here("Code/Models/mod_outputs", "soft_invert_md_RLGA.Rds")),   soft_invert.w[[2]][[2]])
 
-pred.soft_invert <- bind_rows(pred.soft_invert_DNE, pred.soft_invert_OPCR) %>% pred(., "soft_invert")
+pred.soft_invert <- bind_rows(pred.soft_invert_DNE, pred.soft_invert_RLGA) %>% pred(., "soft_invert")
 
-rm( pred.soft_invert_DNE , pred.soft_invert_OPCR)
+rm( pred.soft_invert_DNE , pred.soft_invert_RLGA)
 ```
 
 

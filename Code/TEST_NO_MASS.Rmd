@@ -1,0 +1,471 @@
+---
+title: "Run Plant"
+---
+
+#Run all models in one script This script reads in the scripts and runs the models one by one, so we don't have to open each model script individually. This way the data only has to be loaded once, and wrangled once.
+
+The outputs are stored in the `~Code/Models/mod_outputs` file. Note: Just the models with the highest looic weights are saved. If weight = 0, then the model is not saved. We did this using the `brms::model_weights(., weights = "stacking")` command.
+
+#Setup
+
+#### Files and Functions
+
+```{r}
+pacman::p_load(tidyverse, rmarkdown, brms, cmdstanr, phytools, geiger, caret, here)
+
+here::i_am('Code/Mod_All.Rmd')
+
+# Dirichlet Script
+source("Dirichlet_Prior.R")
+#Functions
+scale2 <- function(x, na.rm = TRUE) (x - mean(x, na.rm = na.rm)) / sd(x, na.rm)
+add1 <- function(x, na.rm = TRUE) (x + 1)
+options(brms.backend = "cmdstanr")
+```
+
+#### Read and Wrangle Data
+
+```{r}
+# Read Tree
+phylo <- ape::read.nexus(here("Data", "Carnivora_MCC_2.tre"))
+
+# Read fossil data and calculate body size estimate ^1/3
+fos_dat_1 <- read_csv(here("Data", "fossil_carnivoran_data.csv")) %>% 
+  mutate(log_cuberoot_mass = log(mass_kg^(1/3)))
+# Read extant data
+dat <- read.delim(here("Data", "Master_Data.txt")) %>% 
+  mutate(mass_kg = exp(log_cuberoot_mass)^3,
+         phylo = Species) %>% 
+  # drop taxa with missing m2 data
+  drop_na(m2_dne) %>% 
+  #combine extant and fossil dat for tip dropping and standardizing
+  bind_rows(fos_dat_1) %>% 
+  # Standardize all data together
+  mutate_at(vars(4:11), scale2) %>% 
+  mutate_at(vars(12:24), add1) %>% 
+  mutate_at(vars(12:24), as.ordered) 
+
+
+row.names(dat)<-dat$Species
+# Remove extra tips (but keep fossil tips!)
+carn_treedata<-treedata(phylo, dat, warnings = FALSE)
+phylo<-carn_treedata$phy
+A <- ape::vcv.phylo(phylo, corr = TRUE)
+
+
+#Separate the model inputs
+dat1 <- dat %>% drop_na(bird)
+
+```
+
+---
+title: "R Notebook"
+#output: html_notebook
+---
+
+# plant
+
+#RLGA
+
+```{r, include = FALSE}
+
+md_RLGA <-  brm(plant ~  RLGA * log_cuberoot_mass + (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(), 
+           prior =  c(set_prior("induced_dirichlet(rep_vector(1, nthres+1),0", class = "Intercept"),
+                     set_prior("normal(0,1)", class = "sd"),
+                     set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, stanvars = dirichlet_prior_stanvar, control = list(adapt_delta = 0.98)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+
+md2_RLGA <-  brm(plant ~  RLGA + log_cuberoot_mass + (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(), 
+           prior =  c(set_prior("induced_dirichlet(rep_vector(1, nthres+1),0", class = "Intercept"),
+                     set_prior("normal(0,1)", class = "sd"),
+                     set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, stanvars = dirichlet_prior_stanvar, control = list(adapt_delta = 0.98)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+
+md3_RLGA <-  brm(plant ~  RLGA  + (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(), 
+           prior =  c(set_prior("induced_dirichlet(rep_vector(1, nthres+1),0", class = "Intercept"),
+                     set_prior("normal(0,1)", class = "sd"),
+                     set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, stanvars = dirichlet_prior_stanvar, control = list(adapt_delta = 0.98)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+
+```
+
+```{r}
+loo_compare( md_RLGA, md2_RLGA, md3_RLGA, criterion = "loo")
+model_weights(md_RLGA, md2_RLGA, md3_RLGA, weights = "stacking") %>%
+  round(digits = 3)
+```
+
+#DNE
+
+Using 3 priors.
+
+```{r, include=FALSE}
+md_DNE <-  brm(plant ~  m1_dne * log_cuberoot_mass + m2_dne * log_cuberoot_mass + (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(), 
+           prior =  c(set_prior("induced_dirichlet(rep_vector(1, nthres+1),0", class = "Intercept"),
+                     set_prior("normal(0,1)", class = "sd"),
+                     set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, stanvars = dirichlet_prior_stanvar, control = list(adapt_delta = 0.98)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+
+md2_DNE <-  brm(plant ~  m1_dne + m2_dne + log_cuberoot_mass + (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(), 
+           prior =  c(set_prior("induced_dirichlet(rep_vector(1, nthres+1),0", class = "Intercept"),
+                     set_prior("normal(0,1)", class = "sd"),
+                     set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, stanvars = dirichlet_prior_stanvar, control = list(adapt_delta = 0.98)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+
+md3_DNE <-  brm(plant ~  m1_dne + m2_dne  + (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(), 
+           prior =  c(set_prior("induced_dirichlet(rep_vector(1, nthres+1),0", class = "Intercept"),
+                     set_prior("normal(0,1)", class = "sd"),
+                     set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, stanvars = dirichlet_prior_stanvar, control = list(adapt_delta = 0.98)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+```
+
+```{r}
+loo_compare(md_DNE, md2_DNE, md3_DNE,criterion = "loo") 
+model_weights(md_DNE, md2_DNE, md3_DNE,criterion = "loo", weights = "stacking") %>%
+  round(digits = 3)
+```
+
+# RFI
+
+```{r, include = FALSE}
+
+md_RFI <-  brm(plant ~  RFI_m1 * log_cuberoot_mass + RFI_m2 * log_cuberoot_mass + (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(),  
+           prior =  c(set_prior("induced_dirichlet(rep_vector(1, nthres+1),0", class = "Intercept"),
+                     set_prior("normal(0,1)", class = "sd"),
+                     set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, stanvars = dirichlet_prior_stanvar, control = list(adapt_delta = 0.98)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+
+md2_RFI <-  brm(plant ~  RFI_m1 + RFI_m2 + log_cuberoot_mass + (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(),  
+           prior =  c(set_prior("induced_dirichlet(rep_vector(1, nthres+1),0", class = "Intercept"),
+                     set_prior("normal(0,1)", class = "sd"),
+                     set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, stanvars = dirichlet_prior_stanvar, control = list(adapt_delta = 0.98)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+
+md3_RFI <-  brm(plant ~  RFI_m1 + RFI_m2  + (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(),  
+           prior =  c(set_prior("induced_dirichlet(rep_vector(1, nthres+1),0", class = "Intercept"),
+                     set_prior("normal(0,1)", class = "sd"),
+                     set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, stanvars = dirichlet_prior_stanvar, control = list(adapt_delta = 0.98)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+```
+
+```{r}
+loo_compare( md_RFI,md2_RFI,md3_RFI, criterion = "loo") 
+
+model_weights(md_RFI,md2_RFI,md3_RFI, weights = "stacking") %>%
+  round(digits = 3)
+```
+
+# OPCR
+
+Using 3 priors.
+
+```{r, include = FALSE}
+
+md_OPCR <-  brm(plant ~  m1_opcr * log_cuberoot_mass + m2_opcr * log_cuberoot_mass + (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(), 
+           prior =  c(set_prior("induced_dirichlet(rep_vector(1, nthres+1),0", class = "Intercept"),
+                     set_prior("normal(0,1)", class = "sd"),
+                     set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, stanvars = dirichlet_prior_stanvar, control = list(adapt_delta = 0.98)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+
+md2_OPCR <-  brm(plant ~  m1_opcr  + m2_opcr + log_cuberoot_mass + (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(), 
+           prior =  c(set_prior("induced_dirichlet(rep_vector(1, nthres+1),0", class = "Intercept"),
+                     set_prior("normal(0,1)", class = "sd"),
+                     set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, stanvars = dirichlet_prior_stanvar, control = list(adapt_delta = 0.98)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+
+md3_OPCR <-  brm(plant ~  m1_opcr  + m2_opcr  + (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(), 
+           prior =  c(set_prior("induced_dirichlet(rep_vector(1, nthres+1),0", class = "Intercept"),
+                     set_prior("normal(0,1)", class = "sd"),
+                     set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, stanvars = dirichlet_prior_stanvar, control = list(adapt_delta = 0.98)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+
+```
+
+```{r}
+loo_compare(md_OPCR, md2_OPCR,  md3_OPCR, criterion = "loo") 
+
+model_weights(md_OPCR, md2_OPCR,  md3_OPCR,  weights = "stacking") %>%
+  round(digits = 3)
+```
+
+# ALL
+
+```{r, include = FALSE}
+
+md_ALL <-  brm(plant~  log_cuberoot_mass*m1_opcr + 
+                      log_cuberoot_mass*m2_opcr +
+                      log_cuberoot_mass*m1_dne  + 
+                      log_cuberoot_mass*m2_dne  + 
+                      log_cuberoot_mass*RFI_m1  + 
+                      log_cuberoot_mass*RFI_m2  + 
+                      log_cuberoot_mass*RLGA +
+                      (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(), 
+           prior =  c(set_prior("induced_dirichlet(rep_vector(1, nthres+1),0", class = "Intercept"),
+                     set_prior("normal(0,1)", class = "sd"),
+                     set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, stanvars = dirichlet_prior_stanvar, control = list(adapt_delta = 0.95)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+
+
+md2_ALL <-  brm(plant~  log_cuberoot_mass + m1_opcr + 
+                      m2_opcr +
+                      m1_dne  + 
+                      m2_dne  + 
+                      RFI_m1  + 
+                      RFI_m2  + 
+                      RLGA +
+                      (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(), 
+           prior =  c(set_prior("induced_dirichlet(rep_vector(1, nthres+1),0", class = "Intercept"),
+                     set_prior("normal(0,1)", class = "sd"),
+                     set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, stanvars = dirichlet_prior_stanvar, control = list(adapt_delta = 0.95)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+
+
+md3_ALL <-  brm(plant~ m1_opcr + 
+                      m2_opcr +
+                      m1_dne  + 
+                      m2_dne  + 
+                      RFI_m1  + 
+                      RFI_m2  + 
+                      RLGA +
+                      (1 | gr(phylo, cov = A)), 
+           data = dat1, data2 = list(A = A),family = cumulative(), 
+           prior =  c(set_prior("induced_dirichlet(rep_vector(1, nthres+1),0", class = "Intercept"),
+                     set_prior("normal(0,1)", class = "sd"),
+                     set_prior("normal(0,1)", class = "b")),
+           refresh = 0, chains = 4,  cores = 4, stanvars = dirichlet_prior_stanvar, control = list(adapt_delta = 0.95)) %>% add_criterion(.,  criterion = c("loo", 'waic'))
+```
+
+```{r}
+loo_compare(md_ALL, md2_ALL,  md3_ALL, criterion = "loo") 
+model_weights(md_ALL, md2_ALL,  md3_ALL, weights = "stacking") %>%
+  round(digits = 3)
+```
+
+# All Model Comp
+
+```{r, message=FALSE}
+set.seed(826)
+loo_compare( md_RLGA, md2_RLGA, md3_RLGA,  md_DNE, md2_DNE, md3_DNE,md_RFI,md2_RFI,md3_RFI, md_OPCR, md2_OPCR,  md3_OPCR, md_ALL, md2_ALL,  md3_ALL, criterion = "loo") 
+
+
+mw_plant <- model_weights(md_RLGA, md2_RLGA, md3_RLGA,  md_DNE, md2_DNE, md3_DNE,md_RFI,md2_RFI,md3_RFI, md_OPCR, md2_OPCR,  md3_OPCR, md_ALL, md2_ALL,  md3_ALL, weights = "stacking") %>% 
+  round(digits = 3) %>% 
+  as.data.frame() %>%
+  rownames_to_column("metric") %>% 
+  add_column(diet = "plant") %>% 
+  rename("value" = ".") %>% 
+  arrange(desc(value))
+
+mw_plant
+
+
+```
+
+```{r}
+posterior_summary(md_DNE, probs = c(0.045, 0.955)) %>% as.data.frame() %>% slice(1:9) %>% round(digits = 3)
+posterior_summary(md2_DNE, probs = c(0.045, 0.955)) %>% as.data.frame() %>% slice(1:7) %>% round(digits = 3)
+posterior_summary(md3_DNE, probs = c(0.045, 0.955)) %>% as.data.frame() %>% slice(1:6) %>% round(digits = 3)
+```
+
+Preds
+
+```{r}
+fos_dat <- dat %>% drop_na(m1_tooth_length)
+cryp_sp <- c("Arctogalidia_trivirgata", "Bassaricyon_alleni", "Catopuma_badia", "Chrotogale_owstoni", "Cynogale_bennettii", "Galidia_elegans", "Galidictis_fasciata", "Hemigalus_derbyanus", "Herpestes_brachyurus", "Mydaus_javanensis", "Paradoxurus_musanga", "Pardofelis_marmorata", "Prionodon_linsang")
+c_dat <- dat %>% filter(Species %in% cryp_sp)
+dat <- dat %>% drop_na(bird)
+
+cfdat <- fos_dat %>% bind_rows(c_dat) %>%  mutate(Species=recode(Species, "Smilodon_californicus_PM_3702"="Smilodon_fatalis"))
+```
+
+```{r}
+p1 <- epred_draws(md_DNE, 
+              newdata = fos_dat, 
+              ndraws = NULL, 
+              probs = c(0.055, 0.945),
+             allow_new_levels = TRUE,
+              seed = 456) %>% as.data.frame() %>% 
+  select(!c(2:35)) %>% 
+  rename(cat = .category,
+         pred = .epred) %>% 
+  group_by(Species, cat) %>% 
+  summarise(int_pred = mean(pred))
+
+p2 <- epred_draws(md2_DNE, 
+              newdata = fos_dat, 
+              ndraws = NULL, 
+              probs = c(0.055, 0.945),
+             allow_new_levels = TRUE,
+              seed = 456) %>% as.data.frame() %>% 
+  select(!c(2:35)) %>% 
+  rename(cat = .category,
+         pred = .epred) %>% 
+  group_by(Species, cat) %>% 
+  summarise(cov_pred = mean(pred))
+
+p3 <- epred_draws(md3_DNE, 
+              newdata = fos_dat, 
+              ndraws = NULL, 
+              probs = c(0.055, 0.945),
+             allow_new_levels = TRUE,
+              seed = 456) %>% as.data.frame() %>% 
+  select(!c(2:35)) %>% 
+  rename(cat = .category,
+         pred = .epred) %>% 
+  group_by(Species, cat) %>% 
+  summarise(pred = mean(pred))
+
+p1 %>% right_join(p2) %>% right_join(p3) %>% view()
+
+```
+
+```{r}
+#req_vars = c('age')
+
+fos_dat2 <- fos_dat %>% select(!log_cuberoot_mass)
+
+
+p4 <- epred_draws(md_DNE, 
+              newdata = fos_dat2, 
+              re_formula = NA,
+              ndraws = NULL, 
+              probs = c(0.055, 0.945),
+              allow_new_levels = TRUE,
+              seed = 456,
+             req_vars = c('m1_DNE')
+             ) %>% as.data.frame() %>% 
+  select(!c(2:34)) %>% 
+  rename(cat = .category,
+         pred = .epred) %>% 
+  group_by(Species, cat) %>% 
+  summarise(int_pred = mean(pred))
+
+p4 
+p1 
+
+```
+
+```{r}
+prs <- read_csv(here("Data", "Model_Averaged_Post_Sims.csv"))
+```
+
+```{r}
+prs %>% group_by(item, Species) %>% summarise(wis = mean(wa_rank))  %>% write_csv(here("Data", "Mean_WIS_Extant_long.csv"))
+
+prs %>% group_by(item, Species) %>% summarise(wis = mean(wa_rank)) %>%  pivot_wider(names_from = item, values_from = wis) %>% write_csv(here("Data", "Mean_WIS_Extant_wide.csv"))
+
+
+tt <- prs %>% group_by(item, Species) %>% summarise(wis = mean(wa_rank)) %>%  pivot_wider(names_from = item, values_from = wis) %>% column_to_rownames(var = "Species")
+
+
+t2 <- princomp(tt)
+
+plot(t2)
+
+t2$scores %>% view()
+
+nns <- function(S_cryptic2, S_new2){
+  cryptic_res <- matrix(data=NA, nrow=nrow(S_cryptic2), ncol=5)
+  for(i in 1:nrow(S_cryptic2)) cryptic_res[i,] <- names(get_neighbors(S_cryptic2[i,1:5], S_new2[,1:5]))[c(1:5)]
+  colnames(cryptic_res) <- paste("nearest", 1:5, sep="_")
+  cryptic_res <- as_tibble(cryptic_res) %>% mutate( Species = rownames(S_cryptic2))
+  return(cryptic_res)
+}
+
+
+t3 <- t2$scores %>% as.data.frame()
+
+nns(t3, t3)
+
+
+t4 <- t2$scores %>% as.data.frame() %>% select(1:5)
+
+nns(t4, t4)
+
+```
+
+PCA with fewer variables
+
+```{r}
+ttt <- tt %>% select(!c('egg', 'seed', 'root', 'carrion')) 
+
+t2 <- princomp(ttt)
+
+#plot(t2)
+
+#t2$scores %>% view()
+
+nns <- function(S_cryptic2, S_new2){
+  cryptic_res <- matrix(data=NA, nrow=nrow(S_cryptic2), ncol=5)
+  for(i in 1:nrow(S_cryptic2)) cryptic_res[i,] <- names(get_neighbors(S_cryptic2[i,1:5], S_new2[,1:5]))[c(1:5)]
+  colnames(cryptic_res) <- paste("nearest", 1:5, sep="_")
+  cryptic_res <- as_tibble(cryptic_res) %>% mutate( Species = rownames(S_cryptic2))
+  return(cryptic_res)
+}
+
+
+t3 <- t2$scores %>% as.data.frame()
+
+nns(t3, t3)
+```
+
+```{r}
+ttt <- tt %>% select(!c('plant')) 
+
+t2 <- princomp(ttt)
+
+#plot(t2)
+
+#t2$scores %>% view()
+
+nns <- function(S_cryptic2, S_new2){
+  cryptic_res <- matrix(data=NA, nrow=nrow(S_cryptic2), ncol=5)
+  for(i in 1:nrow(S_cryptic2)) cryptic_res[i,] <- names(get_neighbors(S_cryptic2[i,1:5], S_new2[,1:5]))[c(1:5)]
+  colnames(cryptic_res) <- paste("nearest", 1:5, sep="_")
+  cryptic_res <- as_tibble(cryptic_res) %>% mutate( Species = rownames(S_cryptic2))
+  return(cryptic_res)
+}
+
+
+t3 <- t2$scores %>% as.data.frame()
+
+nns(t3, t3) %>% view()
+```
+
+```{r}
+tt <- read_csv(here("Data", "Mean_WIS_Extant_wide2.csv")) %>% column_to_rownames('Species')
+
+t2 <- princomp(tt)
+
+nns <- function(S_cryptic2, S_new2){
+  cryptic_res <- matrix(data=NA, nrow=nrow(S_cryptic2), ncol=5)
+  for(i in 1:nrow(S_cryptic2)) cryptic_res[i,] <- names(get_neighbors(S_cryptic2[i,1:5], S_new2[,1:5]))[c(1:5)]
+  colnames(cryptic_res) <- paste("nearest", 1:5, sep="_")
+  cryptic_res <- as_tibble(cryptic_res) %>% mutate( Species = rownames(S_cryptic2))
+  return(cryptic_res)
+}
+
+
+t3 <- t2$scores %>% as.data.frame()
+
+nns(t3, t3)
+
+
+t4 <- t2$scores %>% as.data.frame() %>% select(1:5)
+
+nns(t4, t4)
+```
