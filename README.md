@@ -1,15 +1,25 @@
 Carnivoran Dentition & Ordinal Diet Rankings
 =========
 
-## Bayesian prediction of multivariate ecology from phenotypic data yields novel insights into the diets of extant and extinct taxa
+## Bayesian prediction of multivariate ecology from phenotypic data yields new insights into the diets of extant and extinct taxa
 
 GitHub repo for the manuscript. All scripts necessary to perform the analyses and generate the plots from this manuscript are found here. 
 
 This repo is also in Dryad at https://doi.org/10.5061/dryad.pc866t1rg, and can be downloaded directly from there. The Dryad repo contains a link to a zip file of this GitHub repo, which is officially stored in Zenodo at https://doi.org/10.5281/zenodo.7429701.
 
+
+#### Author Information:
+
+Anna Wisniewski, Jonathan Nations, and Graham Slater
+Department of the Geophysical Sciences
+University of Chicago
+
+
 ## Required Packages:
 
-- `pacman`, `here`, `brms`, `cmdstanr`, `tidyverse`, `tidybayes`, `phytools`, `geiger`, `mclust`, `polycor`, `NbClust`, `ggstar`, `janitor`, `caret`, `scico`, `paletteer`, & `furrr` (for parallel computing)
+- All scripts were run in R version 4.2.0
+
+- `pacman` v.0.5.3, `here` v.1.0.1, `brms` 2.18.8, `cmdstanr` v.0.5.3, `tidyverse` v.1.3.2, `tidybayes`v.3.0.3, `phytools`v.1.2-0, `geiger`v.2.0.10, `mclust`v.6.0.0, `polycor`v.0.8-1, `NbClust`v.3.0.1, `ggstar`v.1.0.4, `janitor`v.2.1.0, `caret` v.6.0-9.3, `scico`v.1.3.1, `paletteer`v.1.5.0, & `furrr`v.0.3.1 (for parallel computing)
 
 - All of these packages should be available in CRAN. See the brms [FAQ](https://github.com/paul-buerkner/brms#faq) for details on installing Stan, cmndstanr, and brms. [pacman](http://trinker.github.io/pacman/vignettes/Introduction_to_pacman.html) makes it easy to install and load multiple packages. 
 
@@ -112,6 +122,8 @@ Here is a list of the data files:
 
 
 ## **`Code`** 
+
+***Code should be run in the order listed below***
 
 #### Polychoric PCA and Cluster Analyses  
 - We are interested if the multivariate diet matches traditional diet categories from several commonly used classification schemes. To do this, we want to project the importance rankings of the 13 food items into a multivariate diet space, then run a cluster analysis to identify natural groupings in dietspace. This is outlined in the `Code/Ord_Clust_Plot_FIgure_2.Rmd/` script. As the dietary importance rankings are ordinal rankings, and not continuous, we use a method called polychoric PCA, which is designed for ordinal variables. We estimate a polychoric correlation matrix, the project the species into diet space. The process is pretty well annotated in the script. Then we use the package [`mclust`](https://cran.r-project.org/web/packages/mclust/vignettes/mclust.html), which performs cluster analyses using finite normal mixture modeling, to determine the natural clusters. Since there is no really strong preference for a number of clusters, we calculate $k$ = 3, 4, 5, and 6. Then we use the adjusted Rand index to compare these to 4 classification schemes. More details in the text. This generates the Figure 2 plots, which are stored as `Plots/Figure_2_Diet_Clusters.pdf`.
