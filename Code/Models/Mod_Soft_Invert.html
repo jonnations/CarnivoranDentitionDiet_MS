@@ -359,13 +359,13 @@ display: none;
 <pre class="r"><code>loo_compare(mn_RLGA, ms_RLGA, md_RLGA, criterion = &quot;loo&quot;)</code></pre>
 <pre><code>##         elpd_diff se_diff
 ## md_RLGA  0.0       0.0   
-## ms_RLGA -0.9       0.4   
-## mn_RLGA -1.5       0.7</code></pre>
+## ms_RLGA  0.0       0.3   
+## mn_RLGA -0.4       0.4</code></pre>
 <pre class="r"><code>loo_compare(mn_RLGA, ms_RLGA, md_RLGA, criterion = &quot;waic&quot;)</code></pre>
 <pre><code>##         elpd_diff se_diff
-## md_RLGA  0.0       0.0   
-## ms_RLGA -0.9       0.4   
-## mn_RLGA -1.6       0.7</code></pre>
+## ms_RLGA  0.0       0.0   
+## md_RLGA -0.1       0.3   
+## mn_RLGA -0.7       0.5</code></pre>
 <pre class="r"><code>model_weights(md_RLGA, mn_RLGA, ms_RLGA, weights = &quot;stacking&quot;) %&gt;%
   round(digits = 3)</code></pre>
 <pre><code>## Warning: Some Pareto k diagnostic values are slightly high. See help(&#39;pareto-k-diagnostic&#39;) for details.
@@ -374,7 +374,7 @@ display: none;
 
 ## Warning: Some Pareto k diagnostic values are slightly high. See help(&#39;pareto-k-diagnostic&#39;) for details.</code></pre>
 <pre><code>## md_RLGA mn_RLGA ms_RLGA 
-##       1       0       0</code></pre>
+##    0.42    0.00    0.58</code></pre>
 <div id="rlga-d" class="section level2">
 <h2>RLGA = D</h2>
 <div id="pred-acc" class="section level4">
@@ -397,44 +397,47 @@ tibble(pareto_k = md_RLGA$criteria$loo$diagnostics$pareto_k,
 pred &lt;- predict(mn_RLGA, summary = T, probs = c(0.55, 0.945))
 pred2 &lt;- as.data.frame(pred) %&gt;% mutate(actual = as.factor(dat1$soft_invert), pred   = colnames(pred)[max.col(pred,ties.method=&quot;first&quot;)], pred   = str_remove(pred,&quot;P\\(Y = &quot;), pred   = str_remove(pred,&quot;\\)&quot;), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
 cm &lt;- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, &quot;Reference&quot;))</code></pre>
-<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of shorter object length</code></pre>
-<pre><code>## Warning in confusionMatrix.default(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, : Levels are not in the same order for
-## reference and data. Refactoring data to match.</code></pre>
+<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of
+## shorter object length</code></pre>
+<pre><code>## Warning in confusionMatrix.default(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, : Levels
+## are not in the same order for reference and data. Refactoring data to match.</code></pre>
 <pre class="r"><code>cm$overall[1]</code></pre>
 <pre><code>##  Accuracy 
-## 0.6404494</code></pre>
+## 0.6590909</code></pre>
 <pre class="r"><code>pred &lt;- predict(ms_RLGA, summary = T, probs = c(0.55, 0.945))
 pred2 &lt;- as.data.frame(pred) %&gt;% mutate(actual = as.factor(dat1$soft_invert), pred   = colnames(pred)[max.col(pred,ties.method=&quot;first&quot;)], pred   = str_remove(pred,&quot;P\\(Y = &quot;), pred   = str_remove(pred,&quot;\\)&quot;), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
 cm &lt;- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, &quot;Reference&quot;))</code></pre>
-<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of shorter object length
+<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of
+## shorter object length
 
-## Warning in levels(reference) != levels(data): Levels are not in the same order for reference and data. Refactoring data to
-## match.</code></pre>
+## Warning in levels(reference) != levels(data): Levels are not in the same order for reference
+## and data. Refactoring data to match.</code></pre>
 <pre class="r"><code>cm$overall[1]</code></pre>
 <pre><code>##  Accuracy 
-## 0.6741573</code></pre>
+## 0.6363636</code></pre>
 <pre class="r"><code>pred &lt;- predict(md_RLGA, summary = T, probs = c(0.55, 0.945))
 pred2 &lt;- as.data.frame(pred) %&gt;% mutate(actual = as.factor(dat1$soft_invert), pred   = colnames(pred)[max.col(pred,ties.method=&quot;first&quot;)], pred   = str_remove(pred,&quot;P\\(Y = &quot;), pred   = str_remove(pred,&quot;\\)&quot;), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
 cm &lt;- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, &quot;Reference&quot;))</code></pre>
-<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of shorter object length
+<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of
+## shorter object length
 
-## Warning in levels(reference) != levels(data): Levels are not in the same order for reference and data. Refactoring data to
-## match.</code></pre>
+## Warning in levels(reference) != levels(data): Levels are not in the same order for reference
+## and data. Refactoring data to match.</code></pre>
 <pre class="r"><code>cm$overall[1]</code></pre>
 <pre><code>##  Accuracy 
-## 0.6741573</code></pre>
+## 0.6477273</code></pre>
 <p>#DNE</p>
 <p>Using 3 priors.</p>
 <pre class="r"><code>loo_compare(mn_DNE, ms_DNE, md_DNE, criterion = &quot;loo&quot;) </code></pre>
 <pre><code>##        elpd_diff se_diff
-## md_DNE  0.0       0.0   
-## ms_DNE -0.7       0.4   
-## mn_DNE -1.1       0.5</code></pre>
+## ms_DNE  0.0       0.0   
+## md_DNE -0.1       0.3   
+## mn_DNE -0.4       0.4</code></pre>
 <pre class="r"><code>loo_compare(mn_DNE, ms_DNE, md_DNE, criterion = &quot;waic&quot;)</code></pre>
 <pre><code>##        elpd_diff se_diff
-## md_DNE  0.0       0.0   
-## ms_DNE -0.5       0.4   
-## mn_DNE -1.1       0.4</code></pre>
+## ms_DNE  0.0       0.0   
+## md_DNE -0.1       0.3   
+## mn_DNE -0.6       0.4</code></pre>
 <pre class="r"><code>model_weights(md_DNE, mn_DNE, ms_DNE, weights = &quot;stacking&quot;) %&gt;%
   round(digits = 3)</code></pre>
 <pre><code>## Warning: Some Pareto k diagnostic values are slightly high. See help(&#39;pareto-k-diagnostic&#39;) for details.
@@ -442,7 +445,7 @@ cm &lt;- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c(&quot;Predicti
 ## Warning: Some Pareto k diagnostic values are slightly high. See help(&#39;pareto-k-diagnostic&#39;) for details.</code></pre>
 <pre><code>## Warning: Some Pareto k diagnostic values are too high. See help(&#39;pareto-k-diagnostic&#39;) for details.</code></pre>
 <pre><code>## md_DNE mn_DNE ms_DNE 
-##      1      0      0</code></pre>
+##  0.002  0.000  0.998</code></pre>
 <p>####DNE = N</p>
 </div>
 <div id="pred-acc-1" class="section level4">
@@ -465,32 +468,35 @@ tibble(pareto_k = md_DNE$criteria$loo$diagnostics$pareto_k,
 pred &lt;- predict(mn_DNE, summary = T, probs = c(0.55, 0.945))
 pred2 &lt;- as.data.frame(pred) %&gt;% mutate(actual = as.factor(dat1$soft_invert), pred   = colnames(pred)[max.col(pred,ties.method=&quot;first&quot;)], pred   = str_remove(pred,&quot;P\\(Y = &quot;), pred   = str_remove(pred,&quot;\\)&quot;), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
 cm &lt;- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, &quot;Reference&quot;))</code></pre>
-<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of shorter object length</code></pre>
-<pre><code>## Warning in confusionMatrix.default(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, : Levels are not in the same order for
-## reference and data. Refactoring data to match.</code></pre>
+<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of
+## shorter object length</code></pre>
+<pre><code>## Warning in confusionMatrix.default(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, : Levels
+## are not in the same order for reference and data. Refactoring data to match.</code></pre>
 <pre class="r"><code>cm$overall[1]</code></pre>
-<pre><code>##  Accuracy 
-## 0.6516854</code></pre>
+<pre><code>## Accuracy 
+##    0.625</code></pre>
 <pre class="r"><code>pred &lt;- predict(ms_DNE, summary = T, probs = c(0.55, 0.945))
 pred2 &lt;- as.data.frame(pred) %&gt;% mutate(actual = as.factor(dat1$soft_invert), pred   = colnames(pred)[max.col(pred,ties.method=&quot;first&quot;)], pred   = str_remove(pred,&quot;P\\(Y = &quot;), pred   = str_remove(pred,&quot;\\)&quot;), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
 cm &lt;- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, &quot;Reference&quot;))</code></pre>
-<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of shorter object length
+<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of
+## shorter object length
 
-## Warning in levels(reference) != levels(data): Levels are not in the same order for reference and data. Refactoring data to
-## match.</code></pre>
+## Warning in levels(reference) != levels(data): Levels are not in the same order for reference
+## and data. Refactoring data to match.</code></pre>
 <pre class="r"><code>cm$overall[1]</code></pre>
 <pre><code>##  Accuracy 
-## 0.6516854</code></pre>
+## 0.6477273</code></pre>
 <pre class="r"><code>pred &lt;- predict(md_DNE, summary = T, probs = c(0.55, 0.945))
 pred2 &lt;- as.data.frame(pred) %&gt;% mutate(actual = as.factor(dat1$soft_invert), pred   = colnames(pred)[max.col(pred,ties.method=&quot;first&quot;)], pred   = str_remove(pred,&quot;P\\(Y = &quot;), pred   = str_remove(pred,&quot;\\)&quot;), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
 cm &lt;- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, &quot;Reference&quot;))</code></pre>
-<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of shorter object length
+<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of
+## shorter object length
 
-## Warning in levels(reference) != levels(data): Levels are not in the same order for reference and data. Refactoring data to
-## match.</code></pre>
+## Warning in levels(reference) != levels(data): Levels are not in the same order for reference
+## and data. Refactoring data to match.</code></pre>
 <pre class="r"><code>cm$overall[1]</code></pre>
 <pre><code>##  Accuracy 
-## 0.6629213</code></pre>
+## 0.6931818</code></pre>
 </div>
 </div>
 </div>
@@ -498,14 +504,14 @@ cm &lt;- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c(&quot;Predicti
 <h1>RFI</h1>
 <pre class="r"><code>loo_compare(mn_RFI, ms_RFI, md_RFI, criterion = &quot;loo&quot;) </code></pre>
 <pre><code>##        elpd_diff se_diff
-## md_RFI  0.0       0.0   
-## ms_RFI -0.2       0.3   
-## mn_RFI -0.2       0.6</code></pre>
+## ms_RFI  0.0       0.0   
+## md_RFI  0.0       0.3   
+## mn_RFI -0.4       0.5</code></pre>
 <pre class="r"><code>loo_compare(mn_RFI, ms_RFI, md_RFI, criterion = &quot;waic&quot;)</code></pre>
 <pre><code>##        elpd_diff se_diff
-## md_RFI  0.0       0.0   
-## ms_RFI -0.1       0.3   
-## mn_RFI -0.3       0.5</code></pre>
+## ms_RFI  0.0       0.0   
+## md_RFI  0.0       0.3   
+## mn_RFI -0.6       0.5</code></pre>
 <pre class="r"><code>model_weights(md_RFI, mn_RFI, ms_RFI, weights = &quot;stacking&quot;) %&gt;%
   round(digits = 3)</code></pre>
 <pre><code>## Warning: Some Pareto k diagnostic values are slightly high. See help(&#39;pareto-k-diagnostic&#39;) for details.
@@ -514,7 +520,7 @@ cm &lt;- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c(&quot;Predicti
 
 ## Warning: Some Pareto k diagnostic values are slightly high. See help(&#39;pareto-k-diagnostic&#39;) for details.</code></pre>
 <pre><code>## md_RFI mn_RFI ms_RFI 
-##  0.989  0.011  0.000</code></pre>
+##  0.213  0.000  0.787</code></pre>
 <div id="rfi-s" class="section level4">
 <h4>RFI = S</h4>
 </div>
@@ -538,32 +544,35 @@ tibble(pareto_k = md_RFI$criteria$loo$diagnostics$pareto_k,
 pred &lt;- predict(mn_RFI, summary = T, probs = c(0.55, 0.945))
 pred2 &lt;- as.data.frame(pred) %&gt;% mutate(actual = as.factor(dat1$soft_invert), pred   = colnames(pred)[max.col(pred,ties.method=&quot;first&quot;)], pred   = str_remove(pred,&quot;P\\(Y = &quot;), pred   = str_remove(pred,&quot;\\)&quot;), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
 cm &lt;- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, &quot;Reference&quot;))</code></pre>
-<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of shorter object length</code></pre>
-<pre><code>## Warning in confusionMatrix.default(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, : Levels are not in the same order for
-## reference and data. Refactoring data to match.</code></pre>
+<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of
+## shorter object length</code></pre>
+<pre><code>## Warning in confusionMatrix.default(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, : Levels
+## are not in the same order for reference and data. Refactoring data to match.</code></pre>
 <pre class="r"><code>cm$overall[1]</code></pre>
 <pre><code>##  Accuracy 
-## 0.6404494</code></pre>
+## 0.6477273</code></pre>
 <pre class="r"><code>pred &lt;- predict(ms_RFI, summary = T, probs = c(0.55, 0.945))
 pred2 &lt;- as.data.frame(pred) %&gt;% mutate(actual = as.factor(dat1$soft_invert), pred   = colnames(pred)[max.col(pred,ties.method=&quot;first&quot;)], pred   = str_remove(pred,&quot;P\\(Y = &quot;), pred   = str_remove(pred,&quot;\\)&quot;), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
 cm &lt;- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, &quot;Reference&quot;))</code></pre>
-<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of shorter object length
+<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of
+## shorter object length
 
-## Warning in levels(reference) != levels(data): Levels are not in the same order for reference and data. Refactoring data to
-## match.</code></pre>
+## Warning in levels(reference) != levels(data): Levels are not in the same order for reference
+## and data. Refactoring data to match.</code></pre>
 <pre class="r"><code>cm$overall[1]</code></pre>
 <pre><code>##  Accuracy 
-## 0.6516854</code></pre>
+## 0.6477273</code></pre>
 <pre class="r"><code>pred &lt;- predict(md_RFI, summary = T, probs = c(0.55, 0.945))
 pred2 &lt;- as.data.frame(pred) %&gt;% mutate(actual = as.factor(dat1$soft_invert), pred   = colnames(pred)[max.col(pred,ties.method=&quot;first&quot;)], pred   = str_remove(pred,&quot;P\\(Y = &quot;), pred   = str_remove(pred,&quot;\\)&quot;), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
 cm &lt;- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, &quot;Reference&quot;))</code></pre>
-<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of shorter object length
+<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of
+## shorter object length
 
-## Warning in levels(reference) != levels(data): Levels are not in the same order for reference and data. Refactoring data to
-## match.</code></pre>
+## Warning in levels(reference) != levels(data): Levels are not in the same order for reference
+## and data. Refactoring data to match.</code></pre>
 <pre class="r"><code>cm$overall[1]</code></pre>
-<pre><code>##  Accuracy 
-## 0.6741573</code></pre>
+<pre><code>## Accuracy 
+##    0.625</code></pre>
 </div>
 </div>
 <div id="opcr" class="section level1">
@@ -571,22 +580,22 @@ cm &lt;- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c(&quot;Predicti
 <p>Using 3 priors.</p>
 <pre class="r"><code>loo_compare(mn_OPCR, ms_OPCR, md_OPCR, criterion = &quot;loo&quot;) </code></pre>
 <pre><code>##         elpd_diff se_diff
-## md_OPCR  0.0       0.0   
-## mn_OPCR -0.2       0.5   
-## ms_OPCR -0.2       0.3</code></pre>
+## mn_OPCR  0.0       0.0   
+## ms_OPCR  0.0       0.4   
+## md_OPCR -0.1       0.4</code></pre>
 <pre class="r"><code>loo_compare(mn_OPCR, ms_OPCR, md_OPCR, criterion = &quot;waic&quot;)</code></pre>
 <pre><code>##         elpd_diff se_diff
-## md_OPCR  0.0       0.0   
-## ms_OPCR -0.1       0.3   
-## mn_OPCR -0.5       0.4</code></pre>
+## ms_OPCR  0.0       0.0   
+## md_OPCR  0.0       0.3   
+## mn_OPCR -0.2       0.4</code></pre>
 <pre class="r"><code>model_weights(md_OPCR, mn_OPCR, ms_OPCR, weights = &quot;stacking&quot;) %&gt;%
   round(digits = 3)</code></pre>
+<pre><code>## Warning: Some Pareto k diagnostic values are too high. See help(&#39;pareto-k-diagnostic&#39;) for details.</code></pre>
 <pre><code>## Warning: Some Pareto k diagnostic values are slightly high. See help(&#39;pareto-k-diagnostic&#39;) for details.
 
 ## Warning: Some Pareto k diagnostic values are slightly high. See help(&#39;pareto-k-diagnostic&#39;) for details.</code></pre>
-<pre><code>## Warning: Some Pareto k diagnostic values are too high. See help(&#39;pareto-k-diagnostic&#39;) for details.</code></pre>
 <pre><code>## md_OPCR mn_OPCR ms_OPCR 
-##       1       0       0</code></pre>
+##   0.000   0.625   0.375</code></pre>
 <p>####OPCR = D</p>
 <div id="pred-acc-3" class="section level4">
 <h4>Pred &amp; Acc</h4>
@@ -608,32 +617,35 @@ tibble(pareto_k = md_OPCR$criteria$loo$diagnostics$pareto_k,
 pred &lt;- predict(mn_OPCR, summary = T, probs = c(0.55, 0.945))
 pred2 &lt;- as.data.frame(pred) %&gt;% mutate(actual = as.factor(dat1$soft_invert), pred   = colnames(pred)[max.col(pred,ties.method=&quot;first&quot;)], pred   = str_remove(pred,&quot;P\\(Y = &quot;), pred   = str_remove(pred,&quot;\\)&quot;), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
 cm &lt;- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, &quot;Reference&quot;))</code></pre>
-<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of shorter object length</code></pre>
-<pre><code>## Warning in confusionMatrix.default(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, : Levels are not in the same order for
-## reference and data. Refactoring data to match.</code></pre>
+<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of
+## shorter object length</code></pre>
+<pre><code>## Warning in confusionMatrix.default(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, : Levels
+## are not in the same order for reference and data. Refactoring data to match.</code></pre>
 <pre class="r"><code>cm$overall[1]</code></pre>
-<pre><code>##  Accuracy 
-## 0.6404494</code></pre>
+<pre><code>## Accuracy 
+##    0.625</code></pre>
 <pre class="r"><code>pred &lt;- predict(ms_OPCR, summary = T, probs = c(0.55, 0.945))
 pred2 &lt;- as.data.frame(pred) %&gt;% mutate(actual = as.factor(dat1$soft_invert), pred   = colnames(pred)[max.col(pred,ties.method=&quot;first&quot;)], pred   = str_remove(pred,&quot;P\\(Y = &quot;), pred   = str_remove(pred,&quot;\\)&quot;), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
 cm &lt;- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, &quot;Reference&quot;))</code></pre>
-<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of shorter object length
+<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of
+## shorter object length
 
-## Warning in levels(reference) != levels(data): Levels are not in the same order for reference and data. Refactoring data to
-## match.</code></pre>
+## Warning in levels(reference) != levels(data): Levels are not in the same order for reference
+## and data. Refactoring data to match.</code></pre>
 <pre class="r"><code>cm$overall[1]</code></pre>
 <pre><code>##  Accuracy 
-## 0.6966292</code></pre>
+## 0.6590909</code></pre>
 <pre class="r"><code>pred &lt;- predict(md_OPCR, summary = T, probs = c(0.55, 0.945))
 pred2 &lt;- as.data.frame(pred) %&gt;% mutate(actual = as.factor(dat1$soft_invert), pred   = colnames(pred)[max.col(pred,ties.method=&quot;first&quot;)], pred   = str_remove(pred,&quot;P\\(Y = &quot;), pred   = str_remove(pred,&quot;\\)&quot;), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
 cm &lt;- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, &quot;Reference&quot;))</code></pre>
-<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of shorter object length
+<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of
+## shorter object length
 
-## Warning in levels(reference) != levels(data): Levels are not in the same order for reference and data. Refactoring data to
-## match.</code></pre>
+## Warning in levels(reference) != levels(data): Levels are not in the same order for reference
+## and data. Refactoring data to match.</code></pre>
 <pre class="r"><code>cm$overall[1]</code></pre>
 <pre><code>##  Accuracy 
-## 0.6741573</code></pre>
+## 0.6477273</code></pre>
 </div>
 </div>
 <div id="all" class="section level1">
@@ -641,18 +653,20 @@ cm &lt;- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c(&quot;Predicti
 <pre class="r"><code>loo_compare(mn_ALL, ms_ALL, md_ALL, criterion = &quot;loo&quot;) </code></pre>
 <pre><code>##        elpd_diff se_diff
 ## md_ALL  0.0       0.0   
-## ms_ALL -0.4       0.4   
-## mn_ALL -0.5       0.7</code></pre>
+## ms_ALL -0.2       0.4   
+## mn_ALL -1.3       0.6</code></pre>
 <pre class="r"><code>loo_compare(mn_ALL, ms_ALL, md_ALL, criterion = &quot;waic&quot;)</code></pre>
 <pre><code>##        elpd_diff se_diff
 ## md_ALL  0.0       0.0   
-## ms_ALL -0.5       0.3   
-## mn_ALL -0.9       0.6</code></pre>
+## ms_ALL -0.2       0.3   
+## mn_ALL -1.6       0.6</code></pre>
 <pre class="r"><code>model_weights(md_ALL, mn_ALL, ms_ALL, weights = &quot;stacking&quot;) %&gt;%
   round(digits = 3)</code></pre>
-<pre><code>## Warning: Some Pareto k diagnostic values are too high. See help(&#39;pareto-k-diagnostic&#39;) for details.</code></pre>
-<pre><code>## Warning: Some Pareto k diagnostic values are slightly high. See help(&#39;pareto-k-diagnostic&#39;) for details.</code></pre>
-<pre><code>## Warning: Some Pareto k diagnostic values are too high. See help(&#39;pareto-k-diagnostic&#39;) for details.</code></pre>
+<pre><code>## Warning: Some Pareto k diagnostic values are too high. See help(&#39;pareto-k-diagnostic&#39;) for details.
+
+## Warning: Some Pareto k diagnostic values are too high. See help(&#39;pareto-k-diagnostic&#39;) for details.
+
+## Warning: Some Pareto k diagnostic values are too high. See help(&#39;pareto-k-diagnostic&#39;) for details.</code></pre>
 <pre><code>## md_ALL mn_ALL ms_ALL 
 ##      1      0      0</code></pre>
 <div id="all-n" class="section level4">
@@ -678,62 +692,73 @@ tibble(pareto_k = md_ALL$criteria$loo$diagnostics$pareto_k,
 pred &lt;- predict(mn_ALL, summary = T, probs = c(0.55, 0.945))
 pred2 &lt;- as.data.frame(pred) %&gt;% mutate(actual = as.factor(dat1$soft_invert), pred   = colnames(pred)[max.col(pred,ties.method=&quot;first&quot;)], pred   = str_remove(pred,&quot;P\\(Y = &quot;), pred   = str_remove(pred,&quot;\\)&quot;), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
 cm &lt;- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, &quot;Reference&quot;))</code></pre>
-<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of shorter object length</code></pre>
-<pre><code>## Warning in confusionMatrix.default(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, : Levels are not in the same order for
-## reference and data. Refactoring data to match.</code></pre>
+<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of
+## shorter object length</code></pre>
+<pre><code>## Warning in confusionMatrix.default(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, : Levels
+## are not in the same order for reference and data. Refactoring data to match.</code></pre>
 <pre class="r"><code>cm$overall[1]</code></pre>
 <pre><code>##  Accuracy 
-## 0.6179775</code></pre>
+## 0.6363636</code></pre>
 <pre class="r"><code>pred &lt;- predict(ms_ALL, summary = T, probs = c(0.55, 0.945))
 pred2 &lt;- as.data.frame(pred) %&gt;% mutate(actual = as.factor(dat1$soft_invert), pred   = colnames(pred)[max.col(pred,ties.method=&quot;first&quot;)], pred   = str_remove(pred,&quot;P\\(Y = &quot;), pred   = str_remove(pred,&quot;\\)&quot;), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
-cm &lt;- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, &quot;Reference&quot;))
-cm$overall[1]</code></pre>
+cm &lt;- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, &quot;Reference&quot;))</code></pre>
+<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of
+## shorter object length
+
+## Warning in levels(reference) != levels(data): Levels are not in the same order for reference
+## and data. Refactoring data to match.</code></pre>
+<pre class="r"><code>cm$overall[1]</code></pre>
 <pre><code>##  Accuracy 
-## 0.6292135</code></pre>
+## 0.6704545</code></pre>
 <pre class="r"><code>pred &lt;- predict(md_ALL, summary = T, probs = c(0.55, 0.945))
 pred2 &lt;- as.data.frame(pred) %&gt;% mutate(actual = as.factor(dat1$soft_invert), pred   = colnames(pred)[max.col(pred,ties.method=&quot;first&quot;)], pred   = str_remove(pred,&quot;P\\(Y = &quot;), pred   = str_remove(pred,&quot;\\)&quot;), actual = factor(actual, ordered = FALSE), pred   = factor(pred), Species = pull(dat1, Species))
-cm &lt;- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, &quot;Reference&quot;))
-cm$overall[1]</code></pre>
+cm &lt;- caret::confusionMatrix(pred2$pred, pred2$actual, dnn = c(&quot;Prediction&quot;, &quot;Reference&quot;))</code></pre>
+<pre><code>## Warning in levels(reference) != levels(data): longer object length is not a multiple of
+## shorter object length
+
+## Warning in levels(reference) != levels(data): Levels are not in the same order for reference
+## and data. Refactoring data to match.</code></pre>
+<pre class="r"><code>cm$overall[1]</code></pre>
 <pre><code>##  Accuracy 
-## 0.6629213</code></pre>
+## 0.6931818</code></pre>
 </div>
 </div>
 <div id="all-model-comp" class="section level1">
 <h1>All Model Comp</h1>
 <pre class="r"><code>loo_compare(mn_DNE, ms_DNE, md_DNE, mn_ALL, ms_ALL, md_ALL, mn_OPCR, ms_OPCR, md_OPCR, mn_RFI, ms_RFI, md_RFI, mn_RLGA,ms_RLGA, md_RLGA,  criterion = &quot;loo&quot;) </code></pre>
 <pre><code>##         elpd_diff se_diff
-## md_DNE   0.0       0.0   
-## ms_DNE  -0.7       0.4   
-## mn_DNE  -1.1       0.5   
-## md_ALL  -4.7       2.0   
-## ms_ALL  -5.1       2.0   
-## mn_ALL  -5.2       2.0   
-## md_OPCR -5.9       3.6   
-## md_RFI  -6.0       3.3   
-## mn_OPCR -6.1       3.7   
-## md_RLGA -6.1       3.8   
-## ms_RFI  -6.1       3.4   
-## ms_OPCR -6.1       3.7   
-## mn_RFI  -6.1       3.4   
-## ms_RLGA -7.1       3.9   
-## mn_RLGA -7.6       3.9</code></pre>
+## ms_DNE   0.0       0.0   
+## md_DNE  -0.1       0.3   
+## mn_DNE  -0.4       0.4   
+## md_RLGA -2.4       2.9   
+## ms_RLGA -2.4       2.9   
+## mn_RLGA -2.8       3.0   
+## ms_RFI  -3.0       2.6   
+## md_RFI  -3.0       2.6   
+## mn_RFI  -3.4       2.7   
+## mn_OPCR -3.7       3.0   
+## ms_OPCR -3.7       3.0   
+## md_OPCR -3.8       3.0   
+## md_ALL  -6.1       1.9   
+## ms_ALL  -6.3       1.8   
+## mn_ALL  -7.4       2.0</code></pre>
 <pre class="r"><code>loo_compare(mn_DNE, ms_DNE, md_DNE, mn_ALL, ms_ALL, md_ALL, mn_OPCR, ms_OPCR, md_OPCR, mn_RFI, ms_RFI, md_RFI, mn_RLGA,ms_RLGA, md_RLGA,  criterion = &quot;waic&quot;)</code></pre>
 <pre><code>##         elpd_diff se_diff
-## md_DNE   0.0       0.0   
-## ms_DNE  -0.5       0.4   
-## mn_DNE  -1.1       0.4   
-## md_ALL  -3.6       2.0   
-## ms_ALL  -4.1       2.0   
-## mn_ALL  -4.5       1.9   
-## md_OPCR -5.1       3.6   
-## ms_OPCR -5.2       3.7   
-## md_RFI  -5.6       3.3   
-## mn_OPCR -5.6       3.7   
-## ms_RFI  -5.7       3.4   
-## mn_RFI  -5.9       3.4   
-## md_RLGA -6.0       3.8   
-## ms_RLGA -6.9       3.9   
-## mn_RLGA -7.6       3.9</code></pre>
+## ms_DNE   0.0       0.0   
+## md_DNE  -0.1       0.3   
+## mn_DNE  -0.6       0.4   
+## ms_RLGA -2.3       2.9   
+## md_RLGA -2.4       2.9   
+## ms_RFI  -2.8       2.6   
+## md_RFI  -2.8       2.5   
+## mn_RLGA -3.0       3.0   
+## ms_OPCR -3.3       3.0   
+## md_OPCR -3.3       3.0   
+## mn_RFI  -3.4       2.7   
+## mn_OPCR -3.5       3.0   
+## md_ALL  -4.9       1.8   
+## ms_ALL  -5.0       1.8   
+## mn_ALL  -6.5       2.0</code></pre>
 <pre class="r"><code>mw_soft_invert &lt;- model_weights(mn_DNE, ms_DNE, md_DNE, mn_ALL, ms_ALL, md_ALL, mn_OPCR, ms_OPCR, md_OPCR, mn_RFI, ms_RFI, md_RFI, mn_RLGA,ms_RLGA, md_RLGA, weights = &quot;stacking&quot;) %&gt;% 
   round(digits = 3) %&gt;% 
   as.data.frame() %&gt;%
@@ -743,17 +768,17 @@ cm$overall[1]</code></pre>
   arrange(desc(value))</code></pre>
 <pre><code>## Warning: Some Pareto k diagnostic values are slightly high. See help(&#39;pareto-k-diagnostic&#39;) for details.</code></pre>
 <pre><code>## Warning: Some Pareto k diagnostic values are too high. See help(&#39;pareto-k-diagnostic&#39;) for details.</code></pre>
+<pre><code>## Warning: Some Pareto k diagnostic values are slightly high. See help(&#39;pareto-k-diagnostic&#39;) for details.</code></pre>
+<pre><code>## Warning: Some Pareto k diagnostic values are too high. See help(&#39;pareto-k-diagnostic&#39;) for details.
+
+## Warning: Some Pareto k diagnostic values are too high. See help(&#39;pareto-k-diagnostic&#39;) for details.
+
+## Warning: Some Pareto k diagnostic values are too high. See help(&#39;pareto-k-diagnostic&#39;) for details.</code></pre>
 <pre><code>## Warning: Some Pareto k diagnostic values are slightly high. See help(&#39;pareto-k-diagnostic&#39;) for details.
 
 ## Warning: Some Pareto k diagnostic values are slightly high. See help(&#39;pareto-k-diagnostic&#39;) for details.</code></pre>
-<pre><code>## Warning: Some Pareto k diagnostic values are too high. See help(&#39;pareto-k-diagnostic&#39;) for details.
-
-## Warning: Some Pareto k diagnostic values are too high. See help(&#39;pareto-k-diagnostic&#39;) for details.</code></pre>
-<pre><code>## Warning: Some Pareto k diagnostic values are slightly high. See help(&#39;pareto-k-diagnostic&#39;) for details.</code></pre>
 <pre><code>## Warning: Some Pareto k diagnostic values are too high. See help(&#39;pareto-k-diagnostic&#39;) for details.</code></pre>
 <pre><code>## Warning: Some Pareto k diagnostic values are slightly high. See help(&#39;pareto-k-diagnostic&#39;) for details.
-
-## Warning: Some Pareto k diagnostic values are slightly high. See help(&#39;pareto-k-diagnostic&#39;) for details.
 
 ## Warning: Some Pareto k diagnostic values are slightly high. See help(&#39;pareto-k-diagnostic&#39;) for details.
 
@@ -774,21 +799,19 @@ cm$overall[1]</code></pre>
   add_column(diet = &quot;soft_invert&quot;) %&gt;% 
   rename(&quot;value&quot; = &quot;.&quot;) %&gt;% 
   arrange(desc(value))</code></pre>
+<pre><code>## Warning: Some Pareto k diagnostic values are slightly high. See help(&#39;pareto-k-diagnostic&#39;) for details.</code></pre>
+<pre><code>## Warning: Some Pareto k diagnostic values are too high. See help(&#39;pareto-k-diagnostic&#39;) for details.
+
+## Warning: Some Pareto k diagnostic values are too high. See help(&#39;pareto-k-diagnostic&#39;) for details.</code></pre>
 <pre><code>## Warning: Some Pareto k diagnostic values are slightly high. See help(&#39;pareto-k-diagnostic&#39;) for details.
-
-## Warning: Some Pareto k diagnostic values are slightly high. See help(&#39;pareto-k-diagnostic&#39;) for details.
-
-## Warning: Some Pareto k diagnostic values are slightly high. See help(&#39;pareto-k-diagnostic&#39;) for details.
-
-## Warning: Some Pareto k diagnostic values are slightly high. See help(&#39;pareto-k-diagnostic&#39;) for details.
 
 ## Warning: Some Pareto k diagnostic values are slightly high. See help(&#39;pareto-k-diagnostic&#39;) for details.</code></pre>
 <pre class="r"><code>mw_soft_invert</code></pre>
 <pre class="r"><code>weights_all &lt;- read_csv(file = here(&quot;Data&quot;, &quot;Test_weights_all.csv&quot;)) %&gt;% 
   bind_rows(mw_soft_invert) %&gt;% 
   write_csv(file = here(&quot;Data&quot;, &quot;Test_weights_all.csv&quot;))</code></pre>
-<pre><code>## Rows: 65 Columns: 3
-## ── Column specification ───────────────────────────────────────────────────────────────────────────────────────────────────
+<pre><code>## Rows: 60 Columns: 3
+## ── Column specification ────────────────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr (2): metric, diet
 ## dbl (1): value
