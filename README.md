@@ -1,15 +1,25 @@
-Carnivoran Dentition & Ordinal Diet Rankings 
+Carnivoran Dentition & Ordinal Diet Rankings
 =========
 
-## Bayesian prediction of multivariate ecology from phenotypic data yields novel insights into the diets of extant and extinct taxa
+## Bayesian prediction of multivariate ecology from phenotypic data yields new insights into the diets of extant and extinct taxa
 
 GitHub repo for the manuscript. All scripts necessary to perform the analyses and generate the plots from this manuscript are found here. 
 
 This repo is also in Dryad at https://doi.org/10.5061/dryad.pc866t1rg, and can be downloaded directly from there. The Dryad repo contains a link to a zip file of this GitHub repo, which is officially stored in Zenodo at https://doi.org/10.5281/zenodo.7429701.
 
+
+#### Author Information:
+
+Anna Wisniewski, Jonathan Nations, and Graham Slater
+Department of the Geophysical Sciences
+University of Chicago
+
+
 ## Required Packages:
 
-- `pacman`, `here`, `brms`, `cmdstanr`, `tidyverse`, `tidybayes`, `phytools`, `geiger`, `mclust`, `polycor`, `NbClust`, `ggstar`, `janitor`, `caret`, `scico`, `paletteer`, & `furrr` (for parallel computing)
+- All scripts were run in R version 4.2.0
+
+- `pacman` v.0.5.3, `here` v.1.0.1, `brms` 2.18.8, `cmdstanr` v.0.5.3, `tidyverse` v.1.3.2, `tidybayes`v.3.0.3, `phytools`v.1.2-0, `geiger`v.2.0.10, `mclust`v.6.0.0, `polycor`v.0.8-1, `NbClust`v.3.0.1, `ggstar`v.1.0.4, `janitor`v.2.1.0, `caret` v.6.0-9.3, `scico`v.1.3.1, `paletteer`v.1.5.0, & `furrr`v.0.3.1 (for parallel computing)
 
 - All of these packages should be available in CRAN. See the brms [FAQ](https://github.com/paul-buerkner/brms#faq) for details on installing Stan, cmndstanr, and brms. [pacman](http://trinker.github.io/pacman/vignettes/Introduction_to_pacman.html) makes it easy to install and load multiple packages. 
 
@@ -113,6 +123,8 @@ Here is a list of the data files:
 
 ## **`Code`** 
 
+***Code should be run in the order listed below***
+
 #### Polychoric PCA and Cluster Analyses  
 - We are interested if the multivariate diet matches traditional diet categories from several commonly used classification schemes. To do this, we want to project the importance rankings of the 13 food items into a multivariate diet space, then run a cluster analysis to identify natural groupings in dietspace. This is outlined in the `Code/Ord_Clust_Plot_FIgure_2.Rmd/` script. As the dietary importance rankings are ordinal rankings, and not continuous, we use a method called polychoric PCA, which is designed for ordinal variables. We estimate a polychoric correlation matrix, the project the species into diet space. The process is pretty well annotated in the script. Then we use the package [`mclust`](https://cran.r-project.org/web/packages/mclust/vignettes/mclust.html), which performs cluster analyses using finite normal mixture modeling, to determine the natural clusters. Since there is no really strong preference for a number of clusters, we calculate $k$ = 3, 4, 5, and 6. Then we use the adjusted Rand index to compare these to 4 classification schemes. More details in the text. This generates the Figure 2 plots, which are stored as `Plots/Figure_2_Diet_Clusters.pdf`.
 
@@ -133,7 +145,7 @@ Here is a list of the data files:
 
 - We performed Posterior Predictive Checks on every model that has a loo model weight > 0. The model outputs are stored in the `Code/Models/mod_outputs` directory.  The `Posterior_Preds_Figure_S2.Rmd` script calls these and plots them in the same way as the prior predictive plots. **Figure_S2_Posterior_Pred_Checks.pdf** in the `Plots` dir shows the results, which look quite good (mean is mostly centered on empirical values with little uncertainty on most food items). 
 
-- We checked the accuracy of our model predictions by comparing them to the empirical ranks for each species. This script is in `Code/Accuracy_Calculations.Rmd`, and the results are reported in Table 4 of the text and are saved as `Data/Accuracy_Table.csv`. We report these results as percentages of estimates that are the exact rank, and within 1 rank (which we consider a good estimate in this ranking scale). We estimate 1000 draws from the posterior of each model, then model average over them using the LOO weights, then estimate the accuracy of the predictions. `Data/Prediction_Table.csv` gives the mean predictions from the 1000 samples, and `Data/Accuracy_Table_Cont.csv` provides the values in table 4. The `Code/Accuracy_Calculations.Rmd` script contains a few custom functions, some parallel computing, and is time intensive. Reach out with questions :)
+- We checked the accuracy of our model predictions by comparing them to the empirical ranks for each species. This script is in `Code/Accuracy_Calculations.Rmd`, and the results are reported in Table 4 of the text and are saved as `Data/Accuracy_Table.csv`. We report these results as percentages of estimates that are the exact rank, and within 1 rank (which we consider a good estimate in this ranking scale). We estimate 1000 draws from the posterior of each model, then model average over them using the LOO weights, then estimate the accuracy of the predictions. `Data/Prediction_Table.csv` gives the mean predictions from the 1000 samples, and `Data/Accuracy_Table_Cont.csv` provides the values in table 4. The `Code/Accuracy_Calculations.Rmd` script contains a few custom functions, some parallel computing, and is time intensive. The `furrr` package sets the functions to run on 4 cores, but this can be modified to the number of available cores. Reach out with questions :)
 
 - Our third method of validating the predictive power of our models is interrogating our predictive accuracy and model fit using leave-one-out cross validation. There is a lot of information on CV, LOO CV, and the Pareto-Smoothed-Importance-Sampling (PSIS) method of LOO approximation out there (try starting with this [Excellent FAQ Page](https://mc-stan.org/loo/articles/online-only/faq.html) from the `LOO` package). In addition to model comparison, which we did above by using model weights generated from LOO scores, we are interested in the stability of our estimates within individual models. If a species is removed from the analysis, does that alter the prediction of other species? The Pareto-$K$ diagnostic score answers that. If, when the sample is removed from the analysis, the posterior changes substantially, it produces a high Pareto-$K$ estimate, and a small Pareto-$K$ means that the estimate is stable without the particular sample. We gathered these scores in the `Code/Accuracy_Calculations.Rmd` script described above, and they are reported along side the additional predictions in the `Data/Prediction_Table.csv` file. The Pareto-$K$ values are reported in the Supporting information Table S1. The `Pareto_Table.tex` file for this table is generated in `Code/Accuracy_Calculations.Rmd` as well, and is used to generate the Table S1 in the latex submission.
 
