@@ -406,6 +406,6 @@ weights_all <- read_csv(file = here("Data", "Test_weights_all.csv")) %>%
 
 ```{r}
 mn_DNE %>% write_rds(file = here("Code/Models/mod_outputs", "soft_invert_mn_DNE.Rds"))
-md_OPCR %>% write_rds(file = here("Code/Models/mod_outputs", "soft_invert_md_OPCR.Rds"))
+md_RLGA %>% write_rds(file = here("Code/Models/mod_outputs", "soft_invert_md_RLGA.Rds"))
 ```
 

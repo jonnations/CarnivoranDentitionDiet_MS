@@ -36,7 +36,7 @@ loo_compare(mn_RLGA, ms_RLGA, md_RLGA, criterion = "waic")
 model_weights(md_RLGA, mn_RLGA, ms_RLGA, weights = "stacking") %>%
   round(digits = 3)
 ```
-## RLGA = D
+## RLGA = d
 
 #### Pred & Acc
 ```{r}
@@ -105,7 +105,7 @@ model_weights(md_DNE, mn_DNE, ms_DNE, weights = "stacking") %>%
   round(digits = 3)
 ```
 
-####DNE = D
+####DNE = d
 
 #### Pred & Acc
 ```{r}
@@ -171,7 +171,7 @@ loo_compare(mn_RFI, ms_RFI, md_RFI, criterion = "waic")
 model_weights(md_RFI, mn_RFI, ms_RFI, weights = "stacking") %>%
   round(digits = 3)
 ```
-#### RFI = D
+#### RFI = d
 
 #### Pred & Acc
 ```{r}
@@ -239,7 +239,7 @@ model_weights(md_OPCR, mn_OPCR, ms_OPCR, weights = "stacking") %>%
   round(digits = 3)
 ```
 
-####OPCR = D 
+####OPCR = d 
 
 #### Pred & Acc
 ```{r}
@@ -368,6 +368,7 @@ cm$overall[1]
 
 # All Model Comp
 ```{r, message=FALSE}
+set.seed(826)
 loo_compare(mn_DNE, ms_DNE, md_DNE, mn_ALL, ms_ALL, md_ALL, mn_OPCR, ms_OPCR, md_OPCR, mn_RFI, ms_RFI, md_RFI, mn_RLGA,ms_RLGA, md_RLGA,  criterion = "loo") 
 
 loo_compare(mn_DNE, ms_DNE, md_DNE, mn_ALL, ms_ALL, md_ALL, mn_OPCR, ms_OPCR, md_OPCR, mn_RFI, ms_RFI, md_RFI, mn_RLGA,ms_RLGA, md_RLGA,  criterion = "waic")
@@ -388,6 +389,7 @@ mw_plant
 
 #### Write Weights
 ```{r}
+set.seed(826)
 mw_plant <- model_weights( md_DNE, md_ALL, md_OPCR, md_RFI, md_RLGA, weights = "stacking") %>% 
   round(digits = 3) %>% 
   as.data.frame() %>%
@@ -408,8 +410,10 @@ weights_all <- read_csv(file = here("Data", "Test_weights_all.csv")) %>%
 #### Write Models
 
 ```{r}
-md_OPCR %>% write_rds(file = here("Code/Models/mod_outputs", "plant_md_OPCR.Rds"))
-md_DNE %>%  write_rds(file = here("Code/Models/mod_outputs", "plant_md_DNE.Rds"))
+md_RLGA %>% write_rds(file = here("Code/Models/mod_outputs", "plant_md_RLGA.Rds"))
 md_ALL %>%  write_rds(file = here("Code/Models/mod_outputs", "plant_md_ALL.Rds"))
+md_DNE %>%  write_rds(file = here("Code/Models/mod_outputs", "plant_md_DNE.Rds"))
+md_RFI %>%  write_rds(file = here("Code/Models/mod_outputs", "plant_md_RFI.Rds"))
+md_OPCR %>%  write_rds(file = here("Code/Models/mod_outputs", "plant_md_OPCR.Rds"))
 ```
 

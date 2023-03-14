@@ -1,6 +1,6 @@
 ---
 title: "R Notebook"
-output: html_notebook
+#output: html_notebook
 ---
 # hard_invert
 
@@ -36,7 +36,7 @@ loo_compare(mn_RLGA, ms_RLGA, md_RLGA, criterion = "waic")
 model_weights(md_RLGA, mn_RLGA, ms_RLGA, weights = "stacking") %>%
   round(digits = 3)
 ```
-#### RLGA = D
+#### RLGA = s
 
 
 #### Pred & Acc
@@ -107,7 +107,7 @@ model_weights(md_DNE, mn_DNE, ms_DNE, weights = "stacking") %>%
   round(digits = 3)
 ```
 
-####DNE = N
+####DNE = n
 
 #### Pred & Acc
 ```{r}
@@ -173,7 +173,7 @@ loo_compare(mn_RFI, ms_RFI, md_RFI, criterion = "waic")
 model_weights(md_RFI, mn_RFI, ms_RFI, weights = "stacking") %>%
   round(digits = 3)
 ```
-#### RFI = S
+#### RFI = n
 
 #### Pred & Acc
 ```{r}
@@ -241,7 +241,7 @@ model_weights(md_OPCR, mn_OPCR, ms_OPCR, weights = "stacking") %>%
   round(digits = 3)
 ```
 
-####OPCR = S 
+####OPCR = s 
 
 #### Pred & Acc
 ```{r}
@@ -330,7 +330,7 @@ loo_compare(mn_ALL, ms_ALL, md_ALL, criterion = "waic")
 model_weights(md_ALL, mn_ALL, ms_ALL, weights = "stacking") %>%
   round(digits = 3)
 ```
-#### ALL = D
+#### ALL = s
 
 #### Pred & Acc
 ```{r}
@@ -368,6 +368,7 @@ cm$overall[1]
 
 # All Model Comp
 ```{r, message=FALSE}
+set.seed(826)
 loo_compare(mn_DNE, ms_DNE, md_DNE, mn_ALL, ms_ALL, md_ALL, mn_OPCR, ms_OPCR, md_OPCR, mn_RFI, ms_RFI, md_RFI, mn_RLGA,ms_RLGA, md_RLGA,  criterion = "loo") 
 
 loo_compare(mn_DNE, ms_DNE, md_DNE, mn_ALL, ms_ALL, md_ALL, mn_OPCR, ms_OPCR, md_OPCR, mn_RFI, ms_RFI, md_RFI, mn_RLGA,ms_RLGA, md_RLGA,  criterion = "waic")
@@ -387,7 +388,8 @@ mw_hard_invert
 
 #### Write Weights
 ```{r}
-mw_hard_invert <- model_weights( mn_DNE, md_ALL, ms_OPCR, ms_RFI, md_RLGA, weights = "stacking") %>% 
+set.seed(826)
+mw_hard_invert <- model_weights( mn_DNE, ms_ALL, ms_OPCR, mn_RFI, ms_RLGA, weights = "stacking") %>% 
   round(digits = 3) %>% 
   as.data.frame() %>%
   rownames_to_column("metric") %>% 
@@ -407,9 +409,11 @@ weights_all <- read_csv(file = here("Data", "Test_weights_all.csv")) %>%
 #### Write Models
 
 ```{r}
-md_RLGA %>% write_rds(file = here("Code/Models/mod_outputs", "hard_invert_md_RLGA.Rds"))
-md_ALL %>%  write_rds(file = here("Code/Models/mod_outputs", "hard_invert_md_ALL.Rds"))
+ms_RLGA %>% write_rds(file = here("Code/Models/mod_outputs", "hard_invert_ms_RLGA.Rds"))
+ms_ALL %>%  write_rds(file = here("Code/Models/mod_outputs", "hard_invert_ms_ALL.Rds"))
 mn_DNE %>%  write_rds(file = here("Code/Models/mod_outputs", "hard_invert_mn_DNE.Rds"))
+mn_RFI %>%  write_rds(file = here("Code/Models/mod_outputs", "hard_invert_mn_RFI.Rds"))
+ms_OPCR %>%  write_rds(file = here("Code/Models/mod_outputs", "hard_invert_ms_OPCR.Rds"))
 ```
 
 

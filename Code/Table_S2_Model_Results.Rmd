@@ -249,43 +249,56 @@ df_transpose <- function(df) {
 
 ```{r}
 r1 <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "bird_md_RLGA.Rds")), "Bird")
-r2 <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "carrion_md_RLGA.Rds")), "Carrion")
-r3 <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "egg_mn_RLGA.Rds")), "Egg")
-r4 <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "fish_ms_RLGA.Rds")), "Fish")
-r5 <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "fruit_ms_RLGA.Rds")), "Fruit")
-r6 <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "hard_invert_md_RLGA.Rds")), "Hard Invert")
-r7 <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "large_mammal_ms_RLGA.Rds")), "Seed")
-r8 <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "seed_mn_RLGA.Rds")), "Large Mammal")
-r9  <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "small_mammal_md_RLGA.Rds")), "Small Mammal")
 
-r10 <- cleanupRFI(read_rds(here("Code/Models/mod_outputs", "bird_mn_RFI.Rds")), "Bird")
-r11 <- cleanupRFI(read_rds(here("Code/Models/mod_outputs", "egg_md_RFI.Rds")), "Egg")
-r12 <- cleanupRFI(read_rds(here("Code/Models/mod_outputs", "fruit_mn_RFI.Rds")), "Fruit")
+r2 <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "carrion_mn_RLGA.Rds")), "Carrion")
 
-r13 <- cleanupOPCr(read_rds(here("Code/Models/mod_outputs", "carrion_md_OPCR.Rds")), "Carrion")
-r14 <- cleanupOPCr(read_rds(here("Code/Models/mod_outputs", "fish_ms_OPCR.Rds")), "Fish")
-r15 <- cleanupOPCr(read_rds(here("Code/Models/mod_outputs", "fruit_ms_OPCR.Rds")), "Fruit")
-r16 <- cleanupOPCr(read_rds(here("Code/Models/mod_outputs", "herptile_md_OPCR.Rds")), "Herptile")
-r17 <- cleanupOPCr(read_rds(here("Code/Models/mod_outputs", "plant_md_OPCR.Rds")), "Plant")
-r18 <- cleanupOPCr(read_rds(here("Code/Models/mod_outputs", "soft_invert_md_OPCR.Rds")),"Soft Invert")
+r3 <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "fish_ms_RLGA.Rds")), "Fish")
 
-r19 <- cleanupaDNE(read_rds(here("Code/Models/mod_outputs", "carrion_ms_DNE.Rds")), "Carrion")
-r20 <- cleanupaDNE(read_rds(here("Code/Models/mod_outputs", "egg_mn_DNE.Rds")), "Egg")
-r21 <- cleanupaDNE(read_rds(here("Code/Models/mod_outputs", "hard_invert_mn_DNE.Rds")), "Hard Invert")
-r22 <- cleanupaDNE(read_rds(here("Code/Models/mod_outputs", "herptile_md_DNE.Rds")), "Herptile")
-r23 <- cleanupaDNE(read_rds(here("Code/Models/mod_outputs", "plant_md_DNE.Rds")), "Plant")
-r24 <- cleanupaDNE(read_rds(here("Code/Models/mod_outputs", "seed_mn_DNE.Rds")), "Seed")
-r25 <- cleanupaDNE(read_rds(here("Code/Models/mod_outputs", "small_mammal_md_DNE.Rds")), "Small Mammal")
-r26 <- cleanupaDNE(read_rds(here("Code/Models/mod_outputs", "soft_invert_mn_DNE.Rds")), "Soft Invert")
+r4 <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "fruit_mn_RLGA.Rds")), "Fruit")
 
-r27 <- cleanupRLGA2(read_rds(here("Code/Models/mod_outputs", "root_mn_RLGA.Rds")), "Root")
+r5 <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "hard_invert_ms_RLGA.Rds")), "Hard Invert")
 
-r28 <- cleanupALL(read_rds(here("Code/Models/mod_outputs", "bird_md_ALL.Rds")), "Bird")
-r29 <- cleanupALL(read_rds(here("Code/Models/mod_outputs", "hard_invert_md_ALL.Rds")), "Hard Invert")
-r30 <- cleanupALL(read_rds(here("Code/Models/mod_outputs", "large_mammal_ms_ALL.Rds")), "Large Mammal")
-r31 <- cleanupALL(read_rds(here("Code/Models/mod_outputs", "plant_md_ALL.Rds")), "Plant")
+r6 <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "herptile_md_RLGA.Rds")), "Herptile")
 
-t <- bind_rows(r1, r2, r3, r4, r5, r6, r7, r8 , r9 , r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r26, r27, r28, r29, r30, r31)   %>% 
+r7 <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "large_mammal_ms_RLGA.Rds")), "Large Mammal")
+
+r8 <- cleanupRLGA2(read_rds(here("Code/Models/mod_outputs", "root_ms_RLGA.Rds")), "Root")
+
+r9 <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "seed_ms_RLGA.Rds")), "Seed")
+
+r10  <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "small_mammal_ms_RLGA.Rds")), "Small Mammal")
+
+r11 <- cleanupRLGA(read_rds(here("Code/Models/mod_outputs", "soft_invert_md_RLGA.Rds")), "Soft Invert")
+
+r12 <- cleanupRFI(read_rds(here("Code/Models/mod_outputs", "egg_mn_RFI.Rds")), "Egg")
+
+r13 <- cleanupRFI(read_rds(here("Code/Models/mod_outputs", "seed_ms_RFI.Rds")), "Seed")
+
+r14 <- cleanupOPCr(read_rds(here("Code/Models/mod_outputs", "carrion_md_OPCR.Rds")), "Carrion")
+
+r15 <- cleanupOPCr(read_rds(here("Code/Models/mod_outputs", "fruit_mn_OPCR.Rds")), "Fruit")
+
+r16 <- cleanupOPCr(read_rds(here("Code/Models/mod_outputs", "plant_md_OPCR.Rds")), "Plant")
+
+r17 <- cleanupaDNE(read_rds(here("Code/Models/mod_outputs", "egg_mn_DNE.Rds")), "Egg")
+
+r18 <- cleanupaDNE(read_rds(here("Code/Models/mod_outputs", "hard_invert_mn_DNE.Rds")), "Hard Invert")
+
+r19 <- cleanupaDNE(read_rds(here("Code/Models/mod_outputs", "herptile_ms_DNE.Rds")), "Herptile")
+
+r20 <- cleanupaDNE(read_rds(here("Code/Models/mod_outputs", "plant_md_DNE.Rds")), "Plant")
+
+r21 <- cleanupaDNE(read_rds(here("Code/Models/mod_outputs", "seed_mn_DNE.Rds")), "Seed")
+
+r22 <- cleanupaDNE(read_rds(here("Code/Models/mod_outputs", "small_mammal_md_DNE.Rds")), "Small Mammal")
+
+r23 <- cleanupaDNE(read_rds(here("Code/Models/mod_outputs", "soft_invert_mn_DNE.Rds")), "Soft Invert")
+
+r24 <- cleanupALL(read_rds(here("Code/Models/mod_outputs", "large_mammal_ms_ALL.Rds")), "Large Mammal")
+
+r25 <- cleanupALL(read_rds(here("Code/Models/mod_outputs", "plant_md_ALL.Rds")), "Plant")
+
+t <- bind_rows(r1, r2, r3, r4, r5, r6, r7, r8 , r9 , r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25)   %>% 
   as_tibble() %>%
   relocate(Metric, .after = Food) %>% 
   arrange(Metric, Food) %>% 
@@ -311,8 +324,9 @@ read_csv(here("Data", "Table_S2_Model_Results2.csv")) %>% kbl(longtable = T, esc
   save_kable(file = here("Plots", "Table_S2_Model_Results.png"),zoom = 2, density = 300, keep_tex = T)
 
 # tex of table for the submission Supporting Information file. 
-read_csv(here("Data", "Table_S2_Model_Results.csv")) %>% pivot_longer(!c(Metric,Food), names_to = "Parameter", values_to = "Test") %>% pivot_wider(names_from = Food, values_from = Test)%>%
+read_csv(here("Data", "Table_S2_Model_Results.csv")) %>% pivot_longer(!c(Metric,Food), names_to = "Parameter", values_to = "Test") %>% pivot_wider(names_from = Food, values_from = Test) %>%
   filter_at(vars(Bird, `Hard Invert`, `Large Mammal`, Plant, Carrion, Egg, Herptile, Seed,  `Small Mammal`, `Soft Invert`, Fish, Fruit, Root), any_vars(!is.na(.))) %>% 
+  select(Metric, Parameter, Bird, `Hard Invert`, `Large Mammal`, Plant, Carrion, Egg, Herptile, Seed, `Small Mammal`, `Soft Invert`, Fish, Fruit, Root) %>% 
   kbl(longtable = T, escape = F, align = 'c', format = 'latex') %>% 
   kable_classic(full_width = F, html_font = "Cambria", font_size = 5) %>% writeLines(here("Plots", "Table_S2_Model_Results.tex"))
 

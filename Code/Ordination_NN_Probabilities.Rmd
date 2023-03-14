@@ -17,11 +17,15 @@ here::i_am("Code/Ordination_NN_Probabilities.Rmd")
 ed <- read_csv(here("Data", "Model_Averaged_Post_Sims.csv")) %>% 
   rename(ma = wa_rank) 
 
+n_ext <- length(unique(ed$Species))
+
 cd <- read_csv(here("Data", "Model_Averaged_Post_Sims_Crypt_Fos.csv")) %>% rename(ma = wa_rank)
+
+n_crpt <- length(unique(cd$Species))
 
 ```
 
-#  PCA
+##  PCA
 
 Perform a PCA on the weighted importance scores of each species. These are the weighted averages of the model-averaged predicitons. 
 
@@ -36,7 +40,7 @@ cd2 <- split(cd, cd$.draw)
 rm(ed, cd)
 ```
 
-#### Functions
+#### Functions 
 ```{r}
 # Breaks each array df into a cor matrix
 ex_prep <- function(x){
@@ -57,14 +61,14 @@ crypt_prep <- function(x){
 mean_prep <- function(x){
   x %>% 
     summarise(across(1:13, mean)) %>% 
-    slice(rep(1:n(), each = 89)) %>% as.matrix()
+    slice(rep(1:n(), each = n_ext)) %>% as.matrix()
 }
 
 #do the same for the cryptic data
 mean_prep2 <- function(x){
   x %>% 
     summarise(across(1:13, mean)) %>% 
-    slice(rep(1:n(), each = 18)) %>% as.matrix()
+    slice(rep(1:n(), each = n_crpt)) %>% as.matrix()
 }
 # Remove vectors from eigen calculation
 
@@ -84,9 +88,17 @@ get_neighbors <- function(taxon, taxa) {
   names(distances) <- rownames(taxa)
   sort(distances)
 }
+
+get_neighbors2 <- function(taxon, taxa) {
+  distances <- numeric()
+  taxa[taxa != taxon]
+  for(i in 1:nrow(taxa)) distances[i] <- dist(rbind(taxon, taxa[i,]), method = "euclidean")
+  names(distances) <- rownames(taxa)
+  sort(distances)
+}
 ```
 
-#### Do the Calculations
+## Do the Calculations 
 ```{r}
 #wide format raw ext data
 ed2_wide <- ed2 %>% map(ex_prep)
@@ -101,10 +113,10 @@ es_list <- ed2_cor %>% map(eigen) %>% map(rem_vecs)
 means_list <-  ed2_wide %>% map(mean_prep)
 
 # Make a matrix of 1's 
-S_new2 <- pmap(list(ed2_wide, means_list, es_list), pc_scores)
+S_new2 <- purrr::pmap(list(ed2_wide, means_list, es_list), pc_scores)
 ```
 
-#### Loadings
+## Loadings 
 ```{r}
 loads <- function(ed2_wide, S_new2){
   (t(ed2_wide) %*% S_new2) / (nrow(ed2_wide)-1)
@@ -113,7 +125,7 @@ Loadings <- map2(ed2_wide, S_new2, loads)
 ```
 
 
-#### Now for data deficient...
+#### Now for data deficient... 
 
 ```{r}
 # Prepping Cryptic Data into wide format
@@ -126,7 +138,7 @@ S_cryptic2 <- pmap(list(cd2_wide, means_list2, es_list), pc_scores)
 
 ```
 
-#### Calculate NNs
+## Calculate NNs 
 ```{r}
 nns <- function(S_cryptic2, S_new2){
   cryptic_res <- matrix(data=NA, nrow=nrow(S_cryptic2), ncol=5)
@@ -151,5 +163,57 @@ nn <- bind_rows(nntest) %>%
 
 #See what was produced
 nn
+```
+
+#### Write  
+```{r}
+nn %>% write_csv(here("Data", "NN_probabilities.csv"))
+
+# Table with just the closest 3 extant species to each fossil/cryptic taxon
+
+nn %>% group_by(Species) %>% slice(1:3) %>% ungroup() %>% write_csv(here("Data", "NN_probabilities_top3.csv"))
+```
+
+#### Preds and weight
+
+```{r}
+ms <- dat %>% select(Species, log_cuberoot_mass) %>% 
+  mutate(nearest_1 = Species)
+
+d1 <- nn %>% right_join(ms, by = 'Species') %>% select(!nearest_1.y) %>% rename(nearest_1 = nearest_1.x)
+d2 <- nn %>% rename(mass2 = log_cuberoot_mass) %>% right_join(ms, by = 'nearest_1')
+```
+
+
+## NNs Extant
+```{r}
+nns2 <- function(S_cryptic2, S_new2){
+  cryptic_res <- matrix(data=NA, nrow=nrow(S_cryptic2), ncol=4)
+  for(i in 1:nrow(S_cryptic2)) cryptic_res[i,] <- names(get_neighbors(S_cryptic2[i,2:5], S_new2[,2:5]))[c(2:5)]
+  colnames(cryptic_res) <- paste("nearest", 2:5, sep="_")
+  cryptic_res <- as_tibble(cryptic_res) %>% mutate( Species = rownames(S_cryptic2))
+  return(cryptic_res)
+}
+
+
+nntest2 <- pmap(list(S_new2, S_new2), nns2)
+
+#Flatten array into a dataframe, then calculate the percentages of the closest nearest neighbors. 
+nn2 <- bind_rows(nntest2) %>% 
+  group_by(Species) %>% 
+  select(Species, nearest_2) %>% 
+  count(nearest_2) %>% 
+  mutate(percent = n/4000) %>% 
+  arrange(Species, desc(percent)) %>% 
+  filter(percent > 0.05) # %>% 
+  #write_csv(here("Data", "NN_probabilities.csv"))
+
+#See what was produced
+nn2
+```
+
+
+```{r}
+nn2 %>% filter(Species == "Ursus_maritimus")
 ```
 
